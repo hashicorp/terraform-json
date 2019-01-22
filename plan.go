@@ -79,10 +79,6 @@ type ResourceChange struct {
 	// This value can be either an integer (int) or a string.
 	Index interface{} `json:"index,omitempty"`
 
-	//  The version of the resource type schema the "values" property
-	//  conforms to.
-	SchemaVersion uint64 `json:"schema_version"`
-
 	// If set, indicates that this action applies to a "deposed" object
 	// of the given instance rather than to its "current" object.
 	// Omitted for changes to the current object.
