@@ -22,7 +22,7 @@ type State struct {
 // prior state (which is always complete) and the planned new state.
 type StateValues struct {
 	// The Outputs for this common state representation.
-	Outputs map[string]Output `json:"outputs,omitempty"`
+	Outputs map[string]StateOutput `json:"outputs,omitempty"`
 
 	// The root module in this state representation.
 	RootModule StateModule `json:"root_module,omitempty"`
@@ -79,4 +79,14 @@ type StateResource struct {
 	// values are omitted or set to null, making them indistinguishable
 	// from absent values.
 	AttributeValues map[string]interface{} `json:"values,omitempty"`
+}
+
+// StateOutput represents an output value in a common state
+// representation.
+type StateOutput struct {
+	// Whether or not the output was marked as sensitive.
+	Sensitive bool `json:"sensitive"`
+
+	// The value of the output.
+	Value interface{} `json:"value,omitempty"`
 }

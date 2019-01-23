@@ -43,15 +43,6 @@ type Plan struct {
 	// Config Config `json:"configuration,omitempty"`
 }
 
-// Output represents an output value.
-type Output struct {
-	// Whether or not the output was marked as sensitive.
-	Sensitive bool `json:"sensitive"`
-
-	// The value of the output.
-	Value interface{} `json:"value,omitempty"`
-}
-
 // ResourceChange is a description of an individual change action
 // that Terraform plans to use to move from the prior state to a new
 // state matching the configuration.
