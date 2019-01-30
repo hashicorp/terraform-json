@@ -13,7 +13,7 @@ const (
 	DataSourceMode ResourceMode = "data"
 
 	// ManagedResourceMode is the resource mode for managed resources.
-	ManagedResourceMode ResourceMode = "resource"
+	ManagedResourceMode ResourceMode = "managed"
 )
 
 // Plan represents the entire contents of an output Terraform plan.
