@@ -1,0 +1,507 @@
+{
+  "format_version": "0.1",
+  "planned_values": {
+    "outputs": {
+      "foo": {
+        "sensitive": true,
+        "value": "bar"
+      },
+      "interpolated": {
+        "sensitive": false
+      },
+      "interpolated_deep": {
+        "sensitive": false
+      },
+      "list": {
+        "sensitive": false,
+        "value": [
+          "foo",
+          "bar"
+        ]
+      },
+      "map": {
+        "sensitive": false,
+        "value": {
+          "foo": "bar",
+          "number": 42
+        }
+      },
+      "referenced": {
+        "sensitive": false
+      },
+      "referenced_deep": {
+        "sensitive": false
+      },
+      "string": {
+        "sensitive": false,
+        "value": "foo"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "data.null_data_source.baz",
+          "mode": "data",
+          "type": "null_data_source",
+          "name": "baz",
+          "provider_name": "null",
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_name": "null",
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.baz[0]",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "baz",
+          "index": 0,
+          "provider_name": "null",
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.baz[1]",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "baz",
+          "index": 1,
+          "provider_name": "null",
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.baz[2]",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "baz",
+          "index": 2,
+          "provider_name": "null",
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_name": "null",
+          "schema_version": 0
+        }
+      ],
+      "child_modules": [
+        {
+          "resources": [
+            {
+              "address": "module.foo.null_resource.foo",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "foo",
+              "provider_name": "null",
+              "schema_version": 0
+            }
+          ],
+          "address": "module.foo"
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "data.null_data_source.baz",
+      "mode": "data",
+      "type": "null_data_source",
+      "name": "baz",
+      "deposed": true,
+      "change": {
+        "actions": [
+          "read"
+        ],
+        "before": null,
+        "after_unknown": {
+          "has_computed_default": true,
+          "id": true,
+          "inputs": {
+            "bar_id": true,
+            "foo_id": true
+          },
+          "outputs": true,
+          "random": true
+        }
+      }
+    },
+    {
+      "address": "module.foo.null_resource.foo",
+      "module_address": "module.foo",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "foo",
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "triggers": {
+            "foo": "bar"
+          }
+        },
+        "after_unknown": {
+          "id": true,
+          "triggers": {
+            "foo": false
+          }
+        }
+      }
+    },
+    {
+      "address": "null_resource.bar",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "bar",
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "null_resource.baz[0]",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "baz",
+      "index": 0,
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "null_resource.baz[1]",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "baz",
+      "index": 1,
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "null_resource.baz[2]",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "baz",
+      "index": 2,
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after_unknown": {
+          "id": true,
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "null_resource.foo",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "foo",
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "triggers": {
+            "foo": "bar"
+          }
+        },
+        "after_unknown": {
+          "id": true,
+          "triggers": {
+            "foo": false
+          }
+        }
+      }
+    }
+  ],
+  "output_changes": {
+    "foo": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": "bar",
+      "after_unknown": false
+    },
+    "interpolated": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after_unknown": true
+    },
+    "interpolated_deep": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after_unknown": true
+    },
+    "list": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": [
+        "foo",
+        "bar"
+      ],
+      "after_unknown": false
+    },
+    "map": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": {
+        "foo": "bar",
+        "number": 42
+      },
+      "after_unknown": false
+    },
+    "referenced": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after_unknown": true
+    },
+    "referenced_deep": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after_unknown": true
+    },
+    "string": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": "foo",
+      "after_unknown": false
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "expressions": {
+          "region": {
+            "constant_value": "us-west-2"
+          }
+        }
+      },
+      "aws.east": {
+        "name": "aws",
+        "alias": "east",
+        "expressions": {
+          "region": {
+            "constant_value": "us-east-1"
+          }
+        }
+      },
+      "null": {
+        "name": "null"
+      }
+    },
+    "root_module": {
+      "outputs": {
+        "foo": {
+          "sensitive": true,
+          "expression": {
+            "constant_value": "bar"
+          }
+        },
+        "interpolated": {
+          "expression": {
+            "references": [
+              "null_resource.foo"
+            ]
+          }
+        },
+        "interpolated_deep": {
+          "expression": {
+            "references": [
+              "null_resource.foo"
+            ]
+          }
+        },
+        "list": {
+          "expression": {
+            "constant_value": [
+              "foo",
+              "bar"
+            ]
+          }
+        },
+        "map": {
+          "expression": {
+            "constant_value": {
+              "foo": "bar",
+              "number": 42
+            }
+          }
+        },
+        "referenced": {
+          "expression": {
+            "references": [
+              "null_resource.foo"
+            ]
+          }
+        },
+        "referenced_deep": {
+          "expression": {
+            "references": [
+              "null_resource.foo"
+            ]
+          }
+        },
+        "string": {
+          "expression": {
+            "constant_value": "foo"
+          }
+        }
+      },
+      "resources": [
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_config_key": "provider.null",
+          "expressions": {
+            "triggers": {
+              "references": [
+                "null_resource.foo"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.baz",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "baz",
+          "provider_config_key": "provider.null",
+          "expressions": {
+            "triggers": {
+              "references": [
+                "null_resource.foo"
+              ]
+            }
+          },
+          "schema_version": 0,
+          "count_expression": {
+            "constant_value": 3
+          }
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_config_key": "provider.null",
+          "provisioners": [
+            {
+              "type": "local-exec",
+              "expressions": {
+                "command": {
+                  "constant_value": "echo hello"
+                }
+              }
+            }
+          ],
+          "expressions": {
+            "triggers": {
+              "constant_value": {
+                "foo": "bar"
+              }
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "data.null_data_source.baz",
+          "mode": "data",
+          "type": "null_data_source",
+          "name": "baz",
+          "provider_config_key": "provider.null",
+          "expressions": {
+            "inputs": {
+              "references": [
+                "null_resource.foo",
+                "null_resource.bar"
+              ]
+            }
+          },
+          "schema_version": 0
+        }
+      ],
+      "module_calls": [
+        {
+          "resolved_source": "./foo",
+          "module": {
+            "resources": [
+              {
+                "address": "null_resource.foo",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "foo",
+                "provider_config_key": "provider.null",
+                "expressions": {
+                  "triggers": {
+                    "constant_value": {
+                      "foo": "bar"
+                    }
+                  }
+                },
+                "schema_version": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
