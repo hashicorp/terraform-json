@@ -10,28 +10,19 @@ type Action string
 
 const (
 	// ActionNoop denotes a no-op operation.
-	ActionNoop Action = "NoOp"
+	ActionNoop Action = "no-op"
 
 	// ActionCreate denotes a create operation.
-	ActionCreate Action = "Create"
+	ActionCreate Action = "create"
 
 	// ActionRead denotes a read operation.
-	ActionRead Action = "Read"
+	ActionRead Action = "read"
 
 	// ActionUpdate denotes an update operation.
-	ActionUpdate Action = "Update"
+	ActionUpdate Action = "update"
 
 	// ActionDelete denotes a delete operation.
-	ActionDelete Action = "Delete"
-
-	// ActionDeleteThenCreate denotes a standard replacement operation
-	// (destroy before create).
-	ActionDeleteThenCreate Action = "DeleteThenCreate"
-
-	// ActionCreateThenDelete denotes a create-before-destroy replacement
-	// operation (destroy before create, usually a result of specifying
-	// create_before_destroy).
-	ActionCreateThenDelete Action = "DeleteThenCreate"
+	ActionDelete Action = "delete"
 )
 
 // Actions denotes a valid change type.
@@ -87,11 +78,11 @@ func (a Actions) Delete() bool {
 // destroy-before-create operation. This is the standard resource
 // replacement method.
 func (a Actions) DestroyBeforeCreate() bool {
-	if len(a) != 1 {
+	if len(a) != 2 {
 		return false
 	}
 
-	return a[0] == ActionDeleteThenCreate
+	return a[0] == ActionDelete && a[1] == ActionCreate
 }
 
 // CreateBeforeDestroy is true if this set of Actions denotes a
@@ -99,11 +90,11 @@ func (a Actions) DestroyBeforeCreate() bool {
 // to a resource that has the create_before_destroy lifecycle option
 // set.
 func (a Actions) CreateBeforeDestroy() bool {
-	if len(a) != 1 {
+	if len(a) != 2 {
 		return false
 	}
 
-	return a[0] == ActionCreateThenDelete
+	return a[0] == ActionCreate && a[1] == ActionDelete
 }
 
 // Replace is true if this set of Actions denotes a valid replacement
