@@ -9,7 +9,7 @@ type Config struct {
 
 	// The root module in the configuration. Any child modules descend
 	// off of here.
-	RootModule ConfigModule `json:"root_module,omitempty"`
+	RootModule *ConfigModule `json:"root_module,omitempty"`
 }
 
 // ProviderConfig describes a provider configuration instance.
@@ -46,7 +46,7 @@ type ConfigOutput struct {
 	Sensitive bool `json:"sensitive,omitempty"`
 
 	// The defined value of the output.
-	Expression Expression `json:"expression,omitempty"`
+	Expression *Expression `json:"expression,omitempty"`
 }
 
 // ConfigResource is the configuration representation of a resource.
@@ -85,18 +85,17 @@ type ConfigResource struct {
 	SchemaVersion uint64 `json:"schema_version"`
 
 	// The expression data for the "count" value in the resource.
-	CountExpression Expression `json:"count_expression,omitempty"`
+	CountExpression *Expression `json:"count_expression,omitempty"`
 
 	// The expression data for the "for_each" value in the resource.
-	ForEachExpression Expression `json:"for_each_expression,omitempty"`
+	ForEachExpression *Expression `json:"for_each_expression,omitempty"`
 }
 
 // ConfigProvisioner describes a provisioner declared in a resource
 // configuration.
 type ConfigProvisioner struct {
-	// The name of the provisioner, synonymous with its type, ie:
-	// "local-exec".
-	Name string `json:"name,omitempty"`
+	// The type of the provisioner, ie: "local-exec".
+	Type string `json:"type,omitempty"`
 
 	// Any non-special configuration values in the provisioner, indexed by
 	// key.
@@ -114,11 +113,11 @@ type ModuleCall struct {
 	Expressions map[string]Expression `json:"expressions,omitempty"`
 
 	// The expression data for the "count" value in the module.
-	CountExpression Expression `json:"count_expression,omitempty"`
+	CountExpression *Expression `json:"count_expression,omitempty"`
 
 	// The expression data for the "for_each" value in the module.
-	ForEachExpression Expression `json:"for_each_expression,omitempty"`
+	ForEachExpression *Expression `json:"for_each_expression,omitempty"`
 
 	// The configuration data for the module itself.
-	Module ConfigModule `json:"module,omitempty"`
+	Module *ConfigModule `json:"module,omitempty"`
 }

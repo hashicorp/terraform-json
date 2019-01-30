@@ -12,10 +12,10 @@ type State struct {
 	FormatVersion string `json:"format_version,omitempty"`
 
 	// The Terraform version used to make the state.
-	TerraformVersion string
+	TerraformVersion string `json:"terraform_version,omitempty"`
 
 	// The values that make up the state.
-	Values StateValues
+	Values *StateValues `json:"values,omitempty"`
 }
 
 // StateValues is the common representation of resolved values for both the
@@ -25,7 +25,7 @@ type StateValues struct {
 	Outputs map[string]StateOutput `json:"outputs,omitempty"`
 
 	// The root module in this state representation.
-	RootModule StateModule `json:"root_module,omitempty"`
+	RootModule *StateModule `json:"root_module,omitempty"`
 }
 
 // StateModule is the representation of a module in the common state
@@ -72,7 +72,7 @@ type StateResource struct {
 
 	//  The version of the resource type schema the "values" property
 	//  conforms to.
-	SchemaVersion uint64 `json:"schema_version"`
+	SchemaVersion uint64 `json:"schema_version,omitempty"`
 
 	// The JSON representation of the attribute values of the resource,
 	// whose structure depends on the resource type schema. Any unknown

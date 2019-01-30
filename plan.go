@@ -26,7 +26,7 @@ type Plan struct {
 	// The common state representation of resources within this plan.
 	// This is a product of the existing state merged with the diff for
 	// this plan.
-	PlannedValues StateValues `json:"planned_values,omitempty"`
+	PlannedValues *StateValues `json:"planned_values,omitempty"`
 
 	// The change operations for resources and data sources within this
 	// plan.
@@ -37,10 +37,10 @@ type Plan struct {
 
 	// The Terraform state prior to the plan operation. This is the
 	// same format as PlannedValues, without the current diff merged.
-	PriorState State `json:"prior_state,omitempty"`
+	PriorState *State `json:"prior_state,omitempty"`
 
 	// The Terraform configuration used to make the plan.
-	// Config Config `json:"configuration,omitempty"`
+	Config *Config `json:"configuration,omitempty"`
 }
 
 // ResourceChange is a description of an individual change action
@@ -76,7 +76,7 @@ type ResourceChange struct {
 	Deposed bool `json:"deposed,omitempty"`
 
 	// The data describing the change that will be made to this object.
-	Change Change `json:"change,omitempty"`
+	Change *Change `json:"change,omitempty"`
 }
 
 // Change is the representation of a proposed change for an object.
@@ -90,8 +90,8 @@ type Change struct {
 	// actions, both values will be identical. After will be incomplete
 	// if there are values within it that won't be known until after
 	// apply.
-	Before map[string]interface{} `json:"before,omitempty"`
-	After  map[string]interface{} `json:"after,omitempty"`
+	Before interface{} `json:"before,"`
+	After  interface{} `json:"after,omitempty"`
 
 	// A deep object of booleans that denotes any values that are
 	// unknown in a resource. These values were previously referred to
@@ -99,5 +99,5 @@ type Change struct {
 	//
 	// If the value cannot be found in this map, then its value should
 	// be available within After, so long as the operation supports it.
-	AfterUnknown map[string]interface{} `json:"after_unknown,omitempty"`
+	AfterUnknown interface{} `json:"after_unknown,omitempty"`
 }
