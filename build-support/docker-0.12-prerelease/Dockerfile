@@ -1,7 +1,7 @@
 FROM golang
 
 ARG GPG_KEY="51852D87348FFC4C"
-ARG BUILD_REF="master"
+ARG BUILD_REF="4bd6c5320a9443f7725be2f3afb86e8ee1701a65"
 
 # Providers
 RUN sh -c "\
