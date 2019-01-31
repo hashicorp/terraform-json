@@ -478,8 +478,8 @@
           "schema_version": 0
         }
       ],
-      "module_calls": [
-        {
+      "module_calls": {
+        "foo": {
           "resolved_source": "./foo",
           "module": {
             "resources": [
@@ -501,7 +501,7 @@
             ]
           }
         }
-      ]
+      }
     }
   }
 }
