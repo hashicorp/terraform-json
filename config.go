@@ -37,7 +37,7 @@ type ConfigModule struct {
 	Resources []ConfigResource `json:"resources,omitempty"`
 
 	// Any "module" stanzas within the specific module.
-	ModuleCalls []ModuleCall `json:"module_calls,omitempty"`
+	ModuleCalls map[string]ModuleCall `json:"module_calls,omitempty"`
 }
 
 // ConfigOutput defines an output as defined in configuration.
