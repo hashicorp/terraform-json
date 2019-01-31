@@ -3,10 +3,11 @@ FROM golang
 ARG GPG_KEY="51852D87348FFC4C"
 ARG BUILD_REF="master"
 
+# Providers
 RUN sh -c "\
   apt-get update && \
-  apt-get -y install git curl gpg unzip && \
-  mkdir -p /providers-download /build /go/bin /root/.gnupg && \
+  apt-get -y install curl gpg unzip && \
+  mkdir -p /providers-download /go/bin /root/.gnupg && \
   chmod og-wrxX -R /root/.gnupg && \
   echo disable-ipv6 > /root/.gnupg/dirmngr.conf && \
   gpg --no-tty --recv-keys ${GPG_KEY} && \
@@ -18,13 +19,23 @@ RUN sh -c "\
   gpg --verify terraform_0.12.0-alpha4_SHA256SUMS.sig && \
   shasum -c terraform_0.12.0-alpha4_SHA256SUMS 2>/dev/null | grep 'terraform_0.12.0-alpha4_terraform_0.12.0-alpha4_linux_amd64.zip: OK' && \
   unzip terraform_0.12.0-alpha4_terraform_0.12.0-alpha4_linux_amd64.zip -x terraform -d /go/bin && \
+  rm -rf /providers-download && \
+  apt-get -y remove curl gpg unzip && \
+  apt-get -y autoremove && \
+  rm -rf /var/cache/apt"
+
+# Core
+RUN sh -c "\
+  apt-get update && \
+  apt-get -y install git && \
+  mkdir -p /build && \
   cd /build && \
   git clone https://github.com/hashicorp/terraform.git terraform && \
   cd terraform && \
   git checkout ${BUILD_REF} && \
   go install -mod=vendor ./ && \
-  rm -rf /providers-download /build && \
-  apt-get -y remove git curl gpg unzip && \
+  rm -rf /build && \
+  apt-get -y remove git && \
   apt-get -y autoremove && \
   rm -rf /var/cache/apt"
 
