@@ -38,7 +38,7 @@ type StateModule struct {
 	Address string `json:"address,omitempty"`
 
 	// Any child modules within this module.
-	ChildModules []StateModule `json:"child_modules,omitempty"`
+	ChildModules []*StateModule `json:"child_modules,omitempty"`
 }
 
 // StateResource is the representation of a resource in the common
