@@ -9,8 +9,8 @@ const PlanFormatVersion = "0.1"
 type ResourceMode string
 
 const (
-	// DataSourceMode is the resource mode for data sources.
-	DataSourceMode ResourceMode = "data"
+	// DataResourceMode is the resource mode for data sources.
+	DataResourceMode ResourceMode = "data"
 
 	// ManagedResourceMode is the resource mode for managed resources.
 	ManagedResourceMode ResourceMode = "managed"
