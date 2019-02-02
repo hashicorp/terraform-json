@@ -23,6 +23,9 @@ type Plan struct {
 	// will be unstable.
 	FormatVersion string `json:"format_version,omitempty"`
 
+	// The version of Terraform used to make the plan.
+	TerraformVersion string `json:"terraform_version,omitempty"`
+
 	// The common state representation of resources within this plan.
 	// This is a product of the existing state merged with the diff for
 	// this plan.
@@ -31,6 +34,9 @@ type Plan struct {
 	// The change operations for resources and data sources within this
 	// plan.
 	ResourceChanges []ResourceChange `json:"resource_changes,omitempty"`
+
+	// The variables set in the root module when creating the plan.
+	Variables map[string]interface{} `json:"variables,omitempty"`
 
 	// The change operations for outputs within this plan.
 	OutputChanges map[string]Change `json:"output_changes,omitempty"`
