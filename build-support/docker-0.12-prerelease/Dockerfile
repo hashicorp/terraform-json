@@ -1,9 +1,7 @@
 FROM golang
 
-ARG GPG_KEY="51852D87348FFC4C"
-ARG BUILD_REF="6330abae3341ae4440b2124396002980561e5e00"
-
 # Providers
+ARG GPG_KEY="51852D87348FFC4C"
 RUN sh -c "\
   apt-get update && \
   apt-get -y install curl gpg unzip && \
@@ -25,6 +23,7 @@ RUN sh -c "\
   rm -rf /var/cache/apt"
 
 # Core
+ARG BUILD_REF="799b4c145fc0461258a3d4675b4c3accfc3cb868"
 RUN sh -c "\
   apt-get update && \
   apt-get -y install git && \

@@ -26,6 +26,9 @@ type Plan struct {
 	// The version of Terraform used to make the plan.
 	TerraformVersion string `json:"terraform_version,omitempty"`
 
+	// The variables set in the root module when creating the plan.
+	Variables map[string]PlanVariable `json:"variables,omitempty"`
+
 	// The common state representation of resources within this plan.
 	// This is a product of the existing state merged with the diff for
 	// this plan.
@@ -34,9 +37,6 @@ type Plan struct {
 	// The change operations for resources and data sources within this
 	// plan.
 	ResourceChanges []ResourceChange `json:"resource_changes,omitempty"`
-
-	// The variables set in the root module when creating the plan.
-	Variables map[string]interface{} `json:"variables,omitempty"`
 
 	// The change operations for outputs within this plan.
 	OutputChanges map[string]Change `json:"output_changes,omitempty"`
@@ -106,4 +106,10 @@ type Change struct {
 	// If the value cannot be found in this map, then its value should
 	// be available within After, so long as the operation supports it.
 	AfterUnknown interface{} `json:"after_unknown,omitempty"`
+}
+
+// PlanVariable is a top-level variable in the Terraform plan.
+type PlanVariable struct {
+	// The value for this variable at plan time.
+	Value interface{} `json:"value,omitempty"`
 }

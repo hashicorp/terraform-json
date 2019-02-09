@@ -1,6 +1,20 @@
 {
   "format_version": "0.1",
   "terraform_version": "0.12.0-dev",
+  "variables": {
+    "foo": {
+      "value": "bar"
+    },
+    "map": {
+      "value": {
+        "foo": "bar",
+        "number": 42
+      }
+    },
+    "number": {
+      "value": 42
+    }
+  },
   "planned_values": {
     "outputs": {
       "foo": {
@@ -527,21 +541,6 @@
             "mode": "managed",
             "type": "null_resource",
             "name": "baz",
-            "index": 0,
-            "provider_name": "null",
-            "schema_version": 0,
-            "values": {
-              "id": "751901236459396488",
-              "triggers": {
-                "foo_id": "424881806176056736"
-              }
-            }
-          },
-          {
-            "address": "null_resource.baz",
-            "mode": "managed",
-            "type": "null_resource",
-            "name": "baz",
             "index": 1,
             "provider_name": "null",
             "schema_version": 0,
@@ -562,6 +561,21 @@
             "schema_version": 0,
             "values": {
               "id": "8665755682221598193",
+              "triggers": {
+                "foo_id": "424881806176056736"
+              }
+            }
+          },
+          {
+            "address": "null_resource.baz",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "baz",
+            "index": 0,
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "751901236459396488",
               "triggers": {
                 "foo_id": "424881806176056736"
               }

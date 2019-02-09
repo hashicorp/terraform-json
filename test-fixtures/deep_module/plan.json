@@ -1,0 +1,58 @@
+{
+  "format_version": "0.1",
+  "terraform_version": "0.12.0-dev",
+  "planned_values": {
+    "root_module": {}
+  },
+  "resource_changes": [
+    {
+      "address": "module.foo.module.bar.null_resource.baz",
+      "module_address": "module.foo.module.bar",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "baz",
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "triggers": null
+        },
+        "after_unknown": {
+          "id": true,
+          "triggers": false
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "root_module": {
+      "module_calls": {
+        "foo": {
+          "resolved_source": "./foo",
+          "module": {
+            "module_calls": {
+              "bar": {
+                "resolved_source": "./bar",
+                "module": {
+                  "resources": [
+                    {
+                      "address": "null_resource.baz",
+                      "mode": "managed",
+                      "type": "null_resource",
+                      "name": "baz",
+                      "provider_config_key": "provider.null",
+                      "schema_version": 0
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

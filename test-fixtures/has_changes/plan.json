@@ -1,6 +1,20 @@
 {
   "format_version": "0.1",
   "terraform_version": "0.12.0-dev",
+  "variables": {
+    "foo": {
+      "value": "bar"
+    },
+    "map": {
+      "value": {
+        "foo": "bar",
+        "number": 42
+      }
+    },
+    "number": {
+      "value": 42
+    }
+  },
   "planned_values": {
     "outputs": {
       "foo": {
@@ -8,10 +22,19 @@
         "value": "bar"
       },
       "interpolated": {
-        "sensitive": false
+        "sensitive": false,
+        "value": "424881806176056736"
       },
       "interpolated_deep": {
-        "sensitive": false
+        "sensitive": false,
+        "value": {
+          "foo": "bar",
+          "map": {
+            "bar": "baz",
+            "id": "424881806176056736"
+          },
+          "number": 42
+        }
       },
       "list": {
         "sensitive": false,
@@ -28,10 +51,19 @@
         }
       },
       "referenced": {
-        "sensitive": false
+        "sensitive": false,
+        "value": "424881806176056736"
       },
       "referenced_deep": {
-        "sensitive": false
+        "sensitive": false,
+        "value": {
+          "foo": "bar",
+          "map": {
+            "bar": "baz",
+            "id": "424881806176056736"
+          },
+          "number": 42
+        }
       },
       "string": {
         "sensitive": false,
@@ -41,20 +73,18 @@
     "root_module": {
       "resources": [
         {
-          "address": "data.null_data_source.baz",
-          "mode": "data",
-          "type": "null_data_source",
-          "name": "baz",
-          "provider_name": "null",
-          "schema_version": 0
-        },
-        {
           "address": "null_resource.bar",
           "mode": "managed",
           "type": "null_resource",
           "name": "bar",
           "provider_name": "null",
-          "schema_version": 0
+          "schema_version": 0,
+          "values": {
+            "id": "4347220156304926627",
+            "triggers": {
+              "foo_id": "424881806176056736"
+            }
+          }
         },
         {
           "address": "null_resource.baz[0]",
@@ -63,7 +93,13 @@
           "name": "baz",
           "index": 0,
           "provider_name": "null",
-          "schema_version": 0
+          "schema_version": 0,
+          "values": {
+            "id": "751901236459396488",
+            "triggers": {
+              "foo_id": "424881806176056736"
+            }
+          }
         },
         {
           "address": "null_resource.baz[1]",
@@ -72,7 +108,13 @@
           "name": "baz",
           "index": 1,
           "provider_name": "null",
-          "schema_version": 0
+          "schema_version": 0,
+          "values": {
+            "id": "2106740714798375541",
+            "triggers": {
+              "foo_id": "424881806176056736"
+            }
+          }
         },
         {
           "address": "null_resource.baz[2]",
@@ -81,7 +123,13 @@
           "name": "baz",
           "index": 2,
           "provider_name": "null",
-          "schema_version": 0
+          "schema_version": 0,
+          "values": {
+            "id": "8665755682221598193",
+            "triggers": {
+              "foo_id": "424881806176056736"
+            }
+          }
         },
         {
           "address": "null_resource.foo",
@@ -89,7 +137,13 @@
           "type": "null_resource",
           "name": "foo",
           "provider_name": "null",
-          "schema_version": 0
+          "schema_version": 0,
+          "values": {
+            "id": "424881806176056736",
+            "triggers": {
+              "foo": "bar"
+            }
+          }
         }
       ],
       "child_modules": [
@@ -101,7 +155,13 @@
               "type": "null_resource",
               "name": "foo",
               "provider_name": "null",
-              "schema_version": 0
+              "schema_version": 0,
+              "values": {
+                "id": "705267318028962447",
+                "triggers": {
+                  "foo": "bar"
+                }
+              }
             }
           ],
           "address": "module.foo"
@@ -111,29 +171,6 @@
   },
   "resource_changes": [
     {
-      "address": "data.null_data_source.baz",
-      "mode": "data",
-      "type": "null_data_source",
-      "name": "baz",
-      "deposed": true,
-      "change": {
-        "actions": [
-          "read"
-        ],
-        "before": null,
-        "after_unknown": {
-          "has_computed_default": true,
-          "id": true,
-          "inputs": {
-            "bar_id": true,
-            "foo_id": true
-          },
-          "outputs": true,
-          "random": true
-        }
-      }
-    },
-    {
       "address": "module.foo.null_resource.foo",
       "module_address": "module.foo",
       "mode": "managed",
@@ -142,16 +179,22 @@
       "deposed": true,
       "change": {
         "actions": [
-          "create"
+          "no-op"
         ],
-        "before": null,
+        "before": {
+          "id": "705267318028962447",
+          "triggers": {
+            "foo": "bar"
+          }
+        },
         "after": {
+          "id": "705267318028962447",
           "triggers": {
             "foo": "bar"
           }
         },
         "after_unknown": {
-          "id": true,
+          "id": false,
           "triggers": {
             "foo": false
           }
@@ -166,12 +209,25 @@
       "deposed": true,
       "change": {
         "actions": [
-          "create"
+          "no-op"
         ],
-        "before": null,
+        "before": {
+          "id": "4347220156304926627",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
+        "after": {
+          "id": "4347220156304926627",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
         "after_unknown": {
-          "id": true,
-          "triggers": true
+          "id": false,
+          "triggers": {
+            "foo_id": false
+          }
         }
       }
     },
@@ -184,12 +240,25 @@
       "deposed": true,
       "change": {
         "actions": [
-          "create"
+          "no-op"
         ],
-        "before": null,
+        "before": {
+          "id": "751901236459396488",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
+        "after": {
+          "id": "751901236459396488",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
         "after_unknown": {
-          "id": true,
-          "triggers": true
+          "id": false,
+          "triggers": {
+            "foo_id": false
+          }
         }
       }
     },
@@ -202,12 +271,25 @@
       "deposed": true,
       "change": {
         "actions": [
-          "create"
+          "no-op"
         ],
-        "before": null,
+        "before": {
+          "id": "2106740714798375541",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
+        "after": {
+          "id": "2106740714798375541",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
         "after_unknown": {
-          "id": true,
-          "triggers": true
+          "id": false,
+          "triggers": {
+            "foo_id": false
+          }
         }
       }
     },
@@ -220,12 +302,25 @@
       "deposed": true,
       "change": {
         "actions": [
-          "create"
+          "no-op"
         ],
-        "before": null,
+        "before": {
+          "id": "8665755682221598193",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
+        "after": {
+          "id": "8665755682221598193",
+          "triggers": {
+            "foo_id": "424881806176056736"
+          }
+        },
         "after_unknown": {
-          "id": true,
-          "triggers": true
+          "id": false,
+          "triggers": {
+            "foo_id": false
+          }
         }
       }
     },
@@ -237,16 +332,22 @@
       "deposed": true,
       "change": {
         "actions": [
-          "create"
+          "no-op"
         ],
-        "before": null,
+        "before": {
+          "id": "424881806176056736",
+          "triggers": {
+            "foo": "bar"
+          }
+        },
         "after": {
+          "id": "424881806176056736",
           "triggers": {
             "foo": "bar"
           }
         },
         "after_unknown": {
-          "id": true,
+          "id": false,
           "triggers": {
             "foo": false
           }
@@ -268,14 +369,23 @@
         "create"
       ],
       "before": null,
-      "after_unknown": true
+      "after": "424881806176056736",
+      "after_unknown": false
     },
     "interpolated_deep": {
       "actions": [
         "create"
       ],
       "before": null,
-      "after_unknown": true
+      "after": {
+        "foo": "bar",
+        "map": {
+          "bar": "baz",
+          "id": "424881806176056736"
+        },
+        "number": 42
+      },
+      "after_unknown": false
     },
     "list": {
       "actions": [
@@ -304,14 +414,23 @@
         "create"
       ],
       "before": null,
-      "after_unknown": true
+      "after": "424881806176056736",
+      "after_unknown": false
     },
     "referenced_deep": {
       "actions": [
         "create"
       ],
       "before": null,
-      "after_unknown": true
+      "after": {
+        "foo": "bar",
+        "map": {
+          "bar": "baz",
+          "id": "424881806176056736"
+        },
+        "number": 42
+      },
+      "after_unknown": false
     },
     "string": {
       "actions": [
@@ -320,6 +439,185 @@
       "before": null,
       "after": "foo",
       "after_unknown": false
+    }
+  },
+  "prior_state": {
+    "format_version": "0.1",
+    "terraform_version": "0.12.0",
+    "values": {
+      "outputs": {
+        "foo": {
+          "sensitive": true,
+          "value": "bar"
+        },
+        "interpolated": {
+          "sensitive": false,
+          "value": "424881806176056736"
+        },
+        "interpolated_deep": {
+          "sensitive": false,
+          "value": {
+            "foo": "bar",
+            "map": {
+              "bar": "baz",
+              "id": "424881806176056736"
+            },
+            "number": 42
+          }
+        },
+        "list": {
+          "sensitive": false,
+          "value": [
+            "foo",
+            "bar"
+          ]
+        },
+        "map": {
+          "sensitive": false,
+          "value": {
+            "foo": "bar",
+            "number": 42
+          }
+        },
+        "referenced": {
+          "sensitive": false,
+          "value": "424881806176056736"
+        },
+        "referenced_deep": {
+          "sensitive": false,
+          "value": {
+            "foo": "bar",
+            "map": {
+              "bar": "baz",
+              "id": "424881806176056736"
+            },
+            "number": 42
+          }
+        },
+        "string": {
+          "sensitive": false,
+          "value": "foo"
+        }
+      },
+      "root_module": {
+        "resources": [
+          {
+            "address": "data.null_data_source.baz",
+            "mode": "data",
+            "type": "null_data_source",
+            "name": "baz",
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "has_computed_default": "default",
+              "id": "static",
+              "inputs": {
+                "bar_id": "4347220156304926627",
+                "foo_id": "424881806176056736"
+              },
+              "outputs": {
+                "bar_id": "4347220156304926627",
+                "foo_id": "424881806176056736"
+              },
+              "random": "1951353658349486401"
+            }
+          },
+          {
+            "address": "null_resource.bar",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "bar",
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "4347220156304926627",
+              "triggers": {
+                "foo_id": "424881806176056736"
+              }
+            }
+          },
+          {
+            "address": "null_resource.baz",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "baz",
+            "index": 2,
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "8665755682221598193",
+              "triggers": {
+                "foo_id": "424881806176056736"
+              }
+            }
+          },
+          {
+            "address": "null_resource.baz",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "baz",
+            "index": 0,
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "751901236459396488",
+              "triggers": {
+                "foo_id": "424881806176056736"
+              }
+            }
+          },
+          {
+            "address": "null_resource.baz",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "baz",
+            "index": 1,
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "2106740714798375541",
+              "triggers": {
+                "foo_id": "424881806176056736"
+              }
+            }
+          },
+          {
+            "address": "null_resource.foo",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "foo",
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "424881806176056736",
+              "triggers": {
+                "foo": "bar"
+              }
+            }
+          }
+        ],
+        "child_modules": [
+          {
+            "resources": [
+              {
+                "address": "null_resource.foo",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "foo",
+                "provider_name": "null",
+                "schema_version": 0,
+                "values": {
+                  "id": "705267318028962447",
+                  "triggers": {
+                    "foo": "bar"
+                  }
+                }
+              }
+            ],
+            "address": "module.foo"
+          }
+        ]
+      }
     }
   },
   "configuration": {

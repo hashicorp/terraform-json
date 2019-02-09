@@ -1,7 +1,7 @@
 DOCKER_IMAGE_NAME=terraform-0.12-local
 TERRAFORM=docker run --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)" $(DOCKER_IMAGE_NAME)
 
-FIXTURES=$(shell find * -maxdepth 0 -type d)
+FIXTURES ?= $(shell find * -maxdepth 0 -type d)
 
 .PHONY: build-terraform-0.12-local
 build-terraform-0.12-local:

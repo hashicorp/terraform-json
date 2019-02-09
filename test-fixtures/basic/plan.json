@@ -1,6 +1,20 @@
 {
   "format_version": "0.1",
   "terraform_version": "0.12.0-dev",
+  "variables": {
+    "foo": {
+      "value": "bar"
+    },
+    "map": {
+      "value": {
+        "foo": "bar",
+        "number": 42
+      }
+    },
+    "number": {
+      "value": 42
+    }
+  },
   "planned_values": {
     "outputs": {
       "foo": {
@@ -89,7 +103,12 @@
           "type": "null_resource",
           "name": "foo",
           "provider_name": "null",
-          "schema_version": 0
+          "schema_version": 0,
+          "values": {
+            "triggers": {
+              "foo": "bar"
+            }
+          }
         }
       ],
       "child_modules": [
@@ -101,7 +120,12 @@
               "type": "null_resource",
               "name": "foo",
               "provider_name": "null",
-              "schema_version": 0
+              "schema_version": 0,
+              "values": {
+                "triggers": {
+                  "foo": "bar"
+                }
+              }
             }
           ],
           "address": "module.foo"
