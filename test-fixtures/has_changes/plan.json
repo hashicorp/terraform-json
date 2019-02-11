@@ -520,7 +520,12 @@
                 "foo_id": "424881806176056736"
               },
               "random": "1951353658349486401"
-            }
+            },
+            "depends_on": [
+              "null_resource.bar",
+              "null_resource.foo"
+            ],
+            "tainted": false
           },
           {
             "address": "null_resource.bar",
@@ -534,22 +539,11 @@
               "triggers": {
                 "foo_id": "424881806176056736"
               }
-            }
-          },
-          {
-            "address": "null_resource.baz",
-            "mode": "managed",
-            "type": "null_resource",
-            "name": "baz",
-            "index": 2,
-            "provider_name": "null",
-            "schema_version": 0,
-            "values": {
-              "id": "8665755682221598193",
-              "triggers": {
-                "foo_id": "424881806176056736"
-              }
-            }
+            },
+            "depends_on": [
+              "null_resource.foo"
+            ],
+            "tainted": false
           },
           {
             "address": "null_resource.baz",
@@ -564,7 +558,11 @@
               "triggers": {
                 "foo_id": "424881806176056736"
               }
-            }
+            },
+            "depends_on": [
+              "null_resource.foo"
+            ],
+            "tainted": false
           },
           {
             "address": "null_resource.baz",
@@ -579,7 +577,30 @@
               "triggers": {
                 "foo_id": "424881806176056736"
               }
-            }
+            },
+            "depends_on": [
+              "null_resource.foo"
+            ],
+            "tainted": false
+          },
+          {
+            "address": "null_resource.baz",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "baz",
+            "index": 2,
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "8665755682221598193",
+              "triggers": {
+                "foo_id": "424881806176056736"
+              }
+            },
+            "depends_on": [
+              "null_resource.foo"
+            ],
+            "tainted": false
           },
           {
             "address": "null_resource.foo",
@@ -593,7 +614,8 @@
               "triggers": {
                 "foo": "bar"
               }
-            }
+            },
+            "tainted": false
           }
         ],
         "child_modules": [
@@ -611,7 +633,8 @@
                   "triggers": {
                     "foo": "bar"
                   }
-                }
+                },
+                "tainted": false
               }
             ],
             "address": "module.foo"

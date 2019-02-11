@@ -79,6 +79,13 @@ type StateResource struct {
 	// values are omitted or set to null, making them indistinguishable
 	// from absent values.
 	AttributeValues map[string]interface{} `json:"values,omitempty"`
+
+	// The addresses of the resources that this resource depends on.
+	DependsOn []string `json:"depends_on,omitempty"`
+
+	// If true, the resource has been marked as tainted and will be
+	// re-created on the next update.
+	Tainted bool `json:"tainted,omitempty"`
 }
 
 // StateOutput represents an output value in a common state
