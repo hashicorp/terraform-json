@@ -1,5 +1,10 @@
 package tfjson
 
+import (
+	"errors"
+	"fmt"
+)
+
 // PlanFormatVersion is the version of the JSON plan format that is
 // supported by this package.
 const PlanFormatVersion = "0.1"
@@ -47,6 +52,20 @@ type Plan struct {
 
 	// The Terraform configuration used to make the plan.
 	Config *Config `json:"configuration,omitempty"`
+}
+
+// Validate checks to ensure that the plan is present, and the
+// version matches the version supported by this library.
+func (p *Plan) Validate() error {
+	if p == nil {
+		return errors.New("plan is nil")
+	}
+
+	if PlanFormatVersion != p.FormatVersion {
+		return fmt.Errorf("unsupported version: expected %q, got %q", PlanFormatVersion, p.FormatVersion)
+	}
+
+	return nil
 }
 
 // ResourceChange is a description of an individual change action

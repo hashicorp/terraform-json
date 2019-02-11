@@ -1,5 +1,10 @@
 package tfjson
 
+import (
+	"errors"
+	"fmt"
+)
+
 // StateFormatVersion is the version of the JSON state format that is
 // supported by this package.
 const StateFormatVersion = "0.1"
@@ -16,6 +21,20 @@ type State struct {
 
 	// The values that make up the state.
 	Values *StateValues `json:"values,omitempty"`
+}
+
+// Validate checks to ensure that the state is present, and the
+// version matches the version supported by this library.
+func (s *State) Validate() error {
+	if s == nil {
+		return errors.New("state is nil")
+	}
+
+	if StateFormatVersion != s.FormatVersion {
+		return fmt.Errorf("unsupported version: expected %q, got %q", StateFormatVersion, s.FormatVersion)
+	}
+
+	return nil
 }
 
 // StateValues is the common representation of resolved values for both the

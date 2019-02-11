@@ -1,5 +1,7 @@
 package tfjson
 
+import "errors"
+
 // Config represents the complete configuration source
 type Config struct {
 	// A map of all provider instances across all modules in the
@@ -10,6 +12,15 @@ type Config struct {
 	// The root module in the configuration. Any child modules descend
 	// off of here.
 	RootModule *ConfigModule `json:"root_module,omitempty"`
+}
+
+// Validate checks to ensure that the config is present.
+func (c *Config) Validate() error {
+	if c == nil {
+		return errors.New("config is nil")
+	}
+
+	return nil
 }
 
 // ProviderConfig describes a provider configuration instance.
