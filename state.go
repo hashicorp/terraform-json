@@ -30,8 +30,12 @@ func (s *State) Validate() error {
 		return errors.New("state is nil")
 	}
 
+	if s.FormatVersion == "" {
+		return errors.New("unexpected plan input, format version is missing")
+	}
+
 	if StateFormatVersion != s.FormatVersion {
-		return fmt.Errorf("unsupported version: expected %q, got %q", StateFormatVersion, s.FormatVersion)
+		return fmt.Errorf("unsupported state format version: expected %q, got %q", StateFormatVersion, s.FormatVersion)
 	}
 
 	return nil

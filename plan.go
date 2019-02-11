@@ -61,8 +61,12 @@ func (p *Plan) Validate() error {
 		return errors.New("plan is nil")
 	}
 
+	if p.FormatVersion == "" {
+		return errors.New("unexpected plan input, format version is missing")
+	}
+
 	if PlanFormatVersion != p.FormatVersion {
-		return fmt.Errorf("unsupported version: expected %q, got %q", PlanFormatVersion, p.FormatVersion)
+		return fmt.Errorf("unsupported plan format version: expected %q, got %q", PlanFormatVersion, p.FormatVersion)
 	}
 
 	return nil
