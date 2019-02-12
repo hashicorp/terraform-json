@@ -23,7 +23,7 @@ RUN sh -c "\
   rm -rf /var/cache/apt"
 
 # Core
-ARG BUILD_REF="482b4b52017264e78b8e71d257f7176e96f13e07"
+ARG BUILD_REF="c2032d8fcffb22a86dc854c516885e5f7e7a61cf"
 RUN sh -c "\
   apt-get update && \
   apt-get -y install git && \

@@ -18,10 +18,11 @@
         ],
         "before": null,
         "after": {
+          "id": null,
           "triggers": null
         },
         "after_unknown": {
-          "id": true,
+          "id": false,
           "triggers": false
         }
       }
