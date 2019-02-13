@@ -47,6 +47,9 @@ type ConfigModule struct {
 	// The resources defined in the module.
 	Resources []ConfigResource `json:"resources,omitempty"`
 
+	// The variables defined in the module.
+	Variables []ConfigVariable `json:"variables,omitempty"`
+
 	// Any "module" stanzas within the specific module.
 	ModuleCalls map[string]ModuleCall `json:"module_calls,omitempty"`
 }
@@ -100,6 +103,14 @@ type ConfigResource struct {
 
 	// The expression data for the "for_each" value in the resource.
 	ForEachExpression *Expression `json:"for_each_expression,omitempty"`
+}
+
+// ConfigVariable defines a variable as defined in configuration.
+type ConfigVariable struct {
+	// The defined default value of the variable.
+	Default interface{} `json:"default,omitempty"`
+	// The defined text description of the variable.
+	Description string `json:"description,omitempty"`
 }
 
 // ConfigProvisioner describes a provisioner declared in a resource
