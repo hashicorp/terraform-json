@@ -821,8 +821,27 @@
                 },
                 "schema_version": 0
               }
-            ]
+            ],
+            "variables": {
+              "bar": {},
+              "one": {}
+            }
           }
+        }
+      },
+      "variables": {
+        "foo": {
+          "default": "bar",
+          "description": "foobar"
+        },
+        "map": {
+          "default": {
+            "foo": "bar",
+            "number": 42
+          }
+        },
+        "number": {
+          "default": 42
         }
       }
     }

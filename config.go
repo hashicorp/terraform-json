@@ -47,11 +47,11 @@ type ConfigModule struct {
 	// The resources defined in the module.
 	Resources []ConfigResource `json:"resources,omitempty"`
 
-	// The variables defined in the module.
-	Variables []ConfigVariable `json:"variables,omitempty"`
-
 	// Any "module" stanzas within the specific module.
 	ModuleCalls map[string]ModuleCall `json:"module_calls,omitempty"`
+
+	// The variables defined in the module.
+	Variables map[string]ConfigVariable `json:"variables,omitempty"`
 }
 
 // ConfigOutput defines an output as defined in configuration.
