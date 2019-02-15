@@ -10,7 +10,7 @@ type Config struct {
 	// A map of all provider instances across all modules in the
 	// configuration, indexed in the format NAME.ALIAS. Default
 	// providers will not have an alias.
-	ProviderConfigs map[string]ProviderConfig `json:"provider_config,omitempty"`
+	ProviderConfigs map[string]*ProviderConfig `json:"provider_config,omitempty"`
 
 	// The root module in the configuration. Any child modules descend
 	// off of here.
@@ -39,22 +39,22 @@ type ProviderConfig struct {
 
 	// Any non-special configuration values in the provider, indexed by
 	// key.
-	Expressions map[string]Expression `json:"expressions,omitempty"`
+	Expressions map[string]*Expression `json:"expressions,omitempty"`
 }
 
 // ConfigModule describes a module in Terraform configuration.
 type ConfigModule struct {
 	// The outputs defined in the module.
-	Outputs map[string]ConfigOutput `json:"outputs,omitempty"`
+	Outputs map[string]*ConfigOutput `json:"outputs,omitempty"`
 
 	// The resources defined in the module.
-	Resources []ConfigResource `json:"resources,omitempty"`
+	Resources []*ConfigResource `json:"resources,omitempty"`
 
 	// Any "module" stanzas within the specific module.
-	ModuleCalls map[string]ModuleCall `json:"module_calls,omitempty"`
+	ModuleCalls map[string]*ModuleCall `json:"module_calls,omitempty"`
 
 	// The variables defined in the module.
-	Variables map[string]ConfigVariable `json:"variables,omitempty"`
+	Variables map[string]*ConfigVariable `json:"variables,omitempty"`
 }
 
 // ConfigOutput defines an output as defined in configuration.
@@ -89,11 +89,11 @@ type ConfigResource struct {
 
 	// The list of provisioner defined for this configuration. This
 	// will be nil if no providers are defined.
-	Provisioners []ConfigProvisioner `json:"provisioners,omitempty"`
+	Provisioners []*ConfigProvisioner `json:"provisioners,omitempty"`
 
 	// Any non-special configuration values in the resource, indexed by
 	// key.
-	Expressions map[string]Expression `json:"expressions,omitempty"`
+	Expressions map[string]*Expression `json:"expressions,omitempty"`
 
 	// The resource's configuration schema version. With access to the
 	// specific Terraform provider for this resource, this can be used
@@ -124,7 +124,7 @@ type ConfigProvisioner struct {
 
 	// Any non-special configuration values in the provisioner, indexed by
 	// key.
-	Expressions map[string]Expression `json:"expressions,omitempty"`
+	Expressions map[string]*Expression `json:"expressions,omitempty"`
 }
 
 // ModuleCall describes a declared "module" within a configuration.
@@ -135,7 +135,7 @@ type ModuleCall struct {
 
 	// Any non-special configuration values in the module, indexed by
 	// key.
-	Expressions map[string]Expression `json:"expressions,omitempty"`
+	Expressions map[string]*Expression `json:"expressions,omitempty"`
 
 	// The expression data for the "count" value in the module.
 	CountExpression *Expression `json:"count_expression,omitempty"`
@@ -171,7 +171,7 @@ type ExpressionData struct {
 	// If this value is a nested block in configuration, sometimes
 	// referred to as a "sub-resource", this field will contain those
 	// values, and ConstantValue and References will be blank.
-	NestedBlocks []map[string]Expression `json:"-"`
+	NestedBlocks []map[string]*Expression `json:"-"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Expression.
@@ -197,13 +197,13 @@ func (e *Expression) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-func unmarshalExpressionBlocks(raw []map[string]json.RawMessage) ([]map[string]Expression, error) {
-	var result []map[string]Expression
+func unmarshalExpressionBlocks(raw []map[string]json.RawMessage) ([]map[string]*Expression, error) {
+	var result []map[string]*Expression
 
 	for _, rawBlock := range raw {
-		block := make(map[string]Expression)
+		block := make(map[string]*Expression)
 		for k, rawExpr := range rawBlock {
-			var expr Expression
+			var expr *Expression
 			if err := json.Unmarshal(rawExpr, &expr); err != nil {
 				return nil, err
 			}
@@ -218,7 +218,7 @@ func unmarshalExpressionBlocks(raw []map[string]json.RawMessage) ([]map[string]E
 }
 
 // MarshalJSON implements json.Marshaler for Expression.
-func (e Expression) MarshalJSON() ([]byte, error) {
+func (e *Expression) MarshalJSON() ([]byte, error) {
 	// Check for nested blocks, and marshal those instead if they exist.
 	if len(e.ExpressionData.NestedBlocks) > 0 {
 		return marshalExpressionBlocks(e.ExpressionData.NestedBlocks)
@@ -227,7 +227,7 @@ func (e Expression) MarshalJSON() ([]byte, error) {
 	return json.Marshal(e.ExpressionData)
 }
 
-func marshalExpressionBlocks(nested []map[string]Expression) ([]byte, error) {
+func marshalExpressionBlocks(nested []map[string]*Expression) ([]byte, error) {
 	var rawNested []map[string]json.RawMessage
 	for _, block := range nested {
 		rawBlock := make(map[string]json.RawMessage)

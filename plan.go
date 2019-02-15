@@ -33,7 +33,7 @@ type Plan struct {
 	TerraformVersion string `json:"terraform_version,omitempty"`
 
 	// The variables set in the root module when creating the plan.
-	Variables map[string]PlanVariable `json:"variables,omitempty"`
+	Variables map[string]*PlanVariable `json:"variables,omitempty"`
 
 	// The common state representation of resources within this plan.
 	// This is a product of the existing state merged with the diff for
@@ -42,10 +42,10 @@ type Plan struct {
 
 	// The change operations for resources and data sources within this
 	// plan.
-	ResourceChanges []ResourceChange `json:"resource_changes,omitempty"`
+	ResourceChanges []*ResourceChange `json:"resource_changes,omitempty"`
 
 	// The change operations for outputs within this plan.
-	OutputChanges map[string]Change `json:"output_changes,omitempty"`
+	OutputChanges map[string]*Change `json:"output_changes,omitempty"`
 
 	// The Terraform state prior to the plan operation. This is the
 	// same format as PlannedValues, without the current diff merged.

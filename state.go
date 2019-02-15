@@ -45,7 +45,7 @@ func (s *State) Validate() error {
 // prior state (which is always complete) and the planned new state.
 type StateValues struct {
 	// The Outputs for this common state representation.
-	Outputs map[string]StateOutput `json:"outputs,omitempty"`
+	Outputs map[string]*StateOutput `json:"outputs,omitempty"`
 
 	// The root module in this state representation.
 	RootModule *StateModule `json:"root_module,omitempty"`
@@ -55,7 +55,7 @@ type StateValues struct {
 // representation. This can be the root module or a child module.
 type StateModule struct {
 	// All resources or data sources within this module.
-	Resources []StateResource `json:"resources,omitempty"`
+	Resources []*StateResource `json:"resources,omitempty"`
 
 	// The absolute module address, omitted for the root module.
 	Address string `json:"address,omitempty"`

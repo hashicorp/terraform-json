@@ -53,32 +53,32 @@ func TestConfigResourceUnmarshalExpressions(t *testing.T) {
 }
 `)
 
-	expectedInner := map[string]Expression{
-		"device_name": Expression{
+	expectedInner := map[string]*Expression{
+		"device_name": &Expression{
 			ExpressionData: &ExpressionData{
 				References: []string{"var.foo"},
 			},
 		},
 	}
 
-	expected := ConfigResource{
+	expected := &ConfigResource{
 		Address:           "aws_instance.foo",
 		Mode:              ManagedResourceMode,
 		Type:              "aws_instance",
 		Name:              "foo",
 		ProviderConfigKey: "provider.aws",
-		Expressions: map[string]Expression{
-			"ami": Expression{
+		Expressions: map[string]*Expression{
+			"ami": &Expression{
 				ExpressionData: &ExpressionData{
 					ConstantValue: "ami-foobar",
 				},
 			},
-			"ebs_block_device": Expression{
+			"ebs_block_device": &Expression{
 				ExpressionData: &ExpressionData{
-					NestedBlocks: []map[string]Expression{expectedInner},
+					NestedBlocks: []map[string]*Expression{expectedInner},
 				},
 			},
-			"instance_type": Expression{
+			"instance_type": &Expression{
 				ExpressionData: &ExpressionData{
 					ConstantValue: "t2.micro",
 				},
@@ -87,7 +87,7 @@ func TestConfigResourceUnmarshalExpressions(t *testing.T) {
 		SchemaVersion: 1,
 	}
 
-	var actual ConfigResource
+	var actual *ConfigResource
 	if err := json.Unmarshal(in, &actual); err != nil {
 		t.Fatal(err)
 	}
