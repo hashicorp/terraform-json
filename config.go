@@ -67,17 +67,7 @@ type ConfigOutput struct {
 }
 
 // ConfigResource is the configuration representation of a resource.
-//
-// This wraps ConfigResourceData to support complex unmarshaling of
-// resource expression data.
 type ConfigResource struct {
-	*ConfigResourceData
-}
-
-// ConfigResourceData represents the inner configuration data.
-// ConfigResource wraps this structure to support complex
-// unmarshaling.
-type ConfigResourceData struct {
 	// The address of the resource relative to the module that it is
 	// in.
 	Address string `json:"address,omitempty"`
@@ -103,12 +93,7 @@ type ConfigResourceData struct {
 
 	// Any non-special configuration values in the resource, indexed by
 	// key.
-	Expressions map[string]Expression `json:"-"`
-
-	// RawExpressions represents the raw JSON expression data, which
-	// requires special handling to deal with nested blocks. This field
-	// is internal and used only during parsing.
-	RawExpressions map[string]json.RawMessage `json:"expressions,omitempty"`
+	Expressions map[string]Expression `json:"expressions,omitempty"`
 
 	// The resource's configuration schema version. With access to the
 	// specific Terraform provider for this resource, this can be used
@@ -121,118 +106,6 @@ type ConfigResourceData struct {
 
 	// The expression data for the "for_each" value in the resource.
 	ForEachExpression *Expression `json:"for_each_expression,omitempty"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for ConfigResource.
-func (r *ConfigResource) UnmarshalJSON(b []byte) error {
-	var data *ConfigResourceData
-	if err := json.Unmarshal(b, &data); err != nil {
-		return err
-	}
-
-	data.Expressions = make(map[string]Expression)
-	for k, raw := range data.RawExpressions {
-		expr, err := unmarshalExpression(raw)
-		if err != nil {
-			return err
-		}
-
-		data.Expressions[k] = expr
-	}
-
-	data.RawExpressions = nil
-	r.ConfigResourceData = data
-	return nil
-}
-
-func unmarshalExpression(raw json.RawMessage) (Expression, error) {
-	// Check to see if this is an array first. If it is, this is more
-	// than likely a list of nested blocks.
-	var rawNested []map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &rawNested); err == nil {
-		return unmarshalExpressionBlocks(rawNested)
-	}
-
-	var result Expression
-	if err := json.Unmarshal(raw, &result); err != nil {
-		return Expression{}, err
-	}
-
-	return result, nil
-}
-
-func unmarshalExpressionBlocks(raw []map[string]json.RawMessage) (Expression, error) {
-	var result Expression
-
-	for _, rawBlock := range raw {
-		block := make(map[string]Expression)
-		for k, rawExpr := range rawBlock {
-			expr, err := unmarshalExpression(rawExpr)
-			if err != nil {
-				return Expression{}, err
-			}
-
-			block[k] = expr
-		}
-
-		result.NestedBlocks = append(result.NestedBlocks, block)
-	}
-
-	return result, nil
-}
-
-// MarshalJSON implements json.Marshaler for ConfigResource.
-func (r *ConfigResource) MarshalJSON() ([]byte, error) {
-	data := *r.ConfigResourceData
-	data.RawExpressions = make(map[string]json.RawMessage)
-	for k, expr := range data.Expressions {
-		rawExpr, err := marshalExpression(expr)
-		if err != nil {
-			return nil, err
-		}
-
-		data.RawExpressions[k] = rawExpr
-	}
-
-	return json.Marshal(data)
-}
-
-func marshalExpression(expr Expression) (json.RawMessage, error) {
-	// Check for nested blocks, and marshal those instead if they exist.
-	if len(expr.NestedBlocks) > 0 {
-		return marshalExpressionBlocks(expr.NestedBlocks)
-	}
-
-	result, err := json.Marshal(expr)
-	if err != nil {
-		return nil, err
-	}
-
-	return json.RawMessage(result), nil
-}
-
-func marshalExpressionBlocks(nested []map[string]Expression) (json.RawMessage, error) {
-	var rawNested []map[string]json.RawMessage
-	for _, block := range nested {
-		rawBlock := make(map[string]json.RawMessage)
-		for k, expr := range block {
-			raw, err := marshalExpression(expr)
-			if err != nil {
-				return nil, err
-			}
-
-			rawBlock[k] = raw
-		}
-
-		rawNested = append(rawNested, rawBlock)
-	}
-
-	result, err := json.Marshal(rawNested)
-	if err != nil {
-		return nil, err
-	}
-
-	return json.RawMessage(result), nil
 }
 
 // ConfigVariable defines a variable as defined in configuration.
@@ -277,10 +150,14 @@ type ModuleCall struct {
 // Expression describes the format for an individual key in a
 // Terraform configuration.
 //
-// This is usually indexed by key when referenced, ie:
-// map[string]Expression, but exceptions exist, such as "count"
-// expressions.
+// This struct wraps ExpressionData to support custom JSON parsing.
 type Expression struct {
+	*ExpressionData
+}
+
+// ExpressionData describes the format for an individual key in a
+// Terraform configuration.
+type ExpressionData struct {
 	// If the *entire* expression is a constant-defined value, this
 	// will contain the Go representation of the expression's data.
 	ConstantValue interface{} `json:"constant_value,omitempty"`
@@ -295,4 +172,76 @@ type Expression struct {
 	// referred to as a "sub-resource", this field will contain those
 	// values, and ConstantValue and References will be blank.
 	NestedBlocks []map[string]Expression `json:"-"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for Expression.
+func (e *Expression) UnmarshalJSON(b []byte) error {
+	result := new(ExpressionData)
+
+	// Check to see if this is an array first. If it is, this is more
+	// than likely a list of nested blocks.
+	var rawNested []map[string]json.RawMessage
+	if err := json.Unmarshal(b, &rawNested); err == nil {
+		result.NestedBlocks, err = unmarshalExpressionBlocks(rawNested)
+		if err != nil {
+			return err
+		}
+	} else {
+		// It's a non-nested expression block, parse normally
+		if err := json.Unmarshal(b, &result); err != nil {
+			return err
+		}
+	}
+
+	e.ExpressionData = result
+	return nil
+}
+
+func unmarshalExpressionBlocks(raw []map[string]json.RawMessage) ([]map[string]Expression, error) {
+	var result []map[string]Expression
+
+	for _, rawBlock := range raw {
+		block := make(map[string]Expression)
+		for k, rawExpr := range rawBlock {
+			var expr Expression
+			if err := json.Unmarshal(rawExpr, &expr); err != nil {
+				return nil, err
+			}
+
+			block[k] = expr
+		}
+
+		result = append(result, block)
+	}
+
+	return result, nil
+}
+
+// MarshalJSON implements json.Marshaler for Expression.
+func (e Expression) MarshalJSON() ([]byte, error) {
+	// Check for nested blocks, and marshal those instead if they exist.
+	if len(e.ExpressionData.NestedBlocks) > 0 {
+		return marshalExpressionBlocks(e.ExpressionData.NestedBlocks)
+	}
+
+	return json.Marshal(e.ExpressionData)
+}
+
+func marshalExpressionBlocks(nested []map[string]Expression) ([]byte, error) {
+	var rawNested []map[string]json.RawMessage
+	for _, block := range nested {
+		rawBlock := make(map[string]json.RawMessage)
+		for k, expr := range block {
+			raw, err := json.Marshal(expr)
+			if err != nil {
+				return nil, err
+			}
+
+			rawBlock[k] = raw
+		}
+
+		rawNested = append(rawNested, rawBlock)
+	}
+
+	return json.Marshal(rawNested)
 }
