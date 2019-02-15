@@ -99,10 +99,10 @@ type ResourceChange struct {
 	// This value can be either an integer (int) or a string.
 	Index interface{} `json:"index,omitempty"`
 
-	// If set, indicates that this action applies to a "deposed" object
-	// of the given instance rather than to its "current" object.
-	// Omitted for changes to the current object.
-	Deposed bool `json:"deposed,omitempty"`
+	// DeposedKey is set during replace operations (that do not have
+	// create_before_destroy set) and refers to the resource that this resource
+	// is replacing.
+	DeposedKey string `json:"deposed,omitempty"`
 
 	// The data describing the change that will be made to this object.
 	Change *Change `json:"change,omitempty"`
