@@ -1,0 +1,188 @@
+{
+  "format_version": "0.1",
+  "terraform_version": "0.12.0-dev",
+  "variables": {
+    "foo": {
+      "value": "/dev/sda1"
+    }
+  },
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_instance.foo",
+          "mode": "managed",
+          "type": "aws_instance",
+          "name": "foo",
+          "provider_name": "aws",
+          "schema_version": 1,
+          "values": {
+            "ami": "ami-foobar",
+            "block_device": null,
+            "credit_specification": [],
+            "disable_api_termination": null,
+            "ebs_block_device": [
+              {
+                "delete_on_termination": true,
+                "device_name": "/dev/sda1"
+              }
+            ],
+            "ebs_optimized": null,
+            "get_password_data": false,
+            "iam_instance_profile": null,
+            "instance_initiated_shutdown_behavior": null,
+            "instance_type": "t2.micro",
+            "monitoring": null,
+            "source_dest_check": true,
+            "tags": null,
+            "timeouts": {
+              "create": null,
+              "delete": null,
+              "update": null
+            },
+            "user_data": null,
+            "user_data_base64": null
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "aws_instance.foo",
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "foo",
+      "deposed": true,
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "ami": "ami-foobar",
+          "block_device": null,
+          "credit_specification": [],
+          "disable_api_termination": null,
+          "ebs_block_device": [
+            {
+              "delete_on_termination": true,
+              "device_name": "/dev/sda1"
+            }
+          ],
+          "ebs_optimized": null,
+          "get_password_data": false,
+          "iam_instance_profile": null,
+          "instance_initiated_shutdown_behavior": null,
+          "instance_type": "t2.micro",
+          "monitoring": null,
+          "source_dest_check": true,
+          "tags": null,
+          "timeouts": {
+            "create": null,
+            "delete": null,
+            "update": null
+          },
+          "user_data": null,
+          "user_data_base64": null
+        },
+        "after_unknown": {
+          "ami": false,
+          "arn": true,
+          "associate_public_ip_address": true,
+          "availability_zone": true,
+          "block_device": false,
+          "cpu_core_count": true,
+          "cpu_threads_per_core": true,
+          "credit_specification": false,
+          "disable_api_termination": false,
+          "ebs_block_device": [
+            {
+              "delete_on_termination": false,
+              "device_name": false,
+              "encrypted": true,
+              "iops": true,
+              "snapshot_id": true,
+              "volume_id": true,
+              "volume_size": true,
+              "volume_type": true
+            }
+          ],
+          "ebs_optimized": false,
+          "ephemeral_block_device": true,
+          "get_password_data": false,
+          "host_id": true,
+          "iam_instance_profile": false,
+          "id": true,
+          "instance_initiated_shutdown_behavior": false,
+          "instance_state": true,
+          "instance_type": false,
+          "ipv6_address_count": true,
+          "ipv6_addresses": true,
+          "key_name": true,
+          "monitoring": false,
+          "network_interface": true,
+          "network_interface_id": true,
+          "password_data": true,
+          "placement_group": true,
+          "primary_network_interface_id": true,
+          "private_dns": true,
+          "private_ip": true,
+          "public_dns": true,
+          "public_ip": true,
+          "root_block_device": true,
+          "security_groups": true,
+          "source_dest_check": false,
+          "subnet_id": true,
+          "tags": false,
+          "tenancy": true,
+          "timeouts": {
+            "create": false,
+            "delete": false,
+            "update": false
+          },
+          "user_data": false,
+          "user_data_base64": false,
+          "volume_tags": true,
+          "vpc_security_group_ids": true
+        }
+      }
+    }
+  ],
+  "configuration": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "aws_instance.foo",
+          "mode": "managed",
+          "type": "aws_instance",
+          "name": "foo",
+          "provider_config_key": "provider.aws",
+          "expressions": {
+            "ami": {
+              "constant_value": "ami-foobar"
+            },
+            "ebs_block_device": [
+              {
+                "device_name": {
+                  "references": [
+                    "var.foo"
+                  ]
+                }
+              }
+            ],
+            "instance_type": {
+              "constant_value": "t2.micro"
+            }
+          },
+          "schema_version": 1
+        }
+      ],
+      "variables": {
+        "foo": {
+          "default": "/dev/sda1"
+        }
+      }
+    }
+  }
+}
