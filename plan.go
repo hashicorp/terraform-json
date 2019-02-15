@@ -1,6 +1,7 @@
 package tfjson
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -99,9 +100,13 @@ type ResourceChange struct {
 	// This value can be either an integer (int) or a string.
 	Index interface{} `json:"index,omitempty"`
 
-	// An identifier used during replacement operations. This value is
-	// internal to Terraform and currently has no use outside of it.
-	DeposedKey string `json:"deposed,omitempty"`
+	// An identifier used during replacement operations, and can be
+	// used to identify the exact resource being replaced in state.
+	//
+	// FIXME: This value is currently unstable in the Terraform alpha
+	// and should not be used. It will be fixed to its stable string
+	// value in later releases.
+	DeposedKey json.RawMessage `json:"deposed,omitempty"`
 
 	// The data describing the change that will be made to this object.
 	Change *Change `json:"change,omitempty"`
