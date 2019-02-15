@@ -99,10 +99,9 @@ type ResourceChange struct {
 	// This value can be either an integer (int) or a string.
 	Index interface{} `json:"index,omitempty"`
 
-	// If set, indicates that this action applies to a "deposed" object
-	// of the given instance rather than to its "current" object.
-	// Omitted for changes to the current object.
-	Deposed bool `json:"deposed,omitempty"`
+	// An identifier used during replacement operations. This value is
+	// internal to Terraform and currently has no use outside of it.
+	DeposedKey string `json:"deposed,omitempty"`
 
 	// The data describing the change that will be made to this object.
 	Change *Change `json:"change,omitempty"`
