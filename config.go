@@ -9,9 +9,12 @@ import (
 // Config represents the complete configuration source
 type Config struct {
 	// A map of all provider instances across all modules in the
-	// configuration, indexed in the format NAME.ALIAS. Default
-	// providers will not have an alias.
-	ProviderConfigs map[ProviderConfigKey]*ProviderConfig `json:"provider_config,omitempty"`
+	// configuration.
+	//
+	// The index for this field is opaque and should not be parsed. Use
+	// the individual fields in ProviderConfig to discern actual data
+	// about the provider such as name, alias, or defined module.
+	ProviderConfigs map[string]*ProviderConfig `json:"provider_config,omitempty"`
 
 	// The root module in the configuration. Any child modules descend
 	// off of here.
@@ -92,10 +95,12 @@ type ConfigResource struct {
 	// The name of the resource, ie: "foo" in "null_resource.foo".
 	Name string `json:"name,omitempty"`
 
-	// The provider address used for this resource. This address should
-	// be able to be referenced in the ProviderConfig key in the
-	// root-level Config structure.
-	ProviderConfigKey ProviderConfigKey `json:"provider_config_key,omitempty"`
+	// An opaque key representing the provider configuration this
+	// module uses. Note that there are more than one circumstance that
+	// this key will not match what is found in the ProviderConfigs
+	// field in the root Config structure, and as such should not be
+	// relied on for that purpose.
+	ProviderConfigKey string `json:"provider_config_key,omitempty"`
 
 	// The list of provisioner defined for this configuration. This
 	// will be nil if no providers are defined.
@@ -258,73 +263,4 @@ func marshalExpressionBlocks(nested []map[string]*Expression) ([]byte, error) {
 	}
 
 	return json.Marshal(rawNested)
-}
-
-// ProviderConfigKey represents a combined provider config key in the
-// syntax MODULE_ADDRESS:PROVIDER.ALIAS, found in resources in a
-// particular module.
-type ProviderConfigKey string
-
-// ProviderConfigKeyData represents the individual components of a
-// ProviderConfigKey.
-type ProviderConfigKeyData struct {
-	// The module address. Omitted for the root module.
-	ModuleAddress string
-
-	// The provider name.
-	Provider string
-
-	// The alias, if any.
-	Alias string
-}
-
-// Data splits the ProviderConfigKey and returns a
-// ProviderConfigKeyData as the result.
-func (k *ProviderConfigKey) Data() *ProviderConfigKeyData {
-	result := new(ProviderConfigKeyData)
-	parts := strings.Split(string(*k), ":")
-	if len(parts) < 2 {
-		result.SplitProvider(parts[0])
-	} else {
-		result.ModuleAddress = parts[0]
-		result.SplitProvider(parts[1])
-	}
-
-	return result
-}
-
-// SetData sets the ProviderConfigKey with the data supplied by the
-// passed in ProviderConfigKeyData.
-func (k *ProviderConfigKey) SetData(d *ProviderConfigKeyData) {
-	result := []string{d.JoinProvider()}
-
-	if d.ModuleAddress != "" {
-		result = append(
-			[]string{d.ModuleAddress},
-			result...,
-		)
-	}
-
-	*k = ProviderConfigKey(strings.Join(result, ":"))
-}
-
-// SplitProvider splits the provider with the supplied string and
-// sets the appropriate components (provider and alias).
-func (d *ProviderConfigKeyData) SplitProvider(s string) {
-	parts := strings.Split(s, ".")
-	d.Provider = parts[0]
-	if len(parts) > 1 {
-		d.Alias = parts[1]
-	}
-}
-
-// JoinProvider joins the individual provider and alias fields into
-// the full PROVIDER.ALIAS address.
-func (d *ProviderConfigKeyData) JoinProvider() string {
-	result := []string{d.Provider}
-	if d.Alias != "" {
-		result = append(result, d.Alias)
-	}
-
-	return strings.Join(result, ".")
 }
