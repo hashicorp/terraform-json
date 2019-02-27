@@ -4,16 +4,10 @@ This directory contains a simple tool that will load a plan JSON file, and then
 immediately dump it back out to stdout. It's helpful when troubleshooting large
 parsing errors, which should (hopefully) be rare.
 
-`go build ./` in this directory to build the binary.
+`go build ./` in this directory to build the binary. `go run` also works if you
+don't need the binary permanently.
 
-## Shortcuts
+## Diffing
 
-Quickly diff the basic test fixture against what tfjson is actually outputting
-for it:
-
-```
-./round-trip-dumper ../../test-fixtures/basic/plan.json | diff -urN ../../test-fixtures/basic/plan.json - | less -R
-```
-
-You can also use [`colordiff`](https://www.colordiff.org/) to get colorized
-output which may help visualize things.
+The `-diff` flag will automatically diff the result for you. `colordiff` is used
+if it's present, otherwise regular `diff` is used.
