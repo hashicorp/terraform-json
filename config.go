@@ -3,7 +3,6 @@ package tfjson
 import (
 	"encoding/json"
 	"errors"
-	"strings"
 )
 
 // Config represents the complete configuration source
