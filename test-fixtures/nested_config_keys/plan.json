@@ -53,7 +53,6 @@
       "mode": "managed",
       "type": "aws_instance",
       "name": "foo",
-      "deposed": true,
       "change": {
         "actions": [
           "create"
@@ -150,6 +149,16 @@
     }
   ],
   "configuration": {
+    "provider_config": {
+      "aws": {
+        "name": "aws",
+        "expressions": {
+          "region": {
+            "constant_value": "us-east-1"
+          }
+        }
+      }
+    },
     "root_module": {
       "resources": [
         {
@@ -157,7 +166,7 @@
           "mode": "managed",
           "type": "aws_instance",
           "name": "foo",
-          "provider_config_key": "provider.aws",
+          "provider_config_key": "aws",
           "expressions": {
             "ami": {
               "constant_value": "ami-foobar"

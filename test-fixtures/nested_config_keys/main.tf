@@ -1,3 +1,7 @@
+provider "aws" {
+  region = "us-east-1"
+}
+
 variable "foo" {
   default = "/dev/sda1"
 }

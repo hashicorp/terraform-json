@@ -1,0 +1,120 @@
+{
+  "format_version": "0.1",
+  "terraform_version": "0.12.0-dev",
+  "planned_values": {
+    "outputs": {
+      "id": {
+        "sensitive": false
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_name": "null",
+          "schema_version": 0,
+          "values": {
+            "triggers": null
+          }
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_name": "null",
+          "schema_version": 0,
+          "values": {
+            "triggers": null
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "null_resource.bar",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "bar",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "triggers": null
+        },
+        "after_unknown": {
+          "id": true,
+          "triggers": false
+        }
+      }
+    },
+    {
+      "address": "null_resource.foo",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "foo",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "triggers": null
+        },
+        "after_unknown": {
+          "id": true,
+          "triggers": false
+        }
+      }
+    }
+  ],
+  "output_changes": {
+    "id": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after_unknown": true
+    }
+  },
+  "configuration": {
+    "root_module": {
+      "outputs": {
+        "id": {
+          "expression": {
+            "references": [
+              "null_resource.foo"
+            ]
+          },
+          "depends_on": [
+            "null_resource.bar"
+          ]
+        }
+      },
+      "resources": [
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_config_key": "null",
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_config_key": "null",
+          "schema_version": 0
+        }
+      ]
+    }
+  }
+}

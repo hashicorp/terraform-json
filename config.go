@@ -3,6 +3,7 @@ package tfjson
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 )
 
 // Config represents the complete configuration source
@@ -10,7 +11,7 @@ type Config struct {
 	// A map of all provider instances across all modules in the
 	// configuration, indexed in the format NAME.ALIAS. Default
 	// providers will not have an alias.
-	ProviderConfigs map[string]*ProviderConfig `json:"provider_config,omitempty"`
+	ProviderConfigs map[ProviderConfigKey]*ProviderConfig `json:"provider_config,omitempty"`
 
 	// The root module in the configuration. Any child modules descend
 	// off of here.
@@ -40,6 +41,9 @@ type ProviderConfig struct {
 	// Any non-special configuration values in the provider, indexed by
 	// key.
 	Expressions map[string]*Expression `json:"expressions,omitempty"`
+
+	// The defined version constraint for this provider.
+	VersionConstraint string `json:"version_constraint,omitempty"`
 }
 
 // ConfigModule describes a module in Terraform configuration.
@@ -64,6 +68,12 @@ type ConfigOutput struct {
 
 	// The defined value of the output.
 	Expression *Expression `json:"expression,omitempty"`
+
+	// The defined description of this output.
+	Description string `json:"description,omitempty"`
+
+	// The defined dependencies tied to this output.
+	DependsOn []string `json:"depends_on,omitempty"`
 }
 
 // ConfigResource is the configuration representation of a resource.
@@ -85,7 +95,7 @@ type ConfigResource struct {
 	// The provider address used for this resource. This address should
 	// be able to be referenced in the ProviderConfig key in the
 	// root-level Config structure.
-	ProviderConfigKey string `json:"provider_config_key,omitempty"`
+	ProviderConfigKey ProviderConfigKey `json:"provider_config_key,omitempty"`
 
 	// The list of provisioner defined for this configuration. This
 	// will be nil if no providers are defined.
@@ -112,6 +122,7 @@ type ConfigResource struct {
 type ConfigVariable struct {
 	// The defined default value of the variable.
 	Default interface{} `json:"default,omitempty"`
+
 	// The defined text description of the variable.
 	Description string `json:"description,omitempty"`
 }
@@ -130,8 +141,8 @@ type ConfigProvisioner struct {
 // ModuleCall describes a declared "module" within a configuration.
 // It also contains the data for the module itself.
 type ModuleCall struct {
-	// The resolved contents of the "source" field.
-	ResolvedSource string `json:"resolved_source,omitempty"`
+	// The contents of the "source" field.
+	Source string `json:"source,omitempty"`
 
 	// Any non-special configuration values in the module, indexed by
 	// key.
@@ -145,6 +156,9 @@ type ModuleCall struct {
 
 	// The configuration data for the module itself.
 	Module *ConfigModule `json:"module,omitempty"`
+
+	// The version constraint for modules that come from the registry.
+	VersionConstraint string `json:"version_constraint,omitempty"`
 }
 
 // Expression describes the format for an individual key in a
@@ -244,4 +258,73 @@ func marshalExpressionBlocks(nested []map[string]*Expression) ([]byte, error) {
 	}
 
 	return json.Marshal(rawNested)
+}
+
+// ProviderConfigKey represents a combined provider config key in the
+// syntax MODULE_ADDRESS:PROVIDER.ALIAS, found in resources in a
+// particular module.
+type ProviderConfigKey string
+
+// ProviderConfigKeyData represents the individual components of a
+// ProviderConfigKey.
+type ProviderConfigKeyData struct {
+	// The module address. Omitted for the root module.
+	ModuleAddress string
+
+	// The provider name.
+	Provider string
+
+	// The alias, if any.
+	Alias string
+}
+
+// Data splits the ProviderConfigKey and returns a
+// ProviderConfigKeyData as the result.
+func (k *ProviderConfigKey) Data() *ProviderConfigKeyData {
+	result := new(ProviderConfigKeyData)
+	parts := strings.Split(string(*k), ":")
+	if len(parts) < 2 {
+		result.SplitProvider(parts[0])
+	} else {
+		result.ModuleAddress = parts[0]
+		result.SplitProvider(parts[1])
+	}
+
+	return result
+}
+
+// SetData sets the ProviderConfigKey with the data supplied by the
+// passed in ProviderConfigKeyData.
+func (k *ProviderConfigKey) SetData(d *ProviderConfigKeyData) {
+	result := []string{d.JoinProvider()}
+
+	if d.ModuleAddress != "" {
+		result = append(
+			[]string{d.ModuleAddress},
+			result...,
+		)
+	}
+
+	*k = ProviderConfigKey(strings.Join(result, ":"))
+}
+
+// SplitProvider splits the provider with the supplied string and
+// sets the appropriate components (provider and alias).
+func (d *ProviderConfigKeyData) SplitProvider(s string) {
+	parts := strings.Split(s, ".")
+	d.Provider = parts[0]
+	if len(parts) > 1 {
+		d.Alias = parts[1]
+	}
+}
+
+// JoinProvider joins the individual provider and alias fields into
+// the full PROVIDER.ALIAS address.
+func (d *ProviderConfigKeyData) JoinProvider() string {
+	result := []string{d.Provider}
+	if d.Alias != "" {
+		result = append(result, d.Alias)
+	}
+
+	return strings.Join(result, ".")
 }

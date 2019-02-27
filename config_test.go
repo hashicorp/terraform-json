@@ -96,3 +96,59 @@ func TestConfigResourceUnmarshalExpressions(t *testing.T) {
 		t.Fatalf("expected %#v, got %#v", expected, actual)
 	}
 }
+
+func TestProviderConfigKey(t *testing.T) {
+	cases := []struct {
+		Name     string
+		In       ProviderConfigKey
+		Expected *ProviderConfigKeyData
+	}{
+		{
+			Name: "root module, no alias",
+			In:   "null",
+			Expected: &ProviderConfigKeyData{
+				Provider: "null",
+			},
+		},
+		{
+			Name: "root module, alias",
+			In:   "null.foo",
+			Expected: &ProviderConfigKeyData{
+				Provider: "null",
+				Alias:    "foo",
+			},
+		},
+		{
+			Name: "module, no alias",
+			In:   "foo:null",
+			Expected: &ProviderConfigKeyData{
+				ModuleAddress: "foo",
+				Provider:      "null",
+			},
+		},
+		{
+			Name: "module, alias",
+			In:   "foo:null.bar",
+			Expected: &ProviderConfigKeyData{
+				ModuleAddress: "foo",
+				Provider:      "null",
+				Alias:         "bar",
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.Name, func(t *testing.T) {
+			actual := tc.In.Data()
+			if !reflect.DeepEqual(tc.Expected, actual) {
+				t.Fatalf("expected %#v, got %#v", tc.Expected, actual)
+			}
+
+			var out ProviderConfigKey
+			out.SetData(actual)
+			if tc.In != out {
+				t.Fatalf("output data mismatch: expected %q, got %q", tc.In, out)
+			}
+		})
+	}
+}

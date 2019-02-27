@@ -1,5 +1,5 @@
 DOCKER_IMAGE_NAME=terraform-0.12-local
-TERRAFORM=docker run --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)" $(DOCKER_IMAGE_NAME)
+TERRAFORM=docker run --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY --env AWS_SESSION_TOKEN --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)" $(DOCKER_IMAGE_NAME)
 
 FIXTURES ?= $(shell find * -maxdepth 0 -type d)
 

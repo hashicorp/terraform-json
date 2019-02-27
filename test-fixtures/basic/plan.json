@@ -115,6 +115,17 @@
         {
           "resources": [
             {
+              "address": "module.foo.null_resource.aliased",
+              "mode": "managed",
+              "type": "null_resource",
+              "name": "aliased",
+              "provider_name": "null.aliased",
+              "schema_version": 0,
+              "values": {
+                "triggers": null
+              }
+            },
+            {
               "address": "module.foo.null_resource.foo",
               "mode": "managed",
               "type": "null_resource",
@@ -139,7 +150,6 @@
       "mode": "data",
       "type": "null_data_source",
       "name": "baz",
-      "deposed": true,
       "change": {
         "actions": [
           "read"
@@ -158,12 +168,31 @@
       }
     },
     {
+      "address": "module.foo.null_resource.aliased",
+      "module_address": "module.foo",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "aliased",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "triggers": null
+        },
+        "after_unknown": {
+          "id": true,
+          "triggers": false
+        }
+      }
+    },
+    {
       "address": "module.foo.null_resource.foo",
       "module_address": "module.foo",
       "mode": "managed",
       "type": "null_resource",
       "name": "foo",
-      "deposed": true,
       "change": {
         "actions": [
           "create"
@@ -187,7 +216,6 @@
       "mode": "managed",
       "type": "null_resource",
       "name": "bar",
-      "deposed": true,
       "change": {
         "actions": [
           "create"
@@ -205,7 +233,6 @@
       "type": "null_resource",
       "name": "baz",
       "index": 0,
-      "deposed": true,
       "change": {
         "actions": [
           "create"
@@ -223,7 +250,6 @@
       "type": "null_resource",
       "name": "baz",
       "index": 1,
-      "deposed": true,
       "change": {
         "actions": [
           "create"
@@ -241,7 +267,6 @@
       "type": "null_resource",
       "name": "baz",
       "index": 2,
-      "deposed": true,
       "change": {
         "actions": [
           "create"
@@ -258,7 +283,6 @@
       "mode": "managed",
       "type": "null_resource",
       "name": "foo",
-      "deposed": true,
       "change": {
         "actions": [
           "create"
@@ -365,6 +389,11 @@
           }
         }
       },
+      "foo:null.aliased": {
+        "name": "null",
+        "alias": "aliased",
+        "module_address": "foo"
+      },
       "null": {
         "name": "null"
       }
@@ -433,7 +462,7 @@
           "mode": "managed",
           "type": "null_resource",
           "name": "bar",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "expressions": {
             "triggers": {
               "references": [
@@ -448,7 +477,7 @@
           "mode": "managed",
           "type": "null_resource",
           "name": "baz",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "expressions": {
             "triggers": {
               "references": [
@@ -466,7 +495,7 @@
           "mode": "managed",
           "type": "null_resource",
           "name": "foo",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "provisioners": [
             {
               "type": "local-exec",
@@ -491,7 +520,7 @@
           "mode": "data",
           "type": "null_data_source",
           "name": "baz",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "expressions": {
             "inputs": {
               "references": [
@@ -505,7 +534,7 @@
       ],
       "module_calls": {
         "foo": {
-          "resolved_source": "./foo",
+          "source": "./foo",
           "expressions": {
             "bar": {
               "constant_value": "baz"
@@ -517,11 +546,19 @@
           "module": {
             "resources": [
               {
+                "address": "null_resource.aliased",
+                "mode": "managed",
+                "type": "null_resource",
+                "name": "aliased",
+                "provider_config_key": "foo:null.aliased",
+                "schema_version": 0
+              },
+              {
                 "address": "null_resource.foo",
                 "mode": "managed",
                 "type": "null_resource",
                 "name": "foo",
-                "provider_config_key": "provider.null",
+                "provider_config_key": "foo:null",
                 "expressions": {
                   "triggers": {
                     "constant_value": {

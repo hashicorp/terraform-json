@@ -176,7 +176,6 @@
       "mode": "managed",
       "type": "null_resource",
       "name": "foo",
-      "deposed": true,
       "change": {
         "actions": [
           "no-op"
@@ -206,7 +205,6 @@
       "mode": "managed",
       "type": "null_resource",
       "name": "bar",
-      "deposed": true,
       "change": {
         "actions": [
           "no-op"
@@ -237,7 +235,6 @@
       "type": "null_resource",
       "name": "baz",
       "index": 0,
-      "deposed": true,
       "change": {
         "actions": [
           "no-op"
@@ -268,7 +265,6 @@
       "type": "null_resource",
       "name": "baz",
       "index": 1,
-      "deposed": true,
       "change": {
         "actions": [
           "no-op"
@@ -299,7 +295,6 @@
       "type": "null_resource",
       "name": "baz",
       "index": 2,
-      "deposed": true,
       "change": {
         "actions": [
           "no-op"
@@ -329,7 +324,6 @@
       "mode": "managed",
       "type": "null_resource",
       "name": "foo",
-      "deposed": true,
       "change": {
         "actions": [
           "no-op"
@@ -548,6 +542,24 @@
             "mode": "managed",
             "type": "null_resource",
             "name": "baz",
+            "index": 2,
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "8665755682221598193",
+              "triggers": {
+                "foo_id": "424881806176056736"
+              }
+            },
+            "depends_on": [
+              "null_resource.foo"
+            ]
+          },
+          {
+            "address": "null_resource.baz",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "baz",
             "index": 0,
             "provider_name": "null",
             "schema_version": 0,
@@ -571,24 +583,6 @@
             "schema_version": 0,
             "values": {
               "id": "2106740714798375541",
-              "triggers": {
-                "foo_id": "424881806176056736"
-              }
-            },
-            "depends_on": [
-              "null_resource.foo"
-            ]
-          },
-          {
-            "address": "null_resource.baz",
-            "mode": "managed",
-            "type": "null_resource",
-            "name": "baz",
-            "index": 2,
-            "provider_name": "null",
-            "schema_version": 0,
-            "values": {
-              "id": "8665755682221598193",
               "triggers": {
                 "foo_id": "424881806176056736"
               }
@@ -723,7 +717,7 @@
           "mode": "managed",
           "type": "null_resource",
           "name": "bar",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "expressions": {
             "triggers": {
               "references": [
@@ -738,7 +732,7 @@
           "mode": "managed",
           "type": "null_resource",
           "name": "baz",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "expressions": {
             "triggers": {
               "references": [
@@ -756,7 +750,7 @@
           "mode": "managed",
           "type": "null_resource",
           "name": "foo",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "provisioners": [
             {
               "type": "local-exec",
@@ -781,7 +775,7 @@
           "mode": "data",
           "type": "null_data_source",
           "name": "baz",
-          "provider_config_key": "provider.null",
+          "provider_config_key": "null",
           "expressions": {
             "inputs": {
               "references": [
@@ -795,7 +789,7 @@
       ],
       "module_calls": {
         "foo": {
-          "resolved_source": "./foo",
+          "source": "./foo",
           "expressions": {
             "bar": {
               "constant_value": "baz"
@@ -811,7 +805,7 @@
                 "mode": "managed",
                 "type": "null_resource",
                 "name": "foo",
-                "provider_config_key": "provider.null",
+                "provider_config_key": "foo:null",
                 "expressions": {
                   "triggers": {
                     "constant_value": {
