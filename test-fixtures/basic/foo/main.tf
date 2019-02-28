@@ -19,3 +19,7 @@ resource "null_resource" "foo" {
 resource "null_resource" "aliased" {
   provider = "null.aliased"
 }
+
+output "foo" {
+  value = "bar"
+}

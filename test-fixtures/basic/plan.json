@@ -544,6 +544,13 @@
             }
           },
           "module": {
+            "outputs": {
+              "foo": {
+                "expression": {
+                  "constant_value": "bar"
+                }
+              }
+            },
             "resources": [
               {
                 "address": "null_resource.aliased",

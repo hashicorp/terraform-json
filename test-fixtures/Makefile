@@ -1,7 +1,7 @@
 DOCKER_IMAGE_NAME=terraform-0.12-local
 TERRAFORM=docker run --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY --env AWS_SESSION_TOKEN --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)" $(DOCKER_IMAGE_NAME)
 
-FIXTURES ?= $(shell find * -maxdepth 0 -type d)
+FIXTURES ?= $(shell find * -maxdepth 0 -type d  ! -name provider_version)
 
 .PHONY: build-terraform-0.12-local
 build-terraform-0.12-local:
