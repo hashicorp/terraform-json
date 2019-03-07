@@ -12,6 +12,7 @@ $(FIXTURES): build-terraform-0.12-local
 	cd $@/ && $(TERRAFORM) init
 	cd $@/ && $(TERRAFORM) plan -out=plan.tfplan
 	cd $@/ && $(TERRAFORM) show -json plan.tfplan > plan.json
+	cd $@/ && $(TERRAFORM) providers schema -json > schemas.json
 
 .PHONY: generate
 generate: $(FIXTURES)

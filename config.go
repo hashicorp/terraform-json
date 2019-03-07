@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-// Config represents the complete configuration source
+// Config represents the complete configuration source.
 type Config struct {
 	// A map of all provider instances across all modules in the
 	// configuration.
