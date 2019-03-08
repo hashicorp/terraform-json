@@ -6,9 +6,9 @@ import "errors"
 // Terraform's underlying type system, which can be found at:
 //   https://godoc.org/github.com/zclconf/go-cty
 //
-// The attribute type system here is largely slimmed down from cty
-// and only serves to facilitate the correct marshaling/unmarshaling
-// of the external JSON data. It is not designed to be 1-1 compatible
+// The attribute type system is largely slimmed down from cty and
+// only serves to facilitate the correct marshaling/unmarshaling of
+// the external JSON data. It is not designed to be 1-1 compatible
 // with cty itself.
 
 // SchemaAttributeType represents any schema attribute type.
