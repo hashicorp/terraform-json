@@ -6,14 +6,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
 
 const testFixtureDir = "test-fixtures"
-const testGoldenFileName = "plan.json"
+const testGoldenPlanFileName = "plan.json"
+const testGoldenSchemasFileName = "schemas.json"
 
-func TestParse(t *testing.T) {
+func testParse(t *testing.T, filename string, typ reflect.Type) {
 	entries, err := ioutil.ReadDir(testFixtureDir)
 	if err != nil {
 		t.Fatalf("err: %s", err)
@@ -25,13 +27,14 @@ func TestParse(t *testing.T) {
 		}
 
 		t.Run(e.Name(), func(t *testing.T) {
-			expected, err := ioutil.ReadFile(filepath.Join(testFixtureDir, e.Name(), testGoldenFileName))
+			expected, err := ioutil.ReadFile(filepath.Join(testFixtureDir, e.Name(), filename))
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			var parsed Plan
-			if err = json.Unmarshal(expected, &parsed); err != nil {
+			parsed := reflect.New(typ).Interface()
+
+			if err = json.Unmarshal(expected, parsed); err != nil {
 				t.Fatal(err)
 			}
 
@@ -48,6 +51,14 @@ func TestParse(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestParsePlan(t *testing.T) {
+	testParse(t, testGoldenPlanFileName, reflect.TypeOf(Plan{}))
+}
+
+func TestParseSchemas(t *testing.T) {
+	testParse(t, testGoldenSchemasFileName, reflect.TypeOf(ProviderSchemas{}))
 }
 
 func testDiff(out, gld []byte) error {

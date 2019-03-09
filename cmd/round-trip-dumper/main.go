@@ -12,7 +12,10 @@ import (
 	tfjson "github.com/hashicorp/terraform-json"
 )
 
-var diff = flag.Bool("diff", false, "diff output instead of writing")
+var (
+	diff   = flag.Bool("diff", false, "diff output instead of writing")
+	schema = flag.Bool("schema", false, "input is a schema, not a plan")
+)
 
 func main() {
 	flag.Parse()
@@ -30,8 +33,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	var parsed tfjson.Plan
-	if err = json.Unmarshal(data, &parsed); err != nil {
+	var parsed interface{}
+	if *schema {
+		parsed = &tfjson.ProviderSchemas{}
+	} else {
+		parsed = &tfjson.Plan{}
+	}
+
+	if err = json.Unmarshal(data, parsed); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

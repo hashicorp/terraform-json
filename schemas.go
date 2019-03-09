@@ -1,5 +1,10 @@
 package tfjson
 
+import (
+	"errors"
+	"fmt"
+)
+
 // ProviderSchemasFormatVersion is the version of the JSON provider
 // schema format that is supported by this package.
 const ProviderSchemasFormatVersion = "0.1"
@@ -16,7 +21,25 @@ type ProviderSchemas struct {
 	// provider type. Aliases are not included, and multiple instances
 	// of a provider in configuration will be represented by a single
 	// provider here.
-	Schemas map[string]*ProviderSchema
+	Schemas map[string]*ProviderSchema `json:"provider_schemas,omitempty"`
+}
+
+// Validate checks to ensure that ProviderSchemas is present, and the
+// version matches the version supported by this library.
+func (p *ProviderSchemas) Validate() error {
+	if p == nil {
+		return errors.New("provider schema data is nil")
+	}
+
+	if p.FormatVersion == "" {
+		return errors.New("unexpected provider schema data, format version is missing")
+	}
+
+	if ProviderSchemasFormatVersion != p.FormatVersion {
+		return fmt.Errorf("unsupported provider schema data format version: expected %q, got %q", PlanFormatVersion, p.FormatVersion)
+	}
+
+	return nil
 }
 
 // ProviderSchema is the JSON representation of the schema of an
@@ -46,7 +69,7 @@ type Schema struct {
 // SchemaBlock represents a nested block within a particular schema.
 type SchemaBlock struct {
 	// The attributes defined at the particular level of this block.
-	// Attributes map[string]*SchemaAttribute `json:"attributes,omitempty"`
+	Attributes map[string]*SchemaAttribute `json:"attributes,omitempty"`
 
 	// Any nested blocks within this particular block.
 	NestedBlocks map[string]*SchemaBlockType `json:"block_types,omitempty"`
@@ -98,4 +121,31 @@ type SchemaBlockType struct {
 	// The upper limit on items that can be declared of this block
 	// type.
 	MaxItems uint64 `json:"max_items,omitempty"`
+}
+
+// SchemaAttribute describes an attribute within a schema block.
+type SchemaAttribute struct {
+	// The attribute type.
+	AttributeType SchemaAttributeType `json:"type,omitempty"`
+
+	// The description field for this attribute.
+	Description string `json:"description,omitempty"`
+
+	// If true, this attribute is required - it has to be entered in
+	// configuration.
+	Required bool `json:"required,omitempty"`
+
+	// If true, this attribute is optional - it does not need to be
+	// entered in configuration.
+	Optional bool `json:"optional,omitempty"`
+
+	// If true, this attribute is computed - it can be set by the
+	// provider. It may also be set by configuration if Optional is
+	// true.
+	Computed bool `json:"computed,omitempty"`
+
+	// If true, this attribute is sensitive and will not be displayed
+	// in logs. Future versions of Terraform may encrypt or otherwise
+	// treat these values with greater care than non-sensitive fields.
+	Sensitive bool `json:"sensitive,omitempty"`
 }
