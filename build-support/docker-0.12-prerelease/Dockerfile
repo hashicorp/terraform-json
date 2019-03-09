@@ -39,8 +39,7 @@ RUN sh -c "\
   apt-get -y install git && \
   mkdir -p /build && \
   cd /build && \
-  git clone
-  https://github.com/vancluever/terraform-provider-random.git terraform-provider-random && \
+  git clone https://github.com/vancluever/terraform-provider-random.git terraform-provider-random && \
   cd terraform-provider-random && \
   git checkout ${RANDOM_BUILD_REF} && \
   go install -mod=vendor ./ && \
