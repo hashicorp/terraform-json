@@ -32,6 +32,23 @@ RUN sh -c "\
   apt-get -y autoremove && \
   rm -rf /var/cache/apt"
 
+# Random Provider
+ARG RANDOM_BUILD_REF="v0.12-sdk-updates-b758628e51df"
+RUN sh -c "\
+  apt-get update && \
+  apt-get -y install git && \
+  mkdir -p /build && \
+  cd /build && \
+  git clone
+  https://github.com/vancluever/terraform-provider-random.git terraform-provider-random && \
+  cd terraform-provider-random && \
+  git checkout ${RANDOM_BUILD_REF} && \
+  go install -mod=vendor ./ && \
+  rm -rf /build && \
+  apt-get -y remove git && \
+  apt-get -y autoremove && \
+  rm -rf /var/cache/apt"
+
 # Core
 ARG CORE_BUILD_REF="e466bc4bb73318de7f2b63d9f99e584d35117379"
 RUN sh -c "\
