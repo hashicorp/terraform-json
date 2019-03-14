@@ -120,6 +120,10 @@ type ConfigResource struct {
 
 	// The expression data for the "for_each" value in the resource.
 	ForEachExpression *Expression `json:"for_each_expression,omitempty"`
+
+	// The contents of the "depends_on" config directive, which
+	// declares explicit dependencies for this resource.
+	DependsOn []string `json:"depends_on,omitempty"`
 }
 
 // ConfigVariable defines a variable as defined in configuration.

@@ -1,0 +1,147 @@
+{
+  "format_version": "0.1",
+  "terraform_version": "0.12.0-dev",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_name": "null",
+          "schema_version": 0,
+          "values": {
+            "triggers": null
+          }
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_name": "null",
+          "schema_version": 0,
+          "values": {
+            "id": "4379128789376396166",
+            "triggers": null
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "null_resource.bar",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "bar",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "before": {
+          "id": "8595481736657951026",
+          "triggers": {
+            "foo": "4379128789376396166"
+          }
+        },
+        "after": {
+          "triggers": null
+        },
+        "after_unknown": {
+          "id": true,
+          "triggers": false
+        }
+      }
+    },
+    {
+      "address": "null_resource.foo",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "foo",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "id": "4379128789376396166",
+          "triggers": null
+        },
+        "after": {
+          "id": "4379128789376396166",
+          "triggers": null
+        },
+        "after_unknown": {
+          "id": false,
+          "triggers": false
+        }
+      }
+    }
+  ],
+  "prior_state": {
+    "format_version": "0.1",
+    "terraform_version": "0.12.0",
+    "values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "null_resource.bar",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "bar",
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "8595481736657951026",
+              "triggers": {
+                "foo": "4379128789376396166"
+              }
+            },
+            "depends_on": [
+              "null_resource.foo"
+            ]
+          },
+          {
+            "address": "null_resource.foo",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "foo",
+            "provider_name": "null",
+            "schema_version": 0,
+            "values": {
+              "id": "4379128789376396166",
+              "triggers": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  "configuration": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_config_key": "null",
+          "schema_version": 0,
+          "depends_on": [
+            "null_resource.foo"
+          ]
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_config_key": "null",
+          "schema_version": 0
+        }
+      ]
+    }
+  }
+}
