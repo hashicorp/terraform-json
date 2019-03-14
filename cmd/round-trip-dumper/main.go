@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 
@@ -27,11 +26,13 @@ func main() {
 
 	path := flag.Arg(0)
 
-	data, err := ioutil.ReadFile(path)
+	f, err := os.Open(path)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+
+	defer f.Close()
 
 	var parsed interface{}
 	if *schema {
@@ -40,7 +41,9 @@ func main() {
 		parsed = &tfjson.Plan{}
 	}
 
-	if err = json.Unmarshal(data, parsed); err != nil {
+	dec := json.NewDecoder(f)
+	dec.DisallowUnknownFields()
+	if err = dec.Decode(parsed); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

@@ -1,6 +1,7 @@
 package tfjson
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,8 +34,9 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 			}
 
 			parsed := reflect.New(typ).Interface()
-
-			if err = json.Unmarshal(expected, parsed); err != nil {
+			dec := json.NewDecoder(bytes.NewBuffer(expected))
+			dec.DisallowUnknownFields()
+			if err = dec.Decode(parsed); err != nil {
 				t.Fatal(err)
 			}
 
