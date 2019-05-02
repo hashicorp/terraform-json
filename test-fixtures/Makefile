@@ -1,14 +1,11 @@
-DOCKER_IMAGE_NAME=terraform-0.12-local
-TERRAFORM=docker run --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY --env AWS_SESSION_TOKEN --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)" $(DOCKER_IMAGE_NAME)
+DOCKER_IMAGE_TAG=0.12.0-beta2
+DOCKER_IMAGE="hashicorp/terraform:${DOCKER_IMAGE_TAG}"
+TERRAFORM=docker run --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY --env AWS_SESSION_TOKEN --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)" $(DOCKER_IMAGE)
 
 FIXTURES ?= $(shell find * -maxdepth 0 -type d  ! -name provider_version ! -name state_depends_on)
 
-.PHONY: build-terraform-0.12-local
-build-terraform-0.12-local:
-	docker build --tag $(DOCKER_IMAGE_NAME) ../build-support/docker-0.12-prerelease
-
 .PHONY: $(FIXTURES)
-$(FIXTURES): build-terraform-0.12-local
+$(FIXTURES):
 	cd $@/ && $(TERRAFORM) init
 	cd $@/ && $(TERRAFORM) plan -out=plan.tfplan
 	cd $@/ && $(TERRAFORM) show -json plan.tfplan > plan.json
