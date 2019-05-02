@@ -86,7 +86,7 @@ func (t *SchemaAttributeType) UnmarshalJSON(buf []byte) error {
 
 		kind, ok := tok.(string)
 		if !ok {
-			return fmt.Errorf("invalid complex type kind name")
+			return fmt.Errorf("invalid complex type kind name: %T", tok)
 		}
 
 		switch kind {
@@ -107,7 +107,7 @@ func (t *SchemaAttributeType) UnmarshalJSON(buf []byte) error {
 			}
 
 		default:
-			return fmt.Errorf("invalid complex type kind name")
+			return fmt.Errorf("invalid complex type kind name: %s", kind)
 		}
 
 		tok, err = dec.Token()

@@ -100,6 +100,13 @@ type ResourceChange struct {
 	// This value can be either an integer (int) or a string.
 	Index interface{} `json:"index,omitempty"`
 
+	// The name of the provider this resource belongs to. This allows
+	// the provider to be interpreted unambiguously in the unusual
+	// situation where a provider offers a resource type whose name
+	// does not start with its own name, such as the "googlebeta"
+	// provider offering "google_compute_instance".
+	ProviderName string `json:"provider_name,omitempty"`
+
 	// An identifier used during replacement operations, and can be
 	// used to identify the exact resource being replaced in state.
 	//
