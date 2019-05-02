@@ -40,7 +40,7 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 				t.Fatal(err)
 			}
 
-			actual, err := json.MarshalIndent(parsed, "", "  ")
+			actual, err := json.Marshal(parsed)
 			if err != nil {
 				t.Fatal(err)
 			}
