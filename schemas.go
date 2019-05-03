@@ -3,6 +3,8 @@ package tfjson
 import (
 	"errors"
 	"fmt"
+
+	"github.com/zclconf/go-cty/cty"
 )
 
 // ProviderSchemasFormatVersion is the version of the JSON provider
@@ -126,7 +128,7 @@ type SchemaBlockType struct {
 // SchemaAttribute describes an attribute within a schema block.
 type SchemaAttribute struct {
 	// The attribute type.
-	AttributeType SchemaAttributeType `json:"type,omitempty"`
+	AttributeType cty.Type `json:"type,omitempty"`
 
 	// The description field for this attribute.
 	Description string `json:"description,omitempty"`
