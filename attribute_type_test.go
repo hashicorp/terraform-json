@@ -31,6 +31,10 @@ func TestSchemaAttributeTypeName(t *testing.T) {
 			name:    "map",
 			subject: SchemaAttributeTypeMap(SchemaAttributeTypeString),
 		},
+		{
+			name:    "object",
+			subject: SchemaAttributeTypeObject(nil),
+		},
 	}
 
 	for _, tc := range cases {
@@ -96,6 +100,86 @@ func TestSchemaAttributeTypeEquals(t *testing.T) {
 			other:   SchemaAttributeTypeMap(SchemaAttributeTypeList(SchemaAttributeTypeString)),
 		},
 		{
+			name: "object",
+			subject: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeNumber,
+				},
+			),
+			other: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeNumber,
+				},
+			),
+		},
+		{
+			name: "object nested in list",
+			subject: SchemaAttributeTypeList(
+				SchemaAttributeTypeObject(
+					map[string]SchemaAttributeType{
+						"bar": SchemaAttributeTypeString,
+						"foo": SchemaAttributeTypeNumber,
+					},
+				),
+			),
+			other: SchemaAttributeTypeList(
+				SchemaAttributeTypeObject(
+					map[string]SchemaAttributeType{
+						"bar": SchemaAttributeTypeString,
+						"foo": SchemaAttributeTypeNumber,
+					},
+				),
+			),
+		},
+		{
+			name: "object nested in set",
+			subject: SchemaAttributeTypeSet(
+				SchemaAttributeTypeObject(
+					map[string]SchemaAttributeType{
+						"bar": SchemaAttributeTypeString,
+						"foo": SchemaAttributeTypeNumber,
+					},
+				),
+			),
+			other: SchemaAttributeTypeSet(
+				SchemaAttributeTypeObject(
+					map[string]SchemaAttributeType{
+						"bar": SchemaAttributeTypeString,
+						"foo": SchemaAttributeTypeNumber,
+					},
+				),
+			),
+		},
+		{
+			name: "object with nested types",
+			subject: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeList(
+						SchemaAttributeTypeObject(
+							map[string]SchemaAttributeType{
+								"baz": SchemaAttributeTypeString,
+							},
+						),
+					),
+				},
+			),
+			other: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeList(
+						SchemaAttributeTypeObject(
+							map[string]SchemaAttributeType{
+								"baz": SchemaAttributeTypeString,
+							},
+						),
+					),
+				},
+			),
+		},
+		{
 			name:     "mismatch primitive",
 			subject:  SchemaAttributeTypeString,
 			other:    SchemaAttributeTypeNumber,
@@ -119,6 +203,72 @@ func TestSchemaAttributeTypeEquals(t *testing.T) {
 			other:    SchemaAttributeTypeList(SchemaAttributeTypeString),
 			mismatch: true,
 		},
+		{
+			name:    "mismatch primitive and object",
+			subject: SchemaAttributeTypeString,
+			other: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeNumber,
+				},
+			),
+			mismatch: true,
+		},
+		{
+			name:    "mismatch collection and object",
+			subject: SchemaAttributeTypeList(SchemaAttributeTypeString),
+			other: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeNumber,
+				},
+			),
+			mismatch: true,
+		},
+		{
+			name: "mismatch collection (different keys)",
+			subject: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"foo": SchemaAttributeTypeString,
+					"bar": SchemaAttributeTypeNumber,
+				},
+			),
+			other: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeNumber,
+				},
+			),
+			mismatch: true,
+		},
+		{
+			name: "mismatch collection (different deep nested data)",
+			subject: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeList(
+						SchemaAttributeTypeObject(
+							map[string]SchemaAttributeType{
+								"baz": SchemaAttributeTypeString,
+							},
+						),
+					),
+				},
+			),
+			other: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeList(
+						SchemaAttributeTypeObject(
+							map[string]SchemaAttributeType{
+								"baz": SchemaAttributeTypeNumber,
+							},
+						),
+					),
+				},
+			),
+			mismatch: true,
+		},
 	}
 
 	for _, tc := range cases {
@@ -130,10 +280,6 @@ func TestSchemaAttributeTypeEquals(t *testing.T) {
 				}
 
 			default:
-				if tc.subject != tc.other {
-					t.Fatalf("expected %#v, got %#v", tc.subject, tc.other)
-				}
-
 				if !tc.subject.Equals(tc.other) {
 					t.Fatal("could not validate equality with Equals method")
 				}

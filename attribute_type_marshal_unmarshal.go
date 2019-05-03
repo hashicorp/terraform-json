@@ -35,6 +35,19 @@ func (t SchemaAttributeType) MarshalJSON() ([]byte, error) {
 		buf.WriteRune(']')
 		return buf.Bytes(), nil
 
+	case objectAttributeType:
+		buf := &bytes.Buffer{}
+		atysJSON, err := json.Marshal(t.AttributeTypes())
+		if err != nil {
+			return nil, err
+		}
+		buf.WriteRune('[')
+		fmt.Fprintf(buf, "%q", objectAttributeTypeLabel)
+		buf.WriteRune(',')
+		buf.Write(atysJSON)
+		buf.WriteRune(']')
+		return buf.Bytes(), nil
+
 	default:
 		// should never happen
 		panic("unknown type implementation")
@@ -103,6 +116,19 @@ func (t *SchemaAttributeType) UnmarshalJSON(buf []byte) error {
 				SchemaAttributeTypeCollection{
 					kind:        collectionAttributeTypeKind(kind),
 					elementType: ety,
+				},
+			}
+
+		case objectAttributeTypeLabel:
+			var atys map[string]SchemaAttributeType
+			err = dec.Decode(&atys)
+			if err != nil {
+				return err
+			}
+
+			*t = SchemaAttributeType{
+				objectAttributeType{
+					attrTypes: atys,
 				},
 			}
 

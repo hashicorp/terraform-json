@@ -132,7 +132,7 @@ func (t SchemaAttributeTypeCollection) Name() string {
 // element types match.
 func (t SchemaAttributeTypeCollection) Equals(other SchemaAttributeType) bool {
 	if otherC, ok := other.attributeTypeImpl.(SchemaAttributeTypeCollection); ok {
-		return otherC == t
+		return t.kind == otherC.kind && t.elementType.Equals(otherC.elementType)
 	}
 
 	return false
@@ -217,4 +217,74 @@ func (t SchemaAttributeType) ElementType() SchemaAttributeType {
 	}
 
 	panic(errors.New("not a collection type"))
+}
+
+// objectAttributeType represents an object type with string-keyed
+// subtypes.
+//
+// While similar to a map, an object is not a collection and can
+// contain more than one type over different keys.
+type objectAttributeType struct {
+	attributeTypeImplSigil
+
+	attrTypes map[string]SchemaAttributeType
+}
+
+// SchemaAttributeTypeObject returns a new object type with the
+// attribute types set to the supplied map.
+func SchemaAttributeTypeObject(attrTypes map[string]SchemaAttributeType) SchemaAttributeType {
+	return SchemaAttributeType{
+		objectAttributeType{
+			attrTypes: attrTypes,
+		},
+	}
+}
+
+const objectAttributeTypeLabel = "object"
+
+// Name returns the name of the type of the collection. This does not
+// print the element type.
+func (t objectAttributeType) Name() string {
+	return objectAttributeTypeLabel
+}
+
+// Equals checks for equality of this collection to another
+// SchemaAttributeType.
+//
+// Two object types are comparable, and equal if their attribute
+// types are deeply equal.
+func (t objectAttributeType) Equals(other SchemaAttributeType) bool {
+	if otherT, ok := other.attributeTypeImpl.(objectAttributeType); ok {
+		if len(t.attrTypes) != len(otherT.attrTypes) {
+			// Fast path: if we don't have the same number of attributes
+			// then we can't possibly be equal. This also avoids the need
+			// to test attributes in both directions below, since we know
+			// there can't be extras in "other".
+			return false
+		}
+
+		for attr, ty := range t.attrTypes {
+			oty, ok := otherT.attrTypes[attr]
+			if !ok {
+				return false
+			}
+			if !oty.Equals(ty) {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	return false
+}
+
+// AttributeTypes returns a map of attribute types for an object. It
+// panics if the type is not an object type.
+func (t SchemaAttributeType) AttributeTypes() map[string]SchemaAttributeType {
+	if ot, ok := t.attributeTypeImpl.(objectAttributeType); ok {
+		return ot.attrTypes
+	}
+
+	panic(errors.New("not an object type"))
 }

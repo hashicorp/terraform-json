@@ -3,6 +3,8 @@ package tfjson
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func TestSchemaAttributeTypeMarshalUnmarshal(t *testing.T) {
@@ -56,6 +58,56 @@ func TestSchemaAttributeTypeMarshalUnmarshal(t *testing.T) {
 			in:       `["map",["list","string"]]`,
 			expected: SchemaAttributeTypeMap(SchemaAttributeTypeList(SchemaAttributeTypeString)),
 		},
+		{
+			name: "object",
+			in:   `["object",{"bar":"string","foo":"number"}]`,
+			expected: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeNumber,
+				},
+			),
+		},
+		{
+			name: "object nested in list",
+			in:   `["list",["object",{"bar":"string","foo":"number"}]]`,
+			expected: SchemaAttributeTypeList(
+				SchemaAttributeTypeObject(
+					map[string]SchemaAttributeType{
+						"bar": SchemaAttributeTypeString,
+						"foo": SchemaAttributeTypeNumber,
+					},
+				),
+			),
+		},
+		{
+			name: "object nested in set",
+			in:   `["set",["object",{"bar":"string","foo":"number"}]]`,
+			expected: SchemaAttributeTypeSet(
+				SchemaAttributeTypeObject(
+					map[string]SchemaAttributeType{
+						"bar": SchemaAttributeTypeString,
+						"foo": SchemaAttributeTypeNumber,
+					},
+				),
+			),
+		},
+		{
+			name: "object with nested types",
+			in:   `["object",{"bar":"string","foo":["list",["object",{"baz":"string"}]]}]`,
+			expected: SchemaAttributeTypeObject(
+				map[string]SchemaAttributeType{
+					"bar": SchemaAttributeTypeString,
+					"foo": SchemaAttributeTypeList(
+						SchemaAttributeTypeObject(
+							map[string]SchemaAttributeType{
+								"baz": SchemaAttributeTypeString,
+							},
+						),
+					),
+				},
+			),
+		},
 	}
 
 	for _, tc := range cases {
@@ -70,16 +122,12 @@ func TestSchemaAttributeTypeMarshalUnmarshal(t *testing.T) {
 				t.Fatalf("marshal err: %s", err)
 			}
 
-			if tc.expected != actual {
-				t.Fatalf("expected %#v, got %#v", tc.expected, actual)
-			}
-
 			if !tc.expected.Equals(actual) {
-				t.Fatal("could not validate equality with Equals method")
+				t.Fatalf("\nEquals: failed\nexpected:\n\n%s\n\ngot:\n\n%s\n\n", spew.Sdump(tc.expected), spew.Sdump(actual))
 			}
 
 			if tc.in != string(actualOut) {
-				t.Fatalf("JSON output mismatch: expected %q, got %q", tc.in, actualOut)
+				t.Fatalf("JSON output mismatch: expected %s, got %s", tc.in, actualOut)
 			}
 		})
 	}
