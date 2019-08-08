@@ -12,7 +12,8 @@ While containing mostly data types, there are also a few helpers to assist with
 working with the data.
 
 This repository also serves as de facto documentation for the formats produced
-by these commands. For more details, see the [GoDoc][godoc].
+by these commands. For more details, see the
+[GoDoc](https://godoc.org/github.com/hashicorp/terraform-json).
 
 ## Why a Separate Repository?
 
