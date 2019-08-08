@@ -1,7 +1,6 @@
 # terraform-json
 
-[![Go Documentation](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)][godocs]
-[godocs]: http://godoc.org/github.com/hashicorp/terraform-json
+[![GoDoc](https://godoc.org/github.com/hashicorp/terraform-json?status.svg)](https://godoc.org/github.com/hashicorp/terraform-json)
 
 This repository houses data types designed to help parse the data produced by
 two [Terraform](https://www.terraform.io/) commands:
