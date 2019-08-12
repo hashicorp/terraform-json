@@ -1,4 +1,4 @@
-DOCKER_IMAGE_TAG=0.12.0
+DOCKER_IMAGE_TAG=0.12.6
 DOCKER_IMAGE="hashicorp/terraform:${DOCKER_IMAGE_TAG}"
 TERRAFORM=docker run --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY --env AWS_SESSION_TOKEN --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)" $(DOCKER_IMAGE)
 
