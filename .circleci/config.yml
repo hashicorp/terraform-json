@@ -1,0 +1,36 @@
+version: 2
+
+references:
+  images:
+    go: &GOLANG_IMAGE circleci/golang:1.13
+  cache:
+    go-sum: &GO_SUM_CACHE_KEY go-sum-v1-{{ checksum "go.sum" }}
+  environment: &ENVIRONMENT
+    GO111MODULE: "on"
+
+jobs:
+  test:
+    docker:
+      - image: *GOLANG_IMAGE
+    environment: *ENVIRONMENT
+    working_directory: /go/src/github.com/hashicorp/terraform-json
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - *GO_SUM_CACHE_KEY
+      - run: make modules
+      - run: make tools
+      - run: make test-circle
+      - store_test_results:
+          path: test-results/
+      - save_cache:
+          key: *GO_SUM_CACHE_KEY
+          paths:
+            - /go/pkg/mod
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
