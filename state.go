@@ -109,6 +109,10 @@ type StateResource struct {
 	// If true, the resource has been marked as tainted and will be
 	// re-created on the next update.
 	Tainted bool `json:"tainted,omitempty"`
+
+	// DeposedKey is set if the resource instance has been marked Deposed and
+	// will be destroyed on the next apply.
+	DeposedKey string `json:"deposed_key,omitempty"`
 }
 
 // StateOutput represents an output value in a common state
