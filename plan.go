@@ -1,7 +1,6 @@
 package tfjson
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -109,11 +108,7 @@ type ResourceChange struct {
 
 	// An identifier used during replacement operations, and can be
 	// used to identify the exact resource being replaced in state.
-	//
-	// FIXME: This value is currently unstable in the Terraform alpha
-	// and should not be used. It will be fixed to its stable string
-	// value in later releases.
-	DeposedKey json.RawMessage `json:"deposed,omitempty"`
+	DeposedKey string `json:"deposed,omitempty"`
 
 	// The data describing the change that will be made to this object.
 	Change *Change `json:"change,omitempty"`
