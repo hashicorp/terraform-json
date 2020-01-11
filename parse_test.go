@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-const testFixtureDir = "test-fixtures"
+const testFixtureDir = "testdata"
 const testGoldenPlanFileName = "plan.json"
 const testGoldenSchemasFileName = "schemas.json"
 

@@ -7,7 +7,7 @@ import (
 )
 
 func TestProviderSchemasValidate(t *testing.T) {
-	f, err := os.Open("test-fixtures/basic/schemas.json")
+	f, err := os.Open("testdata/basic/schemas.json")
 	if err != nil {
 		t.Fatal(err)
 	}

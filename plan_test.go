@@ -7,7 +7,7 @@ import (
 )
 
 func TestPlanValidate(t *testing.T) {
-	f, err := os.Open("test-fixtures/basic/plan.json")
+	f, err := os.Open("testdata/basic/plan.json")
 	if err != nil {
 		t.Fatal(err)
 	}
