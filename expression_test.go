@@ -50,16 +50,16 @@ func TestUnmarshalExpressions(t *testing.T) {
 				Name:              "foo",
 				ProviderConfigKey: "aws",
 				Expressions: map[string]*Expression{
-					"ami": &Expression{
+					"ami": {
 						ExpressionData: &ExpressionData{
 							ConstantValue: "ami-foobar",
 						},
 					},
-					"ebs_block_device": &Expression{
+					"ebs_block_device": {
 						ExpressionData: &ExpressionData{
 							NestedBlocks: []map[string]*Expression{
-								map[string]*Expression{
-									"device_name": &Expression{
+								{
+									"device_name": {
 										ExpressionData: &ExpressionData{
 											ConstantValue: UnknownConstantValue,
 											References:    []string{"var.foo"},
@@ -69,7 +69,7 @@ func TestUnmarshalExpressions(t *testing.T) {
 							},
 						},
 					},
-					"instance_type": &Expression{
+					"instance_type": {
 						ExpressionData: &ExpressionData{
 							ConstantValue: "t2.micro",
 						},
@@ -104,7 +104,7 @@ func TestUnmarshalExpressions(t *testing.T) {
 				Name:              "foo",
 				ProviderConfigKey: "null",
 				Expressions: map[string]*Expression{
-					"triggers": &Expression{
+					"triggers": {
 						ExpressionData: &ExpressionData{
 							ConstantValue: map[string]interface{}{
 								"foo": nil,
