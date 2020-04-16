@@ -83,7 +83,7 @@ type Schema struct {
 	Block *SchemaBlock `json:"block,omitempty"`
 }
 
-// SchemaDescriptionKind is the format of a string
+// SchemaDescriptionKind describes the format type for a particular description's field.
 type SchemaDescriptionKind string
 
 const (
