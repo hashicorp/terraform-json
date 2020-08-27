@@ -4,7 +4,7 @@ TERRAFORM_DOCKER_CMD=docker run $(foreach var,$(AWS_ENV_VARS),--env $(var)) --rm
 TERRAFORM_012_VERSION=0.12.11
 TERRAFORM012=$(TERRAFORM_DOCKER_CMD) hashicorp/terraform:$(TERRAFORM_012_VERSION)
 
-TERRAFORM_013_VERSION=0.13.0
+TERRAFORM_013_VERSION=0.13.1
 TERRAFORM013=$(TERRAFORM_DOCKER_CMD) hashicorp/terraform:$(TERRAFORM_013_VERSION)
 
 FIXTURES ?= $(shell find * -maxdepth 0 -type d -not -name "013*")
