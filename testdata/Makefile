@@ -2,10 +2,10 @@ AWS_ENV_VARS=AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN AWS_REGIO
 TERRAFORM_DOCKER_CMD=docker run $(foreach var,$(AWS_ENV_VARS),--env $(var)) --rm --workdir "$$(pwd)" --volume "$$(pwd)":"$$(pwd)"
 
 TERRAFORM_012_VERSION=0.12.11
-TERRAFORM012=$(TERRAFORM_DOCKER_CMD) hashicorp/terraform:$(TERRAFORM_012_VERSION)
+TERRAFORM012=$(TERRAFORM_DOCKER_CMD) docker.mirror.hashicorp.services/hashicorp/terraform:$(TERRAFORM_012_VERSION)
 
 TERRAFORM_013_VERSION=0.13.1
-TERRAFORM013=$(TERRAFORM_DOCKER_CMD) hashicorp/terraform:$(TERRAFORM_013_VERSION)
+TERRAFORM013=$(TERRAFORM_DOCKER_CMD) docker.mirror.hashicorp.services/hashicorp/terraform:$(TERRAFORM_013_VERSION)
 
 FIXTURES ?= $(shell find * -maxdepth 0 -type d -not -name "013*")
 013FIXTURES ?= $(shell find * -maxdepth 0 -type d -name "013*")
