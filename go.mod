@@ -4,6 +4,6 @@ go 1.13
 
 require (
 	github.com/davecgh/go-spew v1.1.1
+	github.com/google/go-cmp v0.3.1
 	github.com/zclconf/go-cty v1.2.1
-	gotest.tools/gotestsum v0.5.2 // indirect
 )
