@@ -13,6 +13,12 @@ const StateFormatVersion = "0.1"
 
 // State is the top-level representation of a Terraform state.
 type State struct {
+	// useJSONNumber opts into the behavior of calling
+	// json.Decoder.UseNumber prior to decoding the state, which turns
+	// numbers into json.Numbers instead of float64s. Set it using
+	// State.UseJSONNumber.
+	useJSONNumber bool
+
 	// The version of the state format. This should always match the
 	// StateFormatVersion constant in this package, or else am
 	// unmarshal will be unstable.
@@ -23,6 +29,14 @@ type State struct {
 
 	// The values that make up the state.
 	Values *StateValues `json:"values,omitempty"`
+}
+
+// UseJSONNumber controls whether the State will be decoded using the
+// json.Number behavior or the float64 behavior. When b is true, the State will
+// represent numbers in StateOutputs as json.Numbers. When b is false, the
+// State will represent numbers in StateOutputs as float64s.
+func (s *State) UseJSONNumber(b bool) {
+	s.useJSONNumber = b
 }
 
 // Validate checks to ensure that the state is present, and the
@@ -48,7 +62,9 @@ func (s *State) UnmarshalJSON(b []byte) error {
 	var state rawState
 
 	dec := json.NewDecoder(bytes.NewReader(b))
-	dec.UseNumber()
+	if s.useJSONNumber {
+		dec.UseNumber()
+	}
 	err := dec.Decode(&state)
 	if err != nil {
 		return err
