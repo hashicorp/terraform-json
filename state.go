@@ -1,6 +1,7 @@
 package tfjson
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -46,7 +47,9 @@ func (s *State) UnmarshalJSON(b []byte) error {
 	type rawState State
 	var state rawState
 
-	err := json.Unmarshal(b, &state)
+	dec := json.NewDecoder(bytes.NewReader(b))
+	dec.UseNumber()
+	err := dec.Decode(&state)
 	if err != nil {
 		return err
 	}
