@@ -1,5 +1,5 @@
 GOTOOLS = \
-	gotest.tools/gotestsum
+	gotest.tools/gotestsum@latest
 
 test: tools
 	gotestsum --format=short-verbose $(TEST) $(TESTARGS)
