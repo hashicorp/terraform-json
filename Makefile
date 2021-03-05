@@ -15,6 +15,6 @@ test-circle:
 	gotestsum --format=short-verbose --junitfile test-results/terraform-json/results.xml
 
 tools:
-	go install $(GOTOOLS)
+	@echo $(GOTOOLS) | xargs -t -n1 go install
 
 .PHONY: test generate modules test-circle tools
