@@ -123,6 +123,20 @@ const (
 	// with a single-element constraint.
 	SchemaNestingModeSingle SchemaNestingMode = "single"
 
+	// SchemaNestingModeGroup is similar to SchemaNestingModeSingle in that it
+	// calls for only a single instance of a given block type with no labels,
+	// but it additonally guarantees that its result will never be null,
+	// even if the block is absent, and instead the nested attributes
+	// and blocks will be treated as absent in that case.
+	//
+	// This is useful for the situation where a remote API has a feature that
+	// is always enabled but has a group of settings related to that feature
+	// that themselves have default values. By using SchemaNestingModeGroup
+	// instead of SchemaNestingModeSingle in that case, generated plans will
+	// show the block as present even when not present in configuration,
+	// thus allowing any default values within to be displayed to the user.
+	SchemaNestingModeGroup SchemaNestingMode = "group"
+
 	// SchemaNestingModeList denotes list block nesting mode, which
 	// allows an ordered list of blocks where duplicates are allowed.
 	SchemaNestingModeList SchemaNestingMode = "list"
@@ -162,8 +176,13 @@ type SchemaBlockType struct {
 
 // SchemaAttribute describes an attribute within a schema block.
 type SchemaAttribute struct {
-	// The attribute type.
+	// The attribute type
+	// Either AttributeType or AttributeNestedType is set, never both.
 	AttributeType cty.Type `json:"type,omitempty"`
+
+	// Details about a nested attribute type
+	// Either AttributeType or AttributeNestedType is set, never both.
+	AttributeNestedType *SchemaNestedAttributeType `json:"nested_type,omitempty"`
 
 	// The description field for this attribute. If no kind is
 	// provided, it can be assumed to be plain text.
@@ -190,4 +209,24 @@ type SchemaAttribute struct {
 	// in logs. Future versions of Terraform may encrypt or otherwise
 	// treat these values with greater care than non-sensitive fields.
 	Sensitive bool `json:"sensitive,omitempty"`
+}
+
+// SchemaNestedAttributeType describes a nested attribute
+// which could also be just expressed simply as cty.Object(...),
+// cty.List(cty.Object(...)) etc. but this allows tracking additional
+// metadata which can help interpreting or validating the data.
+type SchemaNestedAttributeType struct {
+	// A map of nested attributes
+	Attributes map[string]*SchemaAttribute `json:"attributes,omitempty"`
+
+	// The nesting mode for this attribute.
+	NestingMode string `json:"nesting_mode,omitempty"`
+
+	// The lower limit on number of items that can be declared
+	// of this attribute type.
+	MinItems uint64 `json:"min_items,omitempty"`
+
+	// The upper limit on number of items that can be declared
+	// of this attribute type.
+	MaxItems uint64 `json:"max_items,omitempty"`
 }
