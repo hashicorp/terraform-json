@@ -16,5 +16,6 @@ test-circle:
 
 tools:
 	@echo $(GOTOOLS) | xargs -t -n1 go install
+	go mod tidy
 
 .PHONY: test generate modules test-circle tools
