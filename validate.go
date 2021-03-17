@@ -1,5 +1,11 @@
 package tfjson
 
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
+
 // Pos represents a position in a config file
 type Pos struct {
 	Line   int `json:"line"`
@@ -84,8 +90,45 @@ type DiagnosticExpressionValue struct {
 // ValidateOutput represents JSON output from terraform validate
 // (available from 0.12 onwards)
 type ValidateOutput struct {
+	FormatVersion string `json:"format_version"`
+
 	Valid        bool         `json:"valid"`
 	ErrorCount   int          `json:"error_count"`
 	WarningCount int          `json:"warning_count"`
 	Diagnostics  []Diagnostic `json:"diagnostics"`
+}
+
+// Validate checks to ensure that data is present, and the
+// version matches the version supported by this library.
+func (vo *ValidateOutput) Validate() error {
+	if vo == nil {
+		return errors.New("validation output is nil")
+	}
+
+	if vo.FormatVersion == "" {
+		// The format was not versioned in the past
+		return nil
+	}
+
+	supportedVersion := "0.1"
+	if vo.FormatVersion != supportedVersion {
+		return fmt.Errorf("unsupported validation output format version: expected %q, got %q",
+			supportedVersion, vo.FormatVersion)
+	}
+
+	return nil
+}
+
+func (vo *ValidateOutput) UnmarshalJSON(b []byte) error {
+	type rawOutput ValidateOutput
+	var schemas rawOutput
+
+	err := json.Unmarshal(b, &schemas)
+	if err != nil {
+		return err
+	}
+
+	*vo = *(*ValidateOutput)(&schemas)
+
+	return vo.Validate()
 }
