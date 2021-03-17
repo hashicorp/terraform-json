@@ -10,7 +10,7 @@ import (
 
 // ProviderSchemasFormatVersion is the version of the JSON provider
 // schema format that is supported by this package.
-const ProviderSchemasFormatVersion = "0.1"
+const ProviderSchemasFormatVersion = "0.2"
 
 // ProviderSchemas represents the schemas of all providers and
 // resources in use by the configuration.
@@ -38,8 +38,10 @@ func (p *ProviderSchemas) Validate() error {
 		return errors.New("unexpected provider schema data, format version is missing")
 	}
 
-	if ProviderSchemasFormatVersion != p.FormatVersion {
-		return fmt.Errorf("unsupported provider schema data format version: expected %q, got %q", PlanFormatVersion, p.FormatVersion)
+	oldVersion := "0.1"
+	if p.FormatVersion != ProviderSchemasFormatVersion && p.FormatVersion != oldVersion {
+		return fmt.Errorf("unsupported provider schema data format version: expected %q or %q, got %q",
+			PlanFormatVersion, oldVersion, p.FormatVersion)
 	}
 
 	return nil
