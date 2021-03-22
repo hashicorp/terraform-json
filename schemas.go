@@ -222,13 +222,13 @@ type SchemaNestedAttributeType struct {
 	Attributes map[string]*SchemaAttribute `json:"attributes,omitempty"`
 
 	// The nesting mode for this attribute.
-	NestingMode string `json:"nesting_mode,omitempty"`
+	NestingMode SchemaNestingMode `json:"nesting_mode,omitempty"`
 
 	// The lower limit on number of items that can be declared
-	// of this attribute type.
+	// of this attribute type (not applicable to single nesting mode).
 	MinItems uint64 `json:"min_items,omitempty"`
 
 	// The upper limit on number of items that can be declared
-	// of this attribute type.
+	// of this attribute type (not applicable to single nesting mode).
 	MaxItems uint64 `json:"max_items,omitempty"`
 }
