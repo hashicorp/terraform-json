@@ -1,0 +1,371 @@
+{
+  "format_version": "0.1",
+  "terraform_version": "0.15.1",
+  "variables": {
+    "foo": {
+      "value": "REDACTED_SENSITIVE"
+    },
+    "toggle_sensitive": {
+      "value": true
+    }
+  },
+  "planned_values": {
+    "outputs": {
+      "secret": {
+        "sensitive": true,
+        "value": "REDACTED_SENSITIVE"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_name": "registry.terraform.io/hashicorp/null",
+          "schema_version": 0,
+          "values": {
+            "id": "4356817825751333663",
+            "triggers": "REDACTED_SENSITIVE"
+          }
+        },
+        {
+          "address": "null_resource.baz",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "baz",
+          "provider_name": "registry.terraform.io/hashicorp/null",
+          "schema_version": 0,
+          "values": {
+            "id": "2737458537890894185",
+            "triggers": {
+              "foo": "REDACTED_SENSITIVE"
+            }
+          }
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_name": "registry.terraform.io/hashicorp/null",
+          "schema_version": 0,
+          "values": {
+            "id": "7483449866618536328",
+            "triggers": {
+              "bar": "REDACTED_SENSITIVE",
+              "foo": "one"
+            }
+          }
+        },
+        {
+          "address": "null_resource.qux",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "qux",
+          "provider_name": "registry.terraform.io/hashicorp/null",
+          "schema_version": 0,
+          "values": {
+            "id": "389458145002419915",
+            "triggers": {
+              "foo": "REDACTED_SENSITIVE"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "null_resource.bar",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "bar",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "id": "4356817825751333663",
+          "triggers": "REDACTED_SENSITIVE"
+        },
+        "after": {
+          "id": "4356817825751333663",
+          "triggers": "REDACTED_SENSITIVE"
+        },
+        "after_unknown": {},
+        "before_sensitive": {
+          "triggers": true
+        },
+        "after_sensitive": {
+          "triggers": true
+        }
+      }
+    },
+    {
+      "address": "null_resource.baz",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "baz",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "id": "2737458537890894185",
+          "triggers": {
+            "foo": "REDACTED_SENSITIVE"
+          }
+        },
+        "after": {
+          "id": "2737458537890894185",
+          "triggers": {
+            "foo": "REDACTED_SENSITIVE"
+          }
+        },
+        "after_unknown": {},
+        "before_sensitive": {
+          "triggers": {
+            "foo": true
+          }
+        },
+        "after_sensitive": {
+          "triggers": {
+            "foo": true
+          }
+        }
+      }
+    },
+    {
+      "address": "null_resource.foo",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "foo",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "before": {
+          "id": "7483449866618536328",
+          "triggers": {
+            "bar": "REDACTED_SENSITIVE",
+            "foo": "one"
+          }
+        },
+        "after": {
+          "id": "7483449866618536328",
+          "triggers": {
+            "bar": "REDACTED_SENSITIVE",
+            "foo": "one"
+          }
+        },
+        "after_unknown": {},
+        "before_sensitive": {
+          "triggers": {
+            "bar": true
+          }
+        },
+        "after_sensitive": {
+          "triggers": {
+            "bar": true
+          }
+        }
+      }
+    },
+    {
+      "address": "null_resource.qux",
+      "mode": "managed",
+      "type": "null_resource",
+      "name": "qux",
+      "provider_name": "registry.terraform.io/hashicorp/null",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "before": {
+          "id": "389458145002419915",
+          "triggers": {
+            "foo": "bar"
+          }
+        },
+        "after": {
+          "id": "389458145002419915",
+          "triggers": {
+            "foo": "REDACTED_SENSITIVE"
+          }
+        },
+        "after_unknown": {},
+        "before_sensitive": {
+          "triggers": {}
+        },
+        "after_sensitive": {
+          "triggers": {
+            "foo": true
+          }
+        }
+      }
+    }
+  ],
+  "output_changes": {
+    "secret": {
+      "actions": [
+        "no-op"
+      ],
+      "before": "REDACTED_SENSITIVE",
+      "after": "REDACTED_SENSITIVE",
+      "after_unknown": false,
+      "before_sensitive": true,
+      "after_sensitive": true
+    }
+  },
+  "prior_state": {
+    "format_version": "0.1",
+    "terraform_version": "0.15.1",
+    "values": {
+      "outputs": {
+        "secret": {
+          "sensitive": true,
+          "value": "REDACTED_SENSITIVE"
+        }
+      },
+      "root_module": {
+        "resources": [
+          {
+            "address": "null_resource.bar",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "bar",
+            "provider_name": "registry.terraform.io/hashicorp/null",
+            "schema_version": 0,
+            "values": {
+              "id": "4356817825751333663",
+              "triggers": "REDACTED_SENSITIVE"
+            }
+          },
+          {
+            "address": "null_resource.baz",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "baz",
+            "provider_name": "registry.terraform.io/hashicorp/null",
+            "schema_version": 0,
+            "values": {
+              "id": "2737458537890894185",
+              "triggers": {
+                "foo": "REDACTED_SENSITIVE"
+              }
+            }
+          },
+          {
+            "address": "null_resource.foo",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "foo",
+            "provider_name": "registry.terraform.io/hashicorp/null",
+            "schema_version": 0,
+            "values": {
+              "id": "7483449866618536328",
+              "triggers": {
+                "bar": "REDACTED_SENSITIVE",
+                "foo": "one"
+              }
+            }
+          },
+          {
+            "address": "null_resource.qux",
+            "mode": "managed",
+            "type": "null_resource",
+            "name": "qux",
+            "provider_name": "registry.terraform.io/hashicorp/null",
+            "schema_version": 0,
+            "values": {
+              "id": "389458145002419915",
+              "triggers": {
+                "foo": "bar"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "configuration": {
+    "root_module": {
+      "outputs": {
+        "secret": {
+          "sensitive": true,
+          "expression": {
+            "references": [
+              "null_resource.foo"
+            ]
+          }
+        }
+      },
+      "resources": [
+        {
+          "address": "null_resource.bar",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "bar",
+          "provider_config_key": "null",
+          "expressions": {
+            "triggers": {}
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.baz",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "baz",
+          "provider_config_key": "null",
+          "expressions": {
+            "triggers": {
+              "references": [
+                "var.foo"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.foo",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "foo",
+          "provider_config_key": "null",
+          "expressions": {
+            "triggers": {}
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "null_resource.qux",
+          "mode": "managed",
+          "type": "null_resource",
+          "name": "qux",
+          "provider_config_key": "null",
+          "expressions": {
+            "triggers": {
+              "references": [
+                "var.toggle_sensitive"
+              ]
+            }
+          },
+          "schema_version": 0
+        }
+      ],
+      "variables": {
+        "foo": {
+          "default": "bar",
+          "sensitive": true
+        },
+        "toggle_sensitive": {}
+      }
+    }
+  }
+}
