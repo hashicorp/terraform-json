@@ -3,17 +3,18 @@ package tfjson
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"reflect"
-	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 const testFixtureDir = "testdata"
 const testGoldenPlanFileName = "plan.json"
+const testGoldenStateFileName = "state.json"
 const testGoldenSchemasFileName = "schemas.json"
 
 func testParse(t *testing.T, filename string, typ reflect.Type) {
@@ -30,6 +31,9 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 		t.Run(e.Name(), func(t *testing.T) {
 			expected, err := ioutil.ReadFile(filepath.Join(testFixtureDir, e.Name(), filename))
 			if err != nil {
+				if os.IsNotExist(err) {
+					t.Skip(err.Error())
+				}
 				t.Fatal(err)
 			}
 
@@ -48,8 +52,8 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 			// Add a newline at the end
 			actual = append(actual, byte('\n'))
 
-			if err := testDiff(actual, expected); err != nil {
-				t.Fatal(err)
+			if diff := cmp.Diff(expected, actual); diff != "" {
+				t.Fatalf("unexpected: %s", diff)
 			}
 		})
 	}
@@ -63,35 +67,8 @@ func TestParseSchemas(t *testing.T) {
 	testParse(t, testGoldenSchemasFileName, reflect.TypeOf(ProviderSchemas{}))
 }
 
-func testDiff(out, gld []byte) error {
-	var b strings.Builder // holding long error message
-
-	// compare lengths
-	if len(out) != len(gld) {
-		fmt.Fprintf(&b, "\nlength changed: len(output) = %d, len(golden) = %d", len(out), len(gld))
-	}
-
-	// compare contents
-	line := 1
-	offs := 1
-	for i := 0; i < len(out) && i < len(gld); i++ {
-		ch := out[i]
-		if ch != gld[i] {
-			fmt.Fprintf(&b, "\noutput:%d:%d: %s", line, i-offs+1, lineAt(out, offs))
-			fmt.Fprintf(&b, "\ngolden:%d:%d: %s", line, i-offs+1, lineAt(gld, offs))
-			fmt.Fprintf(&b, "\n\n")
-			break
-		}
-		if ch == '\n' {
-			line++
-			offs = i + 1
-		}
-	}
-
-	if b.Len() > 0 {
-		return errors.New(b.String())
-	}
-	return nil
+func TestParseState(t *testing.T) {
+	testParse(t, testGoldenStateFileName, reflect.TypeOf(State{}))
 }
 
 func lineAt(text []byte, offs int) []byte {
