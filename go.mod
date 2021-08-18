@@ -7,5 +7,5 @@ require (
 	github.com/google/go-cmp v0.5.6
 	github.com/mitchellh/copystructure v1.2.0
 	github.com/sebdah/goldie v1.0.0
-	github.com/zclconf/go-cty v1.2.1
+	github.com/zclconf/go-cty v1.9.1
 )
