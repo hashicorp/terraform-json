@@ -83,3 +83,20 @@ func TestStateValidate_fromPlan(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestStateValidate_fromPlan110(t *testing.T) {
+	f, err := os.Open("testdata/110_basic/plan.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var plan *Plan
+	if err := json.NewDecoder(f).Decode(&plan); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := plan.PriorState.Validate(); err != nil {
+		t.Fatal(err)
+	}
+}

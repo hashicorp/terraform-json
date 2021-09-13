@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/hashicorp/go-version"
 	"github.com/zclconf/go-cty/cty"
 )
 
-// ProviderSchemasFormatVersions represents the versions of
-// the JSON provider schema format that are supported by this package.
-var ProviderSchemasFormatVersions = []string{"0.1", "0.2"}
+// ProviderSchemasFormatVersionConstraints defines the versions of the JSON
+// provider schema format that are supported by this package.
+var ProviderSchemasFormatVersionConstraints = ">= 0.1, < 2.0"
 
 // ProviderSchemas represents the schemas of all providers and
 // resources in use by the configuration.
@@ -38,9 +39,19 @@ func (p *ProviderSchemas) Validate() error {
 		return errors.New("unexpected provider schema data, format version is missing")
 	}
 
-	if !isStringInSlice(ProviderSchemasFormatVersions, p.FormatVersion) {
-		return fmt.Errorf("unsupported provider schema data format version: expected %q, got %q",
-			ProviderSchemasFormatVersions, p.FormatVersion)
+	constraint, err := version.NewConstraint(PlanFormatVersionConstraints)
+	if err != nil {
+		return fmt.Errorf("invalid version constraint: %w", err)
+	}
+
+	version, err := version.NewVersion(p.FormatVersion)
+	if err != nil {
+		return fmt.Errorf("invalid format version %q: %w", p.FormatVersion, err)
+	}
+
+	if !constraint.Check(version) {
+		return fmt.Errorf("unsupported provider schema format version: %q does not satisfy %q",
+			version, constraint)
 	}
 
 	return nil
