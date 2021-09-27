@@ -1,11 +1,7 @@
 package tfjson
 
 // Action is a valid action type for a resource change.
-//
-// Note that a singular Action is not telling of a full resource
-// change operation. Certain resource actions, such as replacement,
-// are a composite of more than one type. See the Actions type and
-// its helpers for more information.
+// See the Actions type and its helpers for more information.
 type Action string
 
 const (
@@ -23,6 +19,15 @@ const (
 
 	// ActionDelete denotes a delete operation.
 	ActionDelete Action = "delete"
+
+	// ActionDestroyBeforeCreate denotes a delete operation and a create operation.
+	ActionDestroyBeforeCreate Action = "destroy-before-create"
+
+	// ActionCreateBeforeDestroy denotes a create operation and a delete operation.
+	ActionCreateBeforeDestroy Action = "create-before-destroy"
+
+	// ActionReplace denotes a destroy-before-create operation or a create-before-destroy operation.
+	ActionReplace Action = "replace"
 )
 
 // Actions denotes a valid change type.
@@ -101,4 +106,28 @@ func (a Actions) CreateBeforeDestroy() bool {
 // operation.
 func (a Actions) Replace() bool {
 	return a.DestroyBeforeCreate() || a.CreateBeforeDestroy()
+}
+
+// GetType returns the Action that is denoted by this set of Actions.
+func (a Actions) GetType() Action {
+	switch {
+	case a.NoOp():
+		return ActionNoop
+	case a.Create():
+		return ActionCreate
+	case a.Read():
+		return ActionRead
+	case a.Update():
+		return ActionUpdate
+	case a.Delete():
+		return ActionDelete
+	case a.DestroyBeforeCreate():
+		return ActionDestroyBeforeCreate
+	case a.CreateBeforeDestroy():
+		return ActionCreateBeforeDestroy
+	case a.Replace():
+		return ActionReplace
+	default:
+		panic("invalid Actions")
+	}
 }
