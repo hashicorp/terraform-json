@@ -223,6 +223,36 @@ type SchemaAttribute struct {
 	Sensitive bool `json:"sensitive,omitempty"`
 }
 
+type jsonSchemaAttribute struct {
+	AttributeType       json.RawMessage            `json:"type,omitempty"`
+	AttributeNestedType *SchemaNestedAttributeType `json:"nested_type,omitempty"`
+	Description         string                     `json:"description,omitempty"`
+	DescriptionKind     SchemaDescriptionKind      `json:"description_kind,omitempty"`
+	Deprecated          bool                       `json:"deprecated,omitempty"`
+	Required            bool                       `json:"required,omitempty"`
+	Optional            bool                       `json:"optional,omitempty"`
+	Computed            bool                       `json:"computed,omitempty"`
+	Sensitive           bool                       `json:"sensitive,omitempty"`
+}
+
+func (as *SchemaAttribute) MarshalJSON() ([]byte, error) {
+	jsonSa := &jsonSchemaAttribute{
+		AttributeNestedType: as.AttributeNestedType,
+		Description:         as.Description,
+		DescriptionKind:     as.DescriptionKind,
+		Deprecated:          as.Deprecated,
+		Required:            as.Required,
+		Optional:            as.Optional,
+		Computed:            as.Computed,
+		Sensitive:           as.Sensitive,
+	}
+	if as.AttributeType != cty.NilType {
+		attrTy, _ := as.AttributeType.MarshalJSON()
+		jsonSa.AttributeType = attrTy
+	}
+	return json.Marshal(jsonSa)
+}
+
 // SchemaNestedAttributeType describes a nested attribute
 // which could also be just expressed simply as cty.Object(...),
 // cty.List(cty.Object(...)) etc. but this allows tracking additional
