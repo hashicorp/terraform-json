@@ -8,5 +8,5 @@ require (
 	github.com/hashicorp/go-version v1.3.0
 	github.com/mitchellh/copystructure v1.2.0
 	github.com/sebdah/goldie v1.0.0
-	github.com/zclconf/go-cty v1.9.1
+	github.com/zclconf/go-cty v1.10.0
 )
