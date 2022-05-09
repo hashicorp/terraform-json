@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	tfjson "github.com/hashicorp/terraform-json"
+	"github.com/zclconf/go-cty-debug/ctydebug"
 )
 
 type testStateCase struct {
@@ -245,11 +246,11 @@ func TestSanitizeStateOutputs(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if diff := cmp.Diff(tc.expected, actual); diff != "" {
+			if diff := cmp.Diff(tc.expected, actual, ctydebug.CmpOptions); diff != "" {
 				t.Errorf("SanitizeStateOutputs() mismatch (-expected +actual):\n%s", diff)
 			}
 
-			if diff := cmp.Diff(outputCases()[i].old, tc.old); diff != "" {
+			if diff := cmp.Diff(outputCases()[i].old, tc.old, ctydebug.CmpOptions); diff != "" {
 				t.Errorf("SanitizeStateOutputs() altered original (-expected +actual):\n%s", diff)
 			}
 		})
