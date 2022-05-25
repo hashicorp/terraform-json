@@ -52,6 +52,9 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 			// Add a newline at the end
 			actual = append(actual, byte('\n'))
 
+			// TODO: Compare the actual struct instead of byte slice
+			// because JSON does not guarantee consistent key ordering
+
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Fatalf("unexpected: %s", diff)
 			}
