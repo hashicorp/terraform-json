@@ -3,7 +3,7 @@ package sanitize
 import (
 	"fmt"
 
-	tfjson "github.com/hashicorp/terraform-json"
+	tfjson "github.com/spacelift-io/terraform-json"
 )
 
 type SanitizeStateModuleChangeMode string
@@ -32,6 +32,28 @@ func SanitizeStateModule(
 	mode SanitizeStateModuleChangeMode,
 	replaceWith interface{},
 ) (*tfjson.StateModule, error) {
+	return SanitizeStateModuleDynamic(old, resourceChanges, mode, NewValueSanitizer(replaceWith))
+}
+
+// SanitizeStateModule traverses a StateModule, consulting the
+// supplied ResourceChange set for resources to determine whether or
+// not particular values should be obfuscated.
+//
+// Use mode to supply the SanitizeStateModuleChangeMode that
+// represents what sensitive field should be consulted to determine
+// whether or not the value should be obfuscated:
+//
+// * SanitizeStateModuleChangeModeBefore for before_sensitive
+// * SanitizeStateModuleChangeModeAfter for after_sensitive
+//
+// Sensitive values are replaced by the supplied Sanitizer.
+// A new state module tree is issued.
+func SanitizeStateModuleDynamic(
+	old *tfjson.StateModule,
+	resourceChanges []*tfjson.ResourceChange,
+	mode SanitizeStateModuleChangeMode,
+	sanitizer Sanitizer,
+) (*tfjson.StateModule, error) {
 	result := &tfjson.StateModule{
 		Resources:    make([]*tfjson.StateResource, len(old.Resources)),
 		Address:      old.Address,
@@ -40,11 +62,11 @@ func SanitizeStateModule(
 
 	for i := range old.Resources {
 		var err error
-		result.Resources[i], err = sanitizeStateResource(
+		result.Resources[i], err = sanitizeStateResourceDynamic(
 			old.Resources[i],
 			findResourceChange(resourceChanges, old.Resources[i].Address),
 			mode,
-			replaceWith,
+			sanitizer,
 		)
 		if err != nil {
 			return nil, err
@@ -53,11 +75,11 @@ func SanitizeStateModule(
 
 	for i := range old.ChildModules {
 		var err error
-		result.ChildModules[i], err = SanitizeStateModule(
+		result.ChildModules[i], err = SanitizeStateModuleDynamic(
 			old.ChildModules[i],
 			resourceChanges,
 			mode,
-			replaceWith,
+			sanitizer,
 		)
 		if err != nil {
 			return nil, err
@@ -72,6 +94,15 @@ func sanitizeStateResource(
 	rc *tfjson.ResourceChange,
 	mode SanitizeStateModuleChangeMode,
 	replaceWith interface{},
+) (*tfjson.StateResource, error) {
+	return sanitizeStateResourceDynamic(old, rc, mode, NewValueSanitizer(replaceWith))
+}
+
+func sanitizeStateResourceDynamic(
+	old *tfjson.StateResource,
+	rc *tfjson.ResourceChange,
+	mode SanitizeStateModuleChangeMode,
+	sanitizer Sanitizer,
 ) (*tfjson.StateResource, error) {
 	result, err := copyStateResource(old)
 	if err != nil {
@@ -95,7 +126,7 @@ func sanitizeStateResource(
 	}
 
 	// We can re-use sanitizeChangeValue here to do the sanitization.
-	result.AttributeValues = sanitizeChangeValue(result.AttributeValues, sensitive, replaceWith).(map[string]interface{})
+	result.AttributeValues = sanitizeChangeValueDynamic(result.AttributeValues, sensitive, sanitizer).(map[string]interface{})
 	return result, nil
 }
 
@@ -124,6 +155,26 @@ func SanitizeStateOutputs(old map[string]*tfjson.StateOutput, replaceWith interf
 	for k := range result {
 		if result[k].Sensitive {
 			result[k].Value = replaceWith
+		}
+	}
+
+	return result, nil
+}
+
+// SanitizeStateOutputsDynamic scans the supplied map of StateOutputs and
+// replaces any values of outputs marked as Sensitiveby using the
+// Sanitizer provided.
+//
+// A new copy of StateOutputs is returned.
+func SanitizeStateOutputsDynamic(old map[string]*tfjson.StateOutput, sanitizer Sanitizer) (map[string]*tfjson.StateOutput, error) {
+	result, err := copyStateOutputs(old)
+	if err != nil {
+		return nil, err
+	}
+
+	for k := range result {
+		if result[k].Sensitive {
+			result[k].Value = sanitizer(result[k].Value)
 		}
 	}
 

@@ -1,7 +1,7 @@
 package sanitize
 
 import (
-	tfjson "github.com/hashicorp/terraform-json"
+	tfjson "github.com/spacelift-io/terraform-json"
 )
 
 // SanitizeChange traverses a Change and replaces all values at
@@ -10,18 +10,31 @@ import (
 //
 // A new change is issued.
 func SanitizeChange(old *tfjson.Change, replaceWith interface{}) (*tfjson.Change, error) {
+	return SanitizeChangeDynamic(old, NewValueSanitizer(replaceWith))
+}
+
+// SanitizeChangeDynamic traverses a Change and replaces all values at
+// the particular locations marked by BeforeSensitive AfterSensitive
+// by using the sanitization function passed in.
+//
+// A new change is issued.
+func SanitizeChangeDynamic(old *tfjson.Change, sanitizer Sanitizer) (*tfjson.Change, error) {
 	result, err := copyChange(old)
 	if err != nil {
 		return nil, err
 	}
 
-	result.Before = sanitizeChangeValue(result.Before, result.BeforeSensitive, replaceWith)
-	result.After = sanitizeChangeValue(result.After, result.AfterSensitive, replaceWith)
+	result.Before = sanitizeChangeValueDynamic(result.Before, result.BeforeSensitive, sanitizer)
+	result.After = sanitizeChangeValueDynamic(result.After, result.AfterSensitive, sanitizer)
 
 	return result, nil
 }
 
 func sanitizeChangeValue(old, sensitive, replaceWith interface{}) interface{} {
+	return sanitizeChangeValueDynamic(old, sensitive, NewValueSanitizer(replaceWith))
+}
+
+func sanitizeChangeValueDynamic(old, sensitive interface{}, replaceWith Sanitizer) interface{} {
 	// Only expect deep types that we would normally see in JSON, so
 	// arrays and objects.
 	switch x := old.(type) {
@@ -32,21 +45,22 @@ func sanitizeChangeValue(old, sensitive, replaceWith interface{}) interface{} {
 					break
 				}
 
-				x[i] = sanitizeChangeValue(x[i], filterSlice[i], replaceWith)
+				x[i] = sanitizeChangeValueDynamic(x[i], filterSlice[i], replaceWith)
 			}
 		}
 	case map[string]interface{}:
 		if filterMap, ok := sensitive.(map[string]interface{}); ok {
 			for filterKey := range filterMap {
 				if value, ok := x[filterKey]; ok {
-					x[filterKey] = sanitizeChangeValue(value, filterMap[filterKey], replaceWith)
+					x[filterKey] = sanitizeChangeValueDynamic(value, filterMap[filterKey], replaceWith)
 				}
 			}
 		}
 	}
 
 	if shouldFilter, ok := sensitive.(bool); ok && shouldFilter {
-		return replaceWith
+		replacement := replaceWith(old)
+		return replacement
 	}
 
 	return old

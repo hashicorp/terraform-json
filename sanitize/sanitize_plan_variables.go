@@ -1,7 +1,7 @@
 package sanitize
 
 import (
-	tfjson "github.com/hashicorp/terraform-json"
+	tfjson "github.com/spacelift-io/terraform-json"
 )
 
 // SanitizePlanVariables traverses a map of PlanVariable and replaces
@@ -15,9 +15,23 @@ func SanitizePlanVariables(
 	configs map[string]*tfjson.ConfigVariable,
 	replaceWith interface{},
 ) (map[string]*tfjson.PlanVariable, error) {
+	return SanitizePlanVariablesDynamic(old, configs, NewValueSanitizer(replaceWith))
+}
+
+// SanitizePlanVariablesDynamic traverses a map of PlanVariable and replaces
+// any sensitive values by using the sanitizer provideds.
+// configs should be the map of ConfigVariables from the root module
+// (so Plan.Config.RootModule.Variables).
+//
+// A new copy of the PlanVariable map is returned.
+func SanitizePlanVariablesDynamic(
+	old map[string]*tfjson.PlanVariable,
+	configs map[string]*tfjson.ConfigVariable,
+	sanitizer Sanitizer,
+) (map[string]*tfjson.PlanVariable, error) {
 	result := make(map[string]*tfjson.PlanVariable, len(old))
 	for k := range old {
-		v, err := sanitizeVariable(old[k], configs[k], replaceWith)
+		v, err := sanitizeVariable(old[k], configs[k], sanitizer)
 		if err != nil {
 			return nil, err
 		}
@@ -31,7 +45,7 @@ func SanitizePlanVariables(
 func sanitizeVariable(
 	old *tfjson.PlanVariable,
 	config *tfjson.ConfigVariable,
-	replaceWith interface{},
+	sanitizer Sanitizer,
 ) (*tfjson.PlanVariable, error) {
 	result, err := copyPlanVariable(old)
 	if err != nil {
@@ -39,7 +53,7 @@ func sanitizeVariable(
 	}
 
 	if config != nil && config.Sensitive {
-		result.Value = replaceWith
+		result.Value = sanitizer(result.Value)
 	}
 
 	return result, nil

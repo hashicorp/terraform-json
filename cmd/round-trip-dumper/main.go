@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/exec"
 
-	tfjson "github.com/hashicorp/terraform-json"
+	tfjson "github.com/spacelift-io/terraform-json"
 )
 
 var (

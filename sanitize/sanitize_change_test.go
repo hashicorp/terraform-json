@@ -1,10 +1,11 @@
 package sanitize
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	tfjson "github.com/hashicorp/terraform-json"
+	tfjson "github.com/spacelift-io/terraform-json"
 )
 
 type testChangeCase struct {
@@ -125,6 +126,64 @@ func TestSanitizeChange(t *testing.T) {
 	for i, tc := range changeCases() {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
+			actual, err := SanitizeChange(tc.old, DefaultSensitiveValue)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if diff := cmp.Diff(tc.expected, actual); diff != "" {
+				t.Errorf("SanitizeChange() mismatch (-expected +actual):\n%s", diff)
+			}
+
+			if diff := cmp.Diff(changeCases()[i].old, tc.old); diff != "" {
+				t.Errorf("SanitizeChange() altered original (-expected +actual):\n%s", diff)
+			}
+		})
+	}
+
+	for i, tc := range changeCases() {
+		tc := tc
+		t.Run(fmt.Sprintf("[dynamic sanitizer] %s", tc.name), func(t *testing.T) {
+			actual, err := SanitizeChange(tc.old, DefaultSensitiveValue)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if diff := cmp.Diff(tc.expected, actual); diff != "" {
+				t.Errorf("SanitizeChange() mismatch (-expected +actual):\n%s", diff)
+			}
+
+			if diff := cmp.Diff(changeCases()[i].old, tc.old); diff != "" {
+				t.Errorf("SanitizeChange() altered original (-expected +actual):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestSanitizeChangeDynamic(t *testing.T) {
+	for i, tc := range changeCases() {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			actual, err := SanitizeChangeDynamic(tc.old, func(old interface{}) interface{} {
+				return DefaultSensitiveValue
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if diff := cmp.Diff(tc.expected, actual); diff != "" {
+				t.Errorf("SanitizeChange() mismatch (-expected +actual):\n%s", diff)
+			}
+
+			if diff := cmp.Diff(changeCases()[i].old, tc.old); diff != "" {
+				t.Errorf("SanitizeChange() altered original (-expected +actual):\n%s", diff)
+			}
+		})
+	}
+
+	for i, tc := range changeCases() {
+		tc := tc
+		t.Run(fmt.Sprintf("[dynamic sanitizer] %s", tc.name), func(t *testing.T) {
 			actual, err := SanitizeChange(tc.old, DefaultSensitiveValue)
 			if err != nil {
 				t.Fatal(err)

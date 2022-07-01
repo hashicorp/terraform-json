@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/sebdah/goldie"
+	tfjson "github.com/spacelift-io/terraform-json"
 )
 
 const testDataDir = "testdata"

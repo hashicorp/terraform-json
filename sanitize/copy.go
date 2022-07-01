@@ -3,8 +3,8 @@ package sanitize
 import (
 	"reflect"
 
-	tfjson "github.com/hashicorp/terraform-json"
 	"github.com/mitchellh/copystructure"
+	tfjson "github.com/spacelift-io/terraform-json"
 )
 
 // copyStructureCopy is an internal function that wraps copystructure.Copy with
