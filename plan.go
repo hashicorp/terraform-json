@@ -59,6 +59,15 @@ type Plan struct {
 	// RelevantAttributes represents any resource instances and their
 	// attributes which may have contributed to the planned changes
 	RelevantAttributes []ResourceAttribute `json:"relevant_attributes,omitempty"`
+
+	// ResourceDrift is a description of the changes Terraform detected
+	// when it compared the most recent state to the prior saved state.
+	ResourceDrift []*ResourceChange `json:"resource_drift,omitempty"`
+
+	// ProposedUnknown is a representation of the attributes, including any
+	// potentially-unknown attributes. Each value is replaced with "true" or
+	// "false" depending on whether it is known in the proposed plan.
+	ProposedUnknown *StateValues `json:"proposed_unknown,omitempty"`
 }
 
 // ResourceAttribute describes a full path to a resource attribute
