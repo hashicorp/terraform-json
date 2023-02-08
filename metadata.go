@@ -11,14 +11,14 @@ import (
 
 // MetadataFunctionsFormatVersionConstraints defines the versions of the JSON
 // metadata functions format that are supported by this package.
-var MetadataFunctionsFormatVersionConstraints = ">= 0.1, < 2.0"
+var MetadataFunctionsFormatVersionConstraints = "~> 1.0"
 
 // MetadataFunctions is the top-level object returned when exporting function
 // signatures
 type MetadataFunctions struct {
-	// The version of the plan format. This should always match one of
-	// ProviderSchemasFormatVersions in this package, or else
-	// an unmarshal will be unstable.
+	// The version of the format. This should always match the
+	// MetadataFunctionsFormatVersionConstraints in this package, else
+	// unmarshaling will fail.
 	FormatVersion string `json:"format_version"`
 
 	// The signatures of the functions available in a Terraform version.
