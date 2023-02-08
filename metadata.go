@@ -83,7 +83,7 @@ type FunctionSignature struct {
 	Parameters []*FunctionParameter `json:"parameters,omitempty"`
 
 	// VariadicParameter describes the function's variadic
-	// parameters, if any are supported.
+	// parameter if it is supported.
 	VariadicParameter *FunctionParameter `json:"variadic_parameter,omitempty"`
 }
 
