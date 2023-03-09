@@ -1,6 +1,6 @@
 module github.com/hashicorp/terraform-json
 
-go 1.13
+go 1.18
 
 require (
 	github.com/davecgh/go-spew v1.1.1
@@ -10,4 +10,9 @@ require (
 	github.com/sebdah/goldie v1.0.0
 	github.com/zclconf/go-cty v1.10.0
 	github.com/zclconf/go-cty-debug v0.0.0-20191215020915-b22d67c1ba0b
+)
+
+require (
+	github.com/mitchellh/reflectwalk v1.0.2 // indirect
+	golang.org/x/text v0.3.8 // indirect
 )
