@@ -22,7 +22,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # https://github.com/actions/checkout/releases/tag/v3.5.1
       - name: Install copywrite
-        uses: hashicorp/setup-copywrite@v1.0.0
+        uses: hashicorp/setup-copywrite@v1.1.2
       - name: Validate Header Compliance
         run: copywrite headers --plan
 
