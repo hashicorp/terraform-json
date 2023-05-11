@@ -66,6 +66,14 @@ type Plan struct {
 	// RelevantAttributes represents any resource instances and their
 	// attributes which may have contributed to the planned changes
 	RelevantAttributes []ResourceAttribute `json:"relevant_attributes,omitempty"`
+
+	// Checks contains the results of any conditional checks executed, or
+	// planned to be executed, during this plan.
+	Checks []CheckResultStatic `json:"checks,omitempty"`
+
+	// Timestamp contains the static timestamp that Terraform considers to be
+	// the time this plan executed, in UTC.
+	Timestamp string `json:"timestamp,omitempty"`
 }
 
 // ResourceAttribute describes a full path to a resource attribute
