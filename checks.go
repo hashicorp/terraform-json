@@ -56,7 +56,8 @@ type CheckStaticAddress struct {
 	// Kind represents the CheckKind of this check.
 	Kind CheckKind `json:"kind"`
 
-	// Module is the module part of the address.
+	// Module is the module part of the address. This will be empty for any
+	// resources in the root module.
 	Module string `json:"module,omitempty"`
 
 	// Mode is the ResourceMode of the resource that contains this check. This
@@ -80,6 +81,12 @@ type CheckDynamicAddress struct {
 	// full address, including the additional information from the relevant
 	// CheckStaticAddress.
 	ToDisplay string `json:"to_display"`
+
+	// Module is the module part of the address. This address will include the
+	// instance key for any module expansions resulting from foreach or count
+	// arguments. This field will be empty for any resources within the root
+	// module.
+	Module string `json:"module,omitempty"`
 
 	// InstanceKey is the instance key for any instances of a given resource.
 	//
