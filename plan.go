@@ -208,6 +208,28 @@ type Change struct {
 	// display of sensitive values in user interfaces.
 	BeforeSensitive interface{} `json:"before_sensitive,omitempty"`
 	AfterSensitive  interface{} `json:"after_sensitive,omitempty"`
+
+	// Importing contains the import metadata about this operation. If importing
+	// is present (ie. not null) then the change is an import operation in
+	// addition to anything mentioned in the actions field. The actual contents
+	// of the Importing struct is subject to change, so downstream consumers
+	// should treat any values in here as strictly optional.
+	Importing *Importing `json:"importing,omitempty"`
+
+	// GeneratedConfig contains any HCL config generated for this resource
+	// during planning as a string.
+	//
+	// If this is populated, then Importing should also be populated but this
+	// might change in the future. However, not all Importing changes will
+	// contain generated config.
+	GeneratedConfig string `json:"generated_config,omitempty"`
+}
+
+// Importing is a nested object for the resource import metadata.
+type Importing struct {
+	// The original ID of this resource used to target it as part of planned
+	// import operation.
+	ID string `json:"id,omitempty"`
 }
 
 // PlanVariable is a top-level variable in the Terraform plan.
