@@ -6,6 +6,7 @@ package tfjson
 import (
 	"encoding/json"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -63,5 +64,38 @@ func TestPlan_015(t *testing.T) {
 	}
 	if diff := cmp.Diff(expectedVariable, plan.Config.RootModule.Variables); diff != "" {
 		t.Fatalf("unexpected variables: %s", diff)
+	}
+}
+
+func TestPlan_withChecks(t *testing.T) {
+	f, err := os.Open("testdata/has_checks/plan.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var plan *Plan
+	if err := json.NewDecoder(f).Decode(&plan); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := plan.Validate(); err != nil {
+		t.Fatal(err)
+	}
+
+	if len(plan.Checks) == 0 {
+		t.Fatal("expected checks to not be empty")
+	}
+
+	for _, c := range plan.Checks {
+		for _, instance := range c.Instances {
+			k := reflect.TypeOf(instance.Address.InstanceKey).Kind()
+			switch k {
+			case reflect.Int, reflect.Float32, reflect.Float64, reflect.String:
+				t.Log("instance key is a valid type")
+			default:
+				t.Fatalf("unexpected type %s, expected string or int", k.String())
+			}
+		}
 	}
 }
