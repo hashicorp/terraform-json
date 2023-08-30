@@ -31,12 +31,6 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 			continue
 		}
 
-		// Skip this directory as this is a unique test that only tests a subset
-		// of attributes for a plan. The fixture is not entirely valid, but that's okay.
-		if e.Name() == "has_checks" {
-			continue
-		}
-
 		t.Run(e.Name(), func(t *testing.T) {
 			expected, err := ioutil.ReadFile(filepath.Join(testFixtureDir, e.Name(), filename))
 			if err != nil {
