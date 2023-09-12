@@ -23,11 +23,13 @@ general purpose use.
 The Terraform core team **recommends against** using `terraform-json` if your
 application has any of the following requirements:
 
-* **Broad version compatibility**: each version this library represents a specific
+* **Forwards-compatibility**: each version of this library represents a specific
   snapshot of the [Terraform JSON output format](https://developer.hashicorp.com/terraform/internals/json-format),
-  and it often slightly lags Terraform itself. If you require compatibility with
-  multiple Terraform versions, we recommend implementing your own custom decoders
-  for the parts of the JSON format you need.
+  and it often slightly lags Terraform itself. The library supports
+  [the 1.x compatibility promises](https://developer.hashicorp.com/terraform/language/v1-compatibility-promises)
+  but you will need to upgrade the version promptly to use new additions. If you
+  require full compatibility with future Terraform versions, we recommend
+  implementing your own custom decoders for the parts of the JSON format you need.
 * **Writing JSON output**: the structures in this library are not guaranteed to emit
   JSON data which is semantically equivalent to Terraform itself. If your application
   must robustly write JSON data to be consumed by systems which expect Terraform's
