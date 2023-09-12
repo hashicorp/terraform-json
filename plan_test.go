@@ -99,3 +99,24 @@ func TestPlan_withChecks(t *testing.T) {
 		}
 	}
 }
+
+func TestPlan_movedBlock(t *testing.T) {
+	f, err := os.Open("testdata/moved_block/plan.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var plan *Plan
+	if err := json.NewDecoder(f).Decode(&plan); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := plan.Validate(); err != nil {
+		t.Fatal(err)
+	}
+
+	if plan.ResourceChanges[0].PreviousAddress != "random_id.test" {
+		t.Fatalf("unexpected previous address %s, expected is random_id.test", plan.ResourceChanges[0].PreviousAddress)
+	}
+}
