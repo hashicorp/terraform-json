@@ -37,7 +37,7 @@ application has any of the following requirements:
   ignored by earlier versions of consumers. This library **drops unknown attributes**,
   which means it is unsuitable for any application which intends to filter data
   or read-modify-write data which will be consumed downstream. Any application doing
-  this will silently drop new data from new versions. For this applicaiton, you should
+  this will silently drop new data from new versions. For this application, you should
   implement a custom decoder and encoder which preserves any unknown attributes
   through a round-trip.
 
