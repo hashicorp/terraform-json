@@ -23,9 +23,9 @@ general purpose use.
 The Terraform core team **recommends against** using `terraform-json` if your
 application has any of the following requirements:
 
-* **Forwards-compatibility**: each version of this library represents a specific
+* **Forward-compatibility**: each version of this library represents a specific
   snapshot of the [Terraform JSON output format](https://developer.hashicorp.com/terraform/internals/json-format),
-  and it often slightly lags Terraform itself. The library supports
+  and it often slightly lags behind Terraform itself. The library supports
   [the 1.x compatibility promises](https://developer.hashicorp.com/terraform/language/v1-compatibility-promises)
   but you will need to upgrade the version promptly to use new additions. If you
   require full compatibility with future Terraform versions, we recommend
