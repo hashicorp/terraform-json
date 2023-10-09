@@ -6,6 +6,7 @@ package tfjson
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 
@@ -13,7 +14,7 @@ import (
 )
 
 func TestPlanValidate(t *testing.T) {
-	f, err := os.Open("testdata/basic/plan.json")
+	f, err := os.Open(filepath.FromSlash("testdata/basic/plan.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,7 +31,7 @@ func TestPlanValidate(t *testing.T) {
 }
 
 func TestPlan_015(t *testing.T) {
-	f, err := os.Open("testdata/basic/plan-0.15.json")
+	f, err := os.Open(filepath.FromSlash("testdata/basic/plan-0.15.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,7 +69,7 @@ func TestPlan_015(t *testing.T) {
 }
 
 func TestPlan_withChecks(t *testing.T) {
-	f, err := os.Open("testdata/has_checks/plan.json")
+	f, err := os.Open(filepath.FromSlash("testdata/has_checks/plan.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,7 +102,7 @@ func TestPlan_withChecks(t *testing.T) {
 }
 
 func TestPlan_movedBlock(t *testing.T) {
-	f, err := os.Open("testdata/moved_block/plan.json")
+	f, err := os.Open(filepath.FromSlash("testdata/moved_block/plan.json"))
 	if err != nil {
 		t.Fatal(err)
 	}

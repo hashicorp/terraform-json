@@ -7,11 +7,12 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestStateValidate_raw(t *testing.T) {
-	f, err := os.Open("testdata/no_changes/state.json")
+	f, err := os.Open(filepath.FromSlash("testdata/no_changes/state.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,7 +29,7 @@ func TestStateValidate_raw(t *testing.T) {
 }
 
 func TestStateUnmarshal_valid(t *testing.T) {
-	f, err := os.Open("testdata/no_changes/state.json")
+	f, err := os.Open(filepath.FromSlash("testdata/no_changes/state.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +48,7 @@ func TestStateUnmarshal_valid(t *testing.T) {
 }
 
 func TestStateUnmarshal_internalState(t *testing.T) {
-	f, err := os.Open("testdata/no_changes/terraform.tfstate")
+	f, err := os.Open(filepath.FromSlash("testdata/no_changes/terraform.tfstate"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +72,7 @@ func TestStateUnmarshal_internalState(t *testing.T) {
 }
 
 func TestStateValidate_fromPlan(t *testing.T) {
-	f, err := os.Open("testdata/no_changes/plan.json")
+	f, err := os.Open(filepath.FromSlash("testdata/no_changes/plan.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,7 +89,7 @@ func TestStateValidate_fromPlan(t *testing.T) {
 }
 
 func TestStateValidate_fromPlan110(t *testing.T) {
-	f, err := os.Open("testdata/110_basic/plan.json")
+	f, err := os.Open(filepath.FromSlash("testdata/110_basic/plan.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
