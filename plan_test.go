@@ -120,3 +120,59 @@ func TestPlan_movedBlock(t *testing.T) {
 		t.Fatalf("unexpected previous address %s, expected is random_id.test", plan.ResourceChanges[0].PreviousAddress)
 	}
 }
+
+func TestPlan_UnmarshalJSON(t *testing.T) {
+	t.Parallel()
+
+	b, err := os.ReadFile("testdata/numerics/plan.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testCases := map[string]struct {
+		useJSONNumber bool
+		expected      any
+	}{
+		"float64": {
+			expected: 1.23,
+		},
+		"json-number": {
+			useJSONNumber: true,
+			expected:      json.Number("1.23"),
+		},
+	}
+
+	for name, testCase := range testCases {
+		name, testCase := name, testCase
+
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			plan := &Plan{}
+
+			plan.UseJSONNumber(testCase.useJSONNumber)
+
+			err = plan.UnmarshalJSON(b)
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			after, ok := plan.ResourceChanges[0].Change.After.(map[string]any)
+
+			if !ok {
+				t.Fatal("plan.ResourceChanges[0].Change.After cannot be asserted as map[string]any")
+			}
+
+			attr, ok := after["configurable_attribute"]
+
+			if !ok {
+				t.Fatal("configurable attribute not found")
+			}
+
+			if diff := cmp.Diff(attr, testCase.expected); diff != "" {
+				t.Errorf("unexpected difference: %s", diff)
+			}
+		})
+	}
+}
