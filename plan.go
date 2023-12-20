@@ -246,6 +246,15 @@ type Change struct {
 	// might change in the future. However, not all Importing changes will
 	// contain generated config.
 	GeneratedConfig string `json:"generated_config,omitempty"`
+
+	// ReplacePaths contains a set of paths that point to attributes/elements
+	// that are causing the overall resource to be replaced rather than simply
+	// updated.
+	//
+	// This field is always a slice of indexes, where an index in this context
+	// is either an integer pointing to a child of a set/list, or a string
+	// pointing to the child of a map, object, or block.
+	ReplacePaths []interface{} `json:"replace_paths,omitempty"`
 }
 
 // Importing is a nested object for the resource import metadata.
