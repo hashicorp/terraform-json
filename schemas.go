@@ -88,7 +88,7 @@ type ProviderSchema struct {
 	DataSourceSchemas map[string]*Schema `json:"data_source_schemas,omitempty"`
 
 	// The definitions for any functions in this provider.
-	Functions *MetadataFunctions `json:"functions,omitempty"`
+	Functions map[string]*FunctionSignature `json:"functions,omitempty"`
 }
 
 // Schema is the JSON representation of a particular schema
