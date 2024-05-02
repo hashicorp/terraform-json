@@ -64,6 +64,10 @@ type Plan struct {
 	// for this plan.
 	DeferredChanges []*DeferredResourceChange `json:"deferred_changes,omitempty"`
 
+	// Complete indicates that all resources have successfully planned changes.
+	// This will be false if there are DeferredChanges or if the -target flag is used.
+	Complete bool `json:"complete,omitempty"`
+
 	// The change operations for outputs within this plan.
 	OutputChanges map[string]*Change `json:"output_changes,omitempty"`
 
