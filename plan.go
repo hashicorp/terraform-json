@@ -67,9 +67,9 @@ type Plan struct {
 	// Complete indicates that all resources have successfully planned changes.
 	// This will be false if there are DeferredChanges or if the -target flag is used.
 	//
-	// Complete was introduced in Terraform 1.8 and will be false for all previous
+	// Complete was introduced in Terraform 1.8 and will be nil for all previous
 	// Terraform versions.
-	Complete bool `json:"complete,omitempty"`
+	Complete *bool `json:"complete,omitempty"`
 
 	// The change operations for outputs within this plan.
 	OutputChanges map[string]*Change `json:"output_changes,omitempty"`
