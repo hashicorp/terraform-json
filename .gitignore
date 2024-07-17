@@ -1,3 +1,6 @@
 .terraform
 plan.tfplan
 terraform.tfstate.backup
+
+# IntelliJ IDE files
+.idea/
