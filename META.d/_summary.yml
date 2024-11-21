@@ -6,6 +6,6 @@ partition: tf-ecosystem
 category: library
 
 summary:
-  owner: team-tf-editor-experience
+  owner: team-tf-core
   description: Library for data types produced by Terraform
   visibility: external
