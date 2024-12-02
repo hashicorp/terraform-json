@@ -6,11 +6,12 @@ package tfjson
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestConfigValidate(t *testing.T) {
-	f, err := os.Open("testdata/basic/plan.json")
+	f, err := os.Open(filepath.FromSlash("testdata/basic/plan.json"))
 	if err != nil {
 		t.Fatal(err)
 	}

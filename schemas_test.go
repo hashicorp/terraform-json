@@ -6,11 +6,12 @@ package tfjson
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestProviderSchemasValidate(t *testing.T) {
-	f, err := os.Open("testdata/basic/schemas.json")
+	f, err := os.Open(filepath.FromSlash("testdata/basic/schemas.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +62,7 @@ func TestProviderSchemasValidate_ephemeralResources(t *testing.T) {
 }
 
 func TestProviderSchemasValidate_nestedAttributes(t *testing.T) {
-	f, err := os.Open("testdata/nested_attributes/schemas.json")
+	f, err := os.Open(filepath.FromSlash("testdata/nested_attributes/schemas.json"))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -6,11 +6,12 @@ package tfjson
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestMetadataFunctionsValidate(t *testing.T) {
-	f, err := os.Open("testdata/basic/functions.json")
+	f, err := os.Open(filepath.FromSlash("testdata/basic/functions.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
