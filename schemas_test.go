@@ -10,69 +10,36 @@ import (
 )
 
 func TestProviderSchemasValidate(t *testing.T) {
-	f, err := os.Open("testdata/basic/schemas.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
-	var schemas *ProviderSchemas
-	if err := json.NewDecoder(f).Decode(&schemas); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := schemas.Validate(); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestProviderSchemasValidate_functions(t *testing.T) {
-	f, err := os.Open("testdata/functions/schemas.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
-	var schemas *ProviderSchemas
-	if err := json.NewDecoder(f).Decode(&schemas); err != nil {
-		t.Fatal(err)
+	cases := map[string]struct {
+		testDataPath string
+	}{
+		"a basic provider schema is validated": {
+			testDataPath: "testdata/basic/schemas.json",
+		},
+		"a provider schema including functions is validated": {
+			testDataPath: "testdata/functions/schemas.json",
+		},
+		"a provider schema including ephemeral resources is validated": {
+			testDataPath: "testdata/ephemeral_resources/schemas.json",
+		},
 	}
 
-	if err := schemas.Validate(); err != nil {
-		t.Fatal(err)
-	}
-}
+	for tn, tc := range cases {
+		t.Run(tn, func(t *testing.T) {
+			f, err := os.Open(tc.testDataPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
 
-func TestProviderSchemasValidate_ephemeralResources(t *testing.T) {
-	f, err := os.Open("testdata/ephemeral_resources/schemas.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
+			var schemas *ProviderSchemas
+			if err := json.NewDecoder(f).Decode(&schemas); err != nil {
+				t.Fatal(err)
+			}
 
-	var schemas *ProviderSchemas
-	if err := json.NewDecoder(f).Decode(&schemas); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := schemas.Validate(); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestProviderSchemasValidate_nestedAttributes(t *testing.T) {
-	f, err := os.Open("testdata/nested_attributes/schemas.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
-	var schemas *ProviderSchemas
-	if err := json.NewDecoder(f).Decode(&schemas); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := schemas.Validate(); err != nil {
-		t.Fatal(err)
+			if err := schemas.Validate(); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }
