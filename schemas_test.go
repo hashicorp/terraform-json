@@ -46,3 +46,26 @@ func TestProviderSchemasValidate(t *testing.T) {
 		})
 	}
 }
+
+// TestProviderSchemas_writeOnlyAttribute asserts that write-only attributes in a resource in a
+// provider schema JSON file are marked as WriteOnly once decoded into a ProviderSchemas struct
+func TestProviderSchemas_writeOnlyAttribute(t *testing.T) {
+	f, err := os.Open("testdata/write_only_attribute_on_resource/schemas.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var schemas *ProviderSchemas
+	if err := json.NewDecoder(f).Decode(&schemas); err != nil {
+		t.Fatal(err)
+	}
+
+	resourceSchema := schemas.Schemas["terraform.io/builtin/terraform"].ResourceSchemas["terraform_example"]
+	if resourceSchema.Block.Attributes["wo_attr"].WriteOnly != true {
+		t.Fatal("expected terraform_example.wo_attr to be marked as write-only")
+	}
+	if resourceSchema.Block.Attributes["foo"].WriteOnly != false {
+		t.Fatal("expected terraform_example.foo to not be marked as write-only")
+	}
+}
