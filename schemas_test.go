@@ -22,6 +22,9 @@ func TestProviderSchemasValidate(t *testing.T) {
 		"a provider schema including ephemeral resources is validated": {
 			testDataPath: "testdata/ephemeral_resources/schemas.json",
 		},
+		"a provider schema including a resource with write-only attribute(s) is validated": {
+			testDataPath: "testdata/write_only_attribute_on_resource/schemas.json",
+		},
 	}
 
 	for tn, tc := range cases {
