@@ -1,0 +1,1 @@
+{"format_version":"1.0","provider_schemas":{"terraform.io/builtin/terraform":{"provider":{"version":0},"resource_schemas":{"terraform_example":{"version":0,"block":{"attributes":{"foo":{"type":"string","description_kind":"plain","optional":true},"wo_attr":{"type":"string","description_kind":"plain","optional":true,"write_only":true}},"description_kind":"plain"}}}}}}
