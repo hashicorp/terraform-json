@@ -5,25 +5,40 @@ package tfjson
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 )
 
 func TestStateValidate_raw(t *testing.T) {
-	f, err := os.Open("testdata/no_changes/state.json")
-	if err != nil {
-		t.Fatal(err)
+	cases := map[string]struct {
+		statePath string
+	}{
+		"basic state": {
+			statePath: "testdata/no_changes/state.json",
+		},
+		"state with identity": {
+			statePath: "testdata/identity/state.json",
+		},
 	}
-	defer f.Close()
 
-	var state State
-	if err := json.NewDecoder(f).Decode(&state); err != nil {
-		t.Fatal(err)
-	}
+	for tn, tc := range cases {
+		t.Run(tn, func(t *testing.T) {
+			f, err := os.Open(tc.statePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
 
-	if err := state.Validate(); err != nil {
-		t.Fatal(err)
+			var state State
+			if err := json.NewDecoder(f).Decode(&state); err != nil {
+				t.Fatal(err)
+			}
+
+			if err := state.Validate(); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }
 
@@ -34,7 +49,7 @@ func TestStateUnmarshal_valid(t *testing.T) {
 	}
 	defer f.Close()
 
-	b, err := ioutil.ReadAll(f)
+	b, err := io.ReadAll(f)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +68,7 @@ func TestStateUnmarshal_internalState(t *testing.T) {
 	}
 	defer f.Close()
 
-	b, err := ioutil.ReadAll(f)
+	b, err := io.ReadAll(f)
 	if err != nil {
 		t.Fatal(err)
 	}
