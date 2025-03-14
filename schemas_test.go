@@ -25,6 +25,9 @@ func TestProviderSchemasValidate(t *testing.T) {
 		"a provider schema including a resource with write-only attribute(s) is validated": {
 			testDataPath: "testdata/write_only_attribute_on_resource/schemas.json",
 		},
+		"a provider schema including resource identity schemas is validated": {
+			testDataPath: "testdata/identity/schemas.json",
+		},
 	}
 
 	for tn, tc := range cases {
