@@ -6,7 +6,6 @@ package tfjson
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -21,7 +20,7 @@ const testGoldenStateFileName = "state.json"
 const testGoldenSchemasFileName = "schemas.json"
 
 func testParse(t *testing.T, filename string, typ reflect.Type) {
-	entries, err := ioutil.ReadDir(testFixtureDir)
+	entries, err := os.ReadDir(testFixtureDir)
 	if err != nil {
 		t.Fatalf("err: %s", err)
 	}
@@ -32,7 +31,7 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 		}
 
 		t.Run(e.Name(), func(t *testing.T) {
-			expected, err := ioutil.ReadFile(filepath.Join(testFixtureDir, e.Name(), filename))
+			expected, err := os.ReadFile(filepath.Join(testFixtureDir, e.Name(), filename))
 			if err != nil {
 				if os.IsNotExist(err) {
 					t.Skip(err.Error())
