@@ -28,6 +28,9 @@ func TestProviderSchemasValidate(t *testing.T) {
 		"a provider schema including resource identity schemas is validated": {
 			testDataPath: "testdata/identity/schemas.json",
 		},
+		"a provider schema including list resource schemas is validated": {
+			testDataPath: "testdata/list_resources/schemas.json",
+		},
 	}
 
 	for tn, tc := range cases {
