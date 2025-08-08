@@ -7,6 +7,10 @@ import (
 	"encoding/json"
 	"os"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/zclconf/go-cty/cty"
 )
 
 func TestProviderSchemasValidate(t *testing.T) {
@@ -73,5 +77,51 @@ func TestProviderSchemas_writeOnlyAttribute(t *testing.T) {
 	}
 	if resourceSchema.Block.Attributes["foo"].WriteOnly != false {
 		t.Fatal("expected terraform_example.foo to not be marked as write-only")
+	}
+}
+
+func TestProviderSchemas_unlinked_action(t *testing.T) {
+	expectedAction := &ActionSchema{
+		Block: &SchemaBlock{
+			DescriptionKind: SchemaDescriptionKindPlain,
+			Attributes: map[string]*SchemaAttribute{
+				"program": {
+					AttributeType:   cty.List(cty.String),
+					Description:     "A list of strings, whose first element is the program to run and whose subsequent elements are optional command line arguments to the program.",
+					DescriptionKind: SchemaDescriptionKindPlain,
+					Required:        true,
+				},
+				"query": {
+					AttributeType:   cty.Map(cty.String),
+					Description:     "A map of string values to pass to the external program as the query arguments. If not supplied, the program will receive an empty object as its input.",
+					DescriptionKind: SchemaDescriptionKindPlain,
+					Optional:        true,
+				},
+				"working_dir": {
+					AttributeType:   cty.String,
+					Description:     "Working directory of the program. If not supplied, the program will run in the current directory.",
+					DescriptionKind: SchemaDescriptionKindPlain,
+					Optional:        true,
+				},
+			},
+		},
+		Unlinked: &UnlinkedSchemaType{},
+	}
+
+	f, err := os.Open("testdata/actions/unlinked_schemas.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var schemas *ProviderSchemas
+	if err := json.NewDecoder(f).Decode(&schemas); err != nil {
+		t.Fatal(err)
+	}
+
+	gotAction := schemas.Schemas["registry.terraform.io/hashicorp/external"].ActionSchemas["external"]
+	if diff := cmp.Diff(gotAction, expectedAction, cmpopts.EquateComparable(cty.Type{})); diff != "" {
+		t.Errorf("Unexpected diff (+wanted, -got): %s", diff)
+		return
 	}
 }
