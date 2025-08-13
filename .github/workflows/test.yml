@@ -36,9 +36,12 @@ jobs:
           - ubuntu-latest
           - macos-latest
         go:
-          - "1.18"
-          - "1.19"
           - "1.20"
+          - "1.21"
+          - "1.22"
+          - "1.23"
+          - "1.24"
+          - "1.25"
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
