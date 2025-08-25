@@ -3,6 +3,7 @@
 package tfjson
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -85,6 +86,39 @@ func TestLogging_generic(t *testing.T) {
 				},
 			},
 		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
+func TestLogging_query(t *testing.T) {
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			`{"@level":"info","@message":"TODO","@module":"terraform.ui","@timestamp":"2025-08-11T15:09:18.827459+02:00","type":"list_start"}`,
+			ListStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "",
+					Time: time.Date(2025, 8, 11, 15, 9, 18, 827459000, time.Local),
+				},
+				Address:      "TODO",
+				ResourceType: "TODO",
+				InputConfig:  map[string]json.RawMessage{},
+			},
+		},
+		// TODO: list_resource_found
+		// TODO: list_complete
 	}
 
 	for _, tc := range testCases {

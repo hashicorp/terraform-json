@@ -21,6 +21,11 @@ var allLogMessageTypes = []any{
 	LogMessage{},
 	DiagnosticLogMessage{},
 	UnknownLogMessage{},
+
+	// query
+	ListStartMessage{},
+	ListResourceFoundMessage{},
+	ListCompleteMessage{},
 }
 
 func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
