@@ -21,10 +21,17 @@ var allLogMessageTypes = []any{
 	LogMessage{},
 	DiagnosticLogMessage{},
 	UnknownLogMessage{},
+
+	// query
+	ListStartMessage{},
+	ListResourceFoundMessage{},
+	ListCompleteMessage{},
 }
 
 func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 	switch t {
+
+	// generic
 	case MessageTypeVersion:
 		v := VersionLogMessage{}
 		return v, json.Unmarshal(b, &v)
@@ -33,6 +40,17 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 		return v, json.Unmarshal(b, &v)
 	case MessageTypeDiagnostic:
 		v := DiagnosticLogMessage{}
+		return v, json.Unmarshal(b, &v)
+
+	// query
+	case MessageListStart:
+		v := ListStartMessage{}
+		return v, json.Unmarshal(b, &v)
+	case MessageListResourceFound:
+		v := ListResourceFoundMessage{}
+		return v, json.Unmarshal(b, &v)
+	case MessageListComplete:
+		v := ListCompleteMessage{}
 		return v, json.Unmarshal(b, &v)
 	}
 

@@ -3,6 +3,7 @@
 package tfjson
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -82,6 +83,73 @@ func TestLogging_generic(t *testing.T) {
 					Lvl:  Debug,
 					Msg:  "Foobar",
 					Time: time.Date(2025, 8, 11, 15, 9, 18, 827459000, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
+func TestLogging_query(t *testing.T) {
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			`{"@level":"info","@message":"list.concept_pet.pets: Starting query...","@module":"terraform.ui","@timestamp":"2025-08-28T18:07:11.534006+00:00","list_start":{"address":"list.concept_pet.pets","resource_type":"concept_pet"},"type":"list_start"}`,
+			ListStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "list.concept_pet.pets: Starting query...",
+					Time: time.Date(2025, 8, 28, 18, 7, 11, 534006000, time.UTC),
+				},
+				ListStart: ListStartData{
+					Address:      "list.concept_pet.pets",
+					ResourceType: "concept_pet",
+					InputConfig:  nil,
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"list.concept_pet.pets: Result found","@module":"terraform.ui","@timestamp":"2025-08-28T18:07:11.534589+00:00","list_resource_found":{"address":"list.concept_pet.pets","display_name":"This is a easy-antelope","identity":{"id":"easy-antelope","legs":6},"resource_type":"concept_pet"},"type":"list_resource_found"}`,
+			ListResourceFoundMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "list.concept_pet.pets: Result found",
+					Time: time.Date(2025, 8, 28, 18, 7, 11, 534589000, time.UTC),
+				},
+				ListResourceFound: ListResourceFoundData{
+					Address:      "list.concept_pet.pets",
+					ResourceType: "concept_pet",
+					DisplayName:  "This is a easy-antelope",
+					Identity: map[string]json.RawMessage{
+						"id":   json.RawMessage(`"easy-antelope"`),
+						"legs": json.RawMessage("6"),
+					},
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"list.concept_pet.pets: List complete","@module":"terraform.ui","@timestamp":"2025-08-28T18:07:11.534661+00:00","list_complete":{"address":"list.concept_pet.pets","resource_type":"concept_pet","total":5},"type":"list_complete"}`,
+			ListCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "list.concept_pet.pets: List complete",
+					Time: time.Date(2025, 8, 28, 18, 7, 11, 534661000, time.UTC),
+				},
+				ListComplete: ListCompleteData{
+					Address:      "list.concept_pet.pets",
+					ResourceType: "concept_pet",
+					Total:        5,
 				},
 			},
 		},
