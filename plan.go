@@ -93,7 +93,7 @@ type Plan struct {
 	// the time this plan executed, in UTC.
 	Timestamp string `json:"timestamp,omitempty"`
 
-	ActionInvocations []ActionInvocation `json:"action_invocations,omitempty"`
+	ActionInvocations []*ActionInvocation `json:"action_invocations,omitempty"`
 }
 
 // ResourceAttribute describes a full path to a resource attribute
