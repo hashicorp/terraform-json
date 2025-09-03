@@ -92,6 +92,8 @@ type Plan struct {
 	// Timestamp contains the static timestamp that Terraform considers to be
 	// the time this plan executed, in UTC.
 	Timestamp string `json:"timestamp,omitempty"`
+
+	ActionInvocations []ActionInvocation `json:"action_invocations,omitempty"`
 }
 
 // ResourceAttribute describes a full path to a resource attribute
