@@ -26,6 +26,9 @@ const (
 
 	// ManagedResourceMode is the resource mode for managed resources.
 	ManagedResourceMode ResourceMode = "managed"
+
+	// For Actions
+	ActionInvocationResourceMode ResourceMode = "action"
 )
 
 // Plan represents the entire contents of an output Terraform plan.
