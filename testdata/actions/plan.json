@@ -1,0 +1,41 @@
+{
+  "format_version": "1.2",
+  "planned_values": { "root_module": {} },
+  "action_invocations": [
+    {
+      "address": "action.bufo_print.success",
+      "type": "bufo_print",
+      "name": "success",
+      "config_values": {
+        "color": null,
+        "name": "bufo-the-builder",
+        "ratio": null
+      },
+      "config_sensitive": {},
+      "provider_name": "registry.terraform.io/austinvalle/bufo",
+      "invoke_action_trigger": {}
+    }
+  ],
+  "configuration": {
+    "provider_config": {
+      "bufo": {
+        "name": "bufo",
+        "full_name": "registry.terraform.io/austinvalle/bufo"
+      }
+    },
+    "root_module": {
+      "actions": [
+        {
+          "address": "action.bufo_print.success",
+          "type": "bufo_print",
+          "name": "success",
+          "provider_config_key": "bufo"
+        }
+      ]
+    }
+  },
+  "timestamp": "2025-09-12T09:56:02Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}
