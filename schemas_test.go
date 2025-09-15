@@ -80,7 +80,7 @@ func TestProviderSchemas_writeOnlyAttribute(t *testing.T) {
 	}
 }
 
-func TestProviderSchemas_unlinked_action(t *testing.T) {
+func TestProviderSchemas_action(t *testing.T) {
 	expectedAction := &ActionSchema{
 		Block: &SchemaBlock{
 			DescriptionKind: SchemaDescriptionKindPlain,
@@ -105,10 +105,9 @@ func TestProviderSchemas_unlinked_action(t *testing.T) {
 				},
 			},
 		},
-		Unlinked: &UnlinkedSchemaType{},
 	}
 
-	f, err := os.Open("testdata/actions/unlinked_schemas.json")
+	f, err := os.Open("testdata/actions/schemas.json")
 	if err != nil {
 		t.Fatal(err)
 	}
