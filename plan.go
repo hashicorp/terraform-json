@@ -310,6 +310,7 @@ type ActionInvocation struct {
 	// ConfigValues is the JSON representation of the values in the config block of the action
 	ConfigValues    interface{} `json:"config_values,omitempty"`
 	ConfigSensitive interface{} `json:"config_sensitive,omitempty"`
+	ConfigUnknown   interface{} `json:"config_unknown,omitempty"`
 
 	// ProviderName allows the property "type" to be interpreted unambiguously
 	// in the unusual situation where a provider offers a type whose

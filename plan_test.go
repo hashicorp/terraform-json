@@ -167,6 +167,7 @@ func TestPlan_actionInvocations(t *testing.T) {
 				"ratio": nil,
 			},
 			ConfigSensitive:        map[string]interface{}{},
+			ConfigUnknown:          map[string]interface{}{},
 			ProviderName:           "registry.terraform.io/austinvalle/bufo",
 			LifecycleActionTrigger: nil,
 			InvokeActionTrigger:    &InvokeActionTrigger{},
