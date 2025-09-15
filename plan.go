@@ -308,8 +308,8 @@ type ActionInvocation struct {
 	Name string `json:"name,omitempty"`
 
 	// ConfigValues is the JSON representation of the values in the config block of the action
-	ConfigValues    map[string]json.RawMessage `json:"config_values,omitempty"`
-	ConfigSensitive json.RawMessage            `json:"config_sensitive,omitempty"`
+	ConfigValues    interface{} `json:"config_values,omitempty"`
+	ConfigSensitive interface{} `json:"config_sensitive,omitempty"`
 
 	// ProviderName allows the property "type" to be interpreted unambiguously
 	// in the unusual situation where a provider offers a type whose
