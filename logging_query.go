@@ -29,13 +29,14 @@ type ListResourceFoundMessage struct {
 }
 
 type ListResourceFoundData struct {
-	Address        string                     `json:"address"`
-	DisplayName    string                     `json:"display_name"`
-	Identity       map[string]json.RawMessage `json:"identity"`
-	ResourceType   string                     `json:"resource_type"`
-	ResourceObject map[string]json.RawMessage `json:"resource_object,omitempty"`
-	Config         string                     `json:"config,omitempty"`
-	ImportConfig   string                     `json:"import_config,omitempty"`
+	Address         string                     `json:"address"`
+	DisplayName     string                     `json:"display_name"`
+	Identity        map[string]json.RawMessage `json:"identity"`
+	IdentityVersion int64                      `json:"identity_version"`
+	ResourceType    string                     `json:"resource_type"`
+	ResourceObject  map[string]json.RawMessage `json:"resource_object,omitempty"`
+	Config          string                     `json:"config,omitempty"`
+	ImportConfig    string                     `json:"import_config,omitempty"`
 }
 
 // ListCompleteMessage represents "query" result message of type "list_complete"
