@@ -161,12 +161,12 @@ func TestPlan_actionInvocations(t *testing.T) {
 			Address: "action.bufo_print.success",
 			Type:    "bufo_print",
 			Name:    "success",
-			ConfigValues: map[string]json.RawMessage{
-				"color": json.RawMessage("null"),
-				"name":  json.RawMessage(`"bufo-the-builder"`),
-				"ratio": json.RawMessage("null"),
+			ConfigValues: map[string]interface{}{
+				"color": nil,
+				"name":  "bufo-the-builder",
+				"ratio": nil,
 			},
-			ConfigSensitive:        json.RawMessage("{}"),
+			ConfigSensitive:        map[string]interface{}{},
 			ProviderName:           "registry.terraform.io/austinvalle/bufo",
 			LifecycleActionTrigger: nil,
 			InvokeActionTrigger:    &InvokeActionTrigger{},
