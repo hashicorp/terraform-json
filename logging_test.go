@@ -120,7 +120,7 @@ func TestLogging_query(t *testing.T) {
 			},
 		},
 		{
-			`{"@level":"info","@message":"list.concept_pet.pets: Result found","@module":"terraform.ui","@timestamp":"2025-08-28T18:07:11.534589+00:00","list_resource_found":{"address":"list.concept_pet.pets","display_name":"This is a easy-antelope","identity":{"id":"easy-antelope","legs":6},"resource_type":"concept_pet"},"type":"list_resource_found"}`,
+			`{"@level":"info","@message":"list.concept_pet.pets: Result found","@module":"terraform.ui","@timestamp":"2025-08-28T18:07:11.534589+00:00","list_resource_found":{"address":"list.concept_pet.pets","display_name":"This is a easy-antelope","identity":{"id":"easy-antelope","legs":6},"identity_version":1,"resource_type":"concept_pet"},"type":"list_resource_found"}`,
 			ListResourceFoundMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
@@ -135,6 +135,7 @@ func TestLogging_query(t *testing.T) {
 						"id":   json.RawMessage(`"easy-antelope"`),
 						"legs": json.RawMessage("6"),
 					},
+					IdentityVersion: 1,
 				},
 			},
 		},
