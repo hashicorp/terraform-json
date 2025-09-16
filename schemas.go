@@ -334,17 +334,6 @@ type IdentityAttribute struct {
 
 // ActionSchema is the JSON representation of an action schema
 type ActionSchema struct {
-	// The version of the action schema.
-	Version uint64 `json:"version"`
-
 	// The root-level block of configuration values.
 	Block *SchemaBlock `json:"block,omitempty"`
-
-	// Additional information about the action, only populated if the action is unlinked.
-	Unlinked *UnlinkedSchemaType `json:"unlinked,omitempty"`
-}
-
-// UnlinkedSchemaType contains any additional information about an unlinked action.
-type UnlinkedSchemaType struct {
-	// Currently there is no additional information for unlinked action schema types
 }
