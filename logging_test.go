@@ -3,7 +3,6 @@
 package tfjson
 
 import (
-	"encoding/json"
 	"testing"
 	"time"
 
@@ -131,9 +130,9 @@ func TestLogging_query(t *testing.T) {
 					Address:      "list.concept_pet.pets",
 					ResourceType: "concept_pet",
 					DisplayName:  "This is a easy-antelope",
-					Identity: map[string]json.RawMessage{
-						"id":   json.RawMessage(`"easy-antelope"`),
-						"legs": json.RawMessage("6"),
+					Identity: map[string]any{
+						"id":   "easy-antelope",
+						"legs": float64(6),
 					},
 					IdentityVersion: 1,
 				},
