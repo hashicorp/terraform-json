@@ -143,12 +143,12 @@ func (p *Plan) Validate() error {
 }
 
 func (p *Plan) UnmarshalJSON(b []byte) error {
+	if !json.Valid(b) {
+		return errors.New("input is not a valid JSON")
+	}
+
 	type rawPlan Plan
 	var plan rawPlan
-
-	if !json.Valid(b) {
-		return errors.New("invalid JSON")
-	}
 
 	dec := json.NewDecoder(bytes.NewReader(b))
 	if p.useJSONNumber {

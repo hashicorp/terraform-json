@@ -79,12 +79,12 @@ func (s *State) Validate() error {
 }
 
 func (s *State) UnmarshalJSON(b []byte) error {
+	if !json.Valid(b) {
+		return errors.New("input is not a valid JSON")
+	}
+
 	type rawState State
 	var state rawState
-
-	if !json.Valid(b) {
-		return errors.New("invalid JSON")
-	}
 
 	dec := json.NewDecoder(bytes.NewReader(b))
 	if s.useJSONNumber {

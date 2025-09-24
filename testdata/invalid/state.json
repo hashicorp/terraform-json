@@ -1,0 +1,17 @@
+{
+  "format_version" : "1.2",
+  "terraform_version": "1.5.0",
+  "variables": {
+    "my-secret": {
+      "value": "PASSWORD123"
+    }
+  },
+  "configuration": {
+    "root_module": {
+      "variables": {
+        "my-secret": {}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}},
+        "sensitive": true
+      }
+    }
+  }
+}
