@@ -78,11 +78,11 @@ func (s *State) Validate() error {
 	return nil
 }
 
+// UnmarshalJSON implements json.Unmarshaler for State.
+//
+// As per established convention this method should only ever
+// be invoked *indirectly* via [encoding/json] library.
 func (s *State) UnmarshalJSON(b []byte) error {
-	if !json.Valid(b) {
-		return errors.New("input is not a valid JSON")
-	}
-
 	type rawState State
 	var state rawState
 

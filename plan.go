@@ -142,11 +142,11 @@ func (p *Plan) Validate() error {
 	return nil
 }
 
+// UnmarshalJSON implements json.Unmarshaler for Plan.
+//
+// As per established convention this method should only ever
+// be invoked *indirectly* via [encoding/json] library.
 func (p *Plan) UnmarshalJSON(b []byte) error {
-	if !json.Valid(b) {
-		return errors.New("input is not a valid JSON")
-	}
-
 	type rawPlan Plan
 	var plan rawPlan
 

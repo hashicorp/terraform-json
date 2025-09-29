@@ -60,6 +60,10 @@ func (p *ProviderSchemas) Validate() error {
 	return nil
 }
 
+// UnmarshalJSON implements json.Unmarshaler for ProviderSchemas.
+//
+// As per established convention this method should only ever
+// be invoked *indirectly* via [encoding/json] library.
 func (p *ProviderSchemas) UnmarshalJSON(b []byte) error {
 	type rawSchemas ProviderSchemas
 	var schemas rawSchemas
