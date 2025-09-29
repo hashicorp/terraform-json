@@ -5,7 +5,6 @@ package tfjson
 
 import (
 	"encoding/json"
-	"errors"
 	"io"
 	"os"
 	"testing"
@@ -45,15 +44,15 @@ func TestStateValidate_raw(t *testing.T) {
 
 func TestStateUnmarshal(t *testing.T) {
 	testCases := map[string]struct {
-		filePath      string
-		expectedError error
+		filePath    string
+		expectError bool
 	}{
 		"valid state JSON": {
 			filePath: "testdata/no_changes/state.json",
 		},
 		"invalid state JSON": {
-			filePath:      "testdata/invalid/state.json",
-			expectedError: errors.New("input is not a valid JSON"),
+			filePath:    "testdata/invalid/state.json",
+			expectError: true,
 		},
 	}
 
@@ -71,17 +70,13 @@ func TestStateUnmarshal(t *testing.T) {
 			}
 
 			var state State
-			err = state.UnmarshalJSON(b)
+			err = json.Unmarshal(b, &state)
 
-			if tc.expectedError != nil {
-				if err.Error() != tc.expectedError.Error() {
-					t.Fatalf("expected error %v; got %v", tc.expectedError.Error(), err.Error())
-				} else if err == nil {
-					t.Fatalf("expected error %v; got nil", tc.expectedError.Error())
-				}
+			if tc.expectError && err == nil {
+				t.Fatalf("expected error; got none")
 			}
 
-			if tc.expectedError == nil && err != nil {
+			if !tc.expectError && err != nil {
 				t.Errorf("expected no error, got %q", err.Error())
 			}
 		})

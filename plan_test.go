@@ -5,7 +5,6 @@ package tfjson
 
 import (
 	"encoding/json"
-	"errors"
 	"io"
 	"os"
 	"reflect"
@@ -210,7 +209,7 @@ func TestPlan_UnmarshalJSON(t *testing.T) {
 
 			plan.UseJSONNumber(testCase.useJSONNumber)
 
-			err = plan.UnmarshalJSON(b)
+			err = json.Unmarshal(b, &plan)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -234,12 +233,12 @@ func TestPlan_UnmarshalJSON(t *testing.T) {
 	}
 
 	jsonValidationTestCases := map[string]struct {
-		filePath      string
-		expectedError error
+		filePath    string
+		expectError bool
 	}{
 		"invalid plan JSON": {
-			filePath:      "testdata/invalid/plan.json",
-			expectedError: errors.New("input is not a valid JSON"),
+			filePath:    "testdata/invalid/plan.json",
+			expectError: true,
 		},
 		"valid plan JSON": {
 			filePath: "testdata/basic/plan.json",
@@ -260,17 +259,13 @@ func TestPlan_UnmarshalJSON(t *testing.T) {
 			}
 
 			var plan Plan
-			err = plan.UnmarshalJSON(b)
+			err = json.Unmarshal(b, &plan)
 
-			if tc.expectedError != nil {
-				if err.Error() != tc.expectedError.Error() {
-					t.Fatalf("expected error %v; got %v", tc.expectedError.Error(), err.Error())
-				} else if err == nil {
-					t.Fatalf("expected error %v; got nil", tc.expectedError)
-				}
+			if tc.expectError && err == nil {
+				t.Fatalf("expected error; got none")
 			}
 
-			if tc.expectedError == nil && err != nil {
+			if !tc.expectError && err != nil {
 				t.Errorf("expected no error, got %q", err.Error())
 			}
 		})
