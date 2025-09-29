@@ -18,6 +18,7 @@ const testFixtureDir = "testdata"
 const testGoldenPlanFileName = "plan.json"
 const testGoldenStateFileName = "state.json"
 const testGoldenSchemasFileName = "schemas.json"
+const testInvalidDir = "invalid"
 
 func testParse(t *testing.T, filename string, typ reflect.Type) {
 	entries, err := os.ReadDir(testFixtureDir)
@@ -31,6 +32,10 @@ func testParse(t *testing.T, filename string, typ reflect.Type) {
 		}
 
 		t.Run(e.Name(), func(t *testing.T) {
+			if e.Name() == testInvalidDir {
+				t.Skip("Skipping known invalid test fixture")
+			}
+
 			expected, err := os.ReadFile(filepath.Join(testFixtureDir, e.Name(), filename))
 			if err != nil {
 				if os.IsNotExist(err) {

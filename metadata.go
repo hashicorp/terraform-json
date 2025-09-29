@@ -57,6 +57,10 @@ func (f *MetadataFunctions) Validate() error {
 	return nil
 }
 
+// UnmarshalJSON implements json.Unmarshaler for MetadataFunctions.
+//
+// As per established convention this method should only ever
+// be invoked *indirectly* via [encoding/json] library.
 func (f *MetadataFunctions) UnmarshalJSON(b []byte) error {
 	type rawFunctions MetadataFunctions
 	var functions rawFunctions

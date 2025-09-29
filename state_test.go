@@ -42,22 +42,44 @@ func TestStateValidate_raw(t *testing.T) {
 	}
 }
 
-func TestStateUnmarshal_valid(t *testing.T) {
-	f, err := os.Open("testdata/no_changes/state.json")
-	if err != nil {
-		t.Fatal(err)
+func TestStateUnmarshal(t *testing.T) {
+	testCases := map[string]struct {
+		filePath    string
+		expectError bool
+	}{
+		"valid state JSON": {
+			filePath: "testdata/no_changes/state.json",
+		},
+		"invalid state JSON": {
+			filePath:    "testdata/invalid/state.json",
+			expectError: true,
+		},
 	}
-	defer f.Close()
 
-	b, err := io.ReadAll(f)
-	if err != nil {
-		t.Fatal(err)
-	}
+	for tn, tc := range testCases {
+		t.Run(tn, func(t *testing.T) {
+			f, err := os.Open(tc.filePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
 
-	var state State
-	err = json.Unmarshal(b, &state)
-	if err != nil {
-		t.Fatal(err)
+			b, err := io.ReadAll(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var state State
+			err = json.Unmarshal(b, &state)
+
+			if tc.expectError && err == nil {
+				t.Fatalf("expected error; got none")
+			}
+
+			if !tc.expectError && err != nil {
+				t.Errorf("expected no error, got %q", err.Error())
+			}
+		})
 	}
 }
 
