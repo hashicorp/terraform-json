@@ -189,12 +189,13 @@ func TestLogging_init(t *testing.T) {
 		},
 		{
 			`{"@level":"info","@message":"Initializing provider plugins found in the configuration...","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:04.314Z","message_code":"initializing_provider_plugin_from_config_message","type":"init_output"}`,
-			UnknownLogMessage{
+			InitOutputMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
 					Msg:  "Initializing provider plugins found in the configuration...",
 					Time: time.Date(2025, 11, 17, 17, 18, 04, 314000000, time.UTC),
 				},
+				MessageCode: "initializing_provider_plugin_from_config_message",
 			},
 		},
 		{
@@ -229,12 +230,13 @@ func TestLogging_init(t *testing.T) {
 		},
 		{
 			`{"@level":"info","@message":"Initializing the backend...","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:52.256Z","message_code":"initializing_backend_message","type":"init_output"}`,
-			UnknownLogMessage{
+			InitOutputMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
 					Msg:  "Initializing the backend...",
 					Time: time.Date(2025, 11, 17, 17, 18, 52, 256000000, time.UTC),
 				},
+				MessageCode: "initializing_backend_message",
 			},
 		},
 		// At this point in an init command's output there is a log message that isn't presented in JSON format:
@@ -246,32 +248,35 @@ func TestLogging_init(t *testing.T) {
 		// See this GitHub issue: https://github.com/hashicorp/terraform/issues/37911
 		{
 			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:06.698Z","message_code":"lock_info","type":"init_output"}`,
-			UnknownLogMessage{
+			InitOutputMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
 					Msg:  "Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.",
 					Time: time.Date(2025, 11, 17, 17, 19, 06, 698000000, time.UTC),
 				},
+				MessageCode: "lock_info",
 			},
 		},
 		{
 			`{"@level":"info","@message":"Terraform has been successfully initialized!","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:09.915Z","message_code":"output_init_success_message","type":"init_output"}`,
-			UnknownLogMessage{
+			InitOutputMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
 					Msg:  "Terraform has been successfully initialized!",
 					Time: time.Date(2025, 11, 17, 17, 19, 9, 915000000, time.UTC),
 				},
+				MessageCode: "output_init_success_message",
 			},
 		},
 		{
 			`{"@level":"info","@message":"You may now begin working with Terraform. Try running \"terraform plan\" to see\nany changes that are required for your infrastructure. All Terraform commands\nshould now work.\n\nIf you ever set or change modules or backend configuration for Terraform,\nrerun this command to reinitialize your working directory. If you forget, other\ncommands will detect it and remind you to do so if necessary.","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:10.553Z","message_code":"output_init_success_cli_message","type":"init_output"}`,
-			UnknownLogMessage{
+			InitOutputMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
 					Msg:  "You may now begin working with Terraform. Try running \"terraform plan\" to see\nany changes that are required for your infrastructure. All Terraform commands\nshould now work.\n\nIf you ever set or change modules or backend configuration for Terraform,\nrerun this command to reinitialize your working directory. If you forget, other\ncommands will detect it and remind you to do so if necessary.",
 					Time: time.Date(2025, 11, 17, 17, 19, 10, 553000000, time.UTC),
 				},
+				MessageCode: "output_init_success_cli_message",
 			},
 		},
 	}
