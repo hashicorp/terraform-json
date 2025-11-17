@@ -4,10 +4,12 @@ package tfjson
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-version"
 )
 
@@ -83,6 +85,57 @@ func TestLogging_generic(t *testing.T) {
 					Lvl:  Debug,
 					Msg:  "Foobar",
 					Time: time.Date(2025, 8, 11, 15, 9, 18, 827459000, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
+// Checking what happens when Terraform core swaps from using time.RFC3339 to using hclog.TimeFormat when formatting
+// timestamps for logs. We see that terraform-json is able to parse either log without issue, though precision is different
+// as a consequence.
+func TestLogging_timestampPrecision(t *testing.T) {
+
+	// "2025-11-17 18:55:01.123456789 +0000 UTC"
+	// * time.RFC3339     : "2025-11-17T18:55:01Z"
+	// * hclog.TimeFormat : "2025-11-17T18:55:01.123Z"
+	staticTime := time.Date(2025, 11, 17, 18, 55, 01, 123456789, time.UTC)
+
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in time.RFC3339 format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
+				staticTime.Format(time.RFC3339),
+			),
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Testing out timestamps in time.RFC3339 format",
+					Time: time.Date(2025, 11, 17, 18, 55, 1, 0, time.UTC),
+				},
+			},
+		},
+		{
+			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in hclog.TimeFormat format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
+				staticTime.Format(hclog.TimeFormat),
+			),
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Testing out timestamps in hclog.TimeFormat format",
+					Time: time.Date(2025, 11, 17, 18, 55, 1, 123000000, time.UTC),
 				},
 			},
 		},
