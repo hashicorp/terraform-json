@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-version"
 )
 
@@ -106,10 +105,12 @@ func TestLogging_generic(t *testing.T) {
 // as a consequence.
 func TestLogging_timestampPrecision(t *testing.T) {
 
-	// "2025-11-17 18:55:01.123456789 +0000 UTC"
-	// * time.RFC3339     : "2025-11-17T18:55:01Z"
-	// * hclog.TimeFormat : "2025-11-17T18:55:01.123Z"
-	staticTime := time.Date(2025, 11, 17, 18, 55, 01, 123456789, time.UTC)
+	// The strings below are what you get when you take this time and use the Format method with different arguments.
+	//     t := time.Date(2025, 11, 17, 18, 55, 01, 123456789, time.UTC)// "2025-11-17 18:55:01.123456789 +0000 UTC"
+	//     t.Format(time.RFC3339) == "2025-11-17T18:55:01Z"
+	//     t.Format(hclog.TimeFormat) == "2025-11-17T18:55:01.123Z"
+	timeRFC3339 := "2025-11-17T18:55:01Z"
+	hclogTimeFormat := "2025-11-17T18:55:01.123Z"
 
 	testCases := []struct {
 		rawMessage      string
@@ -117,7 +118,7 @@ func TestLogging_timestampPrecision(t *testing.T) {
 	}{
 		{
 			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in time.RFC3339 format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
-				staticTime.Format(time.RFC3339),
+				timeRFC3339,
 			),
 			LogMessage{
 				baseLogMessage: baseLogMessage{
@@ -129,7 +130,7 @@ func TestLogging_timestampPrecision(t *testing.T) {
 		},
 		{
 			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in hclog.TimeFormat format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
-				staticTime.Format(hclog.TimeFormat),
+				hclogTimeFormat,
 			),
 			LogMessage{
 				baseLogMessage: baseLogMessage{
