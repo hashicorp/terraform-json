@@ -4,6 +4,7 @@ package tfjson
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -99,6 +100,59 @@ func TestLogging_generic(t *testing.T) {
 	}
 }
 
+// Checking what happens when Terraform core swaps from using time.RFC3339 to using hclog.TimeFormat when formatting
+// timestamps for logs. We see that terraform-json is able to parse either log without issue, though precision is different
+// as a consequence.
+func TestLogging_timestampPrecision(t *testing.T) {
+
+	// The strings below are what you get when you take this time and use the Format method with different arguments.
+	//     t := time.Date(2025, 11, 17, 18, 55, 01, 123456789, time.UTC)// "2025-11-17 18:55:01.123456789 +0000 UTC"
+	//     t.Format(time.RFC3339) == "2025-11-17T18:55:01Z"
+	//     t.Format(hclog.TimeFormat) == "2025-11-17T18:55:01.123Z"
+	timeRFC3339 := "2025-11-17T18:55:01Z"
+	hclogTimeFormat := "2025-11-17T18:55:01.123Z"
+
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in time.RFC3339 format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
+				timeRFC3339,
+			),
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Testing out timestamps in time.RFC3339 format",
+					Time: time.Date(2025, 11, 17, 18, 55, 1, 0, time.UTC),
+				},
+			},
+		},
+		{
+			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in hclog.TimeFormat format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
+				hclogTimeFormat,
+			),
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Testing out timestamps in hclog.TimeFormat format",
+					Time: time.Date(2025, 11, 17, 18, 55, 1, 123000000, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
 func TestLogging_query(t *testing.T) {
 	testCases := []struct {
 		rawMessage      string
@@ -151,6 +205,127 @@ func TestLogging_query(t *testing.T) {
 					Address:      "list.concept_pet.pets",
 					ResourceType: "concept_pet",
 					Total:        5,
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
+// Includes a typical sequence of logs that happen when initializing a working directory
+//
+// Currently `init` creates some logs with "type":"log" and others with "type":"init_output"
+// Type "init_output" logs include a specific field called "message_code" that takes a string value.
+func TestLogging_init(t *testing.T) {
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			`{"@level":"info","@message":"Terraform 1.15.0-dev","@module":"terraform.ui","@timestamp":"2025-11-17T17:17:58.540604Z","terraform":"1.15.0-dev","type":"version","ui":"1.2"}`,
+			VersionLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform 1.15.0-dev",
+					Time: time.Date(2025, 11, 17, 17, 17, 58, 540604000, time.UTC),
+				},
+				Terraform: version.Must(version.NewSemver("1.15.0-dev")),
+				UI:        version.Must(version.NewSemver("1.2.0")),
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing provider plugins found in the configuration...","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:04.314Z","message_code":"initializing_provider_plugin_from_config_message","type":"init_output"}`,
+			UnknownLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing provider plugins found in the configuration...",
+					Time: time.Date(2025, 11, 17, 17, 18, 04, 314000000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"hashicorp/aws: Finding latest version...","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:04.314594Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "hashicorp/aws: Finding latest version...",
+					Time: time.Date(2025, 11, 17, 17, 18, 04, 314594000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installing provider version: hashicorp/aws v6.21.0...","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:04.784659Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing provider version: hashicorp/aws v6.21.0...",
+					Time: time.Date(2025, 11, 17, 17, 18, 04, 784659000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installed provider version: hashicorp/aws v6.21.0 (signed by HashiCorp)","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:26.345919Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installed provider version: hashicorp/aws v6.21.0 (signed by HashiCorp)",
+					Time: time.Date(2025, 11, 17, 17, 18, 26, 345919000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing the backend...","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:52.256Z","message_code":"initializing_backend_message","type":"init_output"}`,
+			UnknownLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing the backend...",
+					Time: time.Date(2025, 11, 17, 17, 18, 52, 256000000, time.UTC),
+				},
+			},
+		},
+		// At this point in an init command's output there is a log message that isn't presented in JSON format:
+		// /*
+		//  Successfully configured the backend "local"! Terraform will automatically
+		//  use this backend unless the backend configuration changes.
+		// */
+		//
+		// See this GitHub issue: https://github.com/hashicorp/terraform/issues/37911
+		{
+			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:06.698Z","message_code":"lock_info","type":"init_output"}`,
+			UnknownLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.",
+					Time: time.Date(2025, 11, 17, 17, 19, 06, 698000000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Terraform has been successfully initialized!","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:09.915Z","message_code":"output_init_success_message","type":"init_output"}`,
+			UnknownLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has been successfully initialized!",
+					Time: time.Date(2025, 11, 17, 17, 19, 9, 915000000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"You may now begin working with Terraform. Try running \"terraform plan\" to see\nany changes that are required for your infrastructure. All Terraform commands\nshould now work.\n\nIf you ever set or change modules or backend configuration for Terraform,\nrerun this command to reinitialize your working directory. If you forget, other\ncommands will detect it and remind you to do so if necessary.","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:10.553Z","message_code":"output_init_success_cli_message","type":"init_output"}`,
+			UnknownLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "You may now begin working with Terraform. Try running \"terraform plan\" to see\nany changes that are required for your infrastructure. All Terraform commands\nshould now work.\n\nIf you ever set or change modules or backend configuration for Terraform,\nrerun this command to reinitialize your working directory. If you forget, other\ncommands will detect it and remind you to do so if necessary.",
+					Time: time.Date(2025, 11, 17, 17, 19, 10, 553000000, time.UTC),
 				},
 			},
 		},
