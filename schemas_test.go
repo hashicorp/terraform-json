@@ -124,3 +124,48 @@ func TestProviderSchemas_action(t *testing.T) {
 		return
 	}
 }
+
+// Providers can include one or more state store implementations
+func TestProviderSchemas_stateStores(t *testing.T) {
+	expectedStoreSchema := &Schema{
+		Version: 0,
+		Block: &SchemaBlock{
+			DescriptionKind: SchemaDescriptionKindPlain,
+			Attributes: map[string]*SchemaAttribute{
+				"value": {
+					AttributeType:   cty.String,
+					DescriptionKind: "plain",
+					Required:        true,
+				},
+			},
+		},
+	}
+
+	f, err := os.Open("testdata/state_stores/single_store.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var schemas *ProviderSchemas
+	if err := json.NewDecoder(f).Decode(&schemas); err != nil {
+		t.Fatal(err)
+	}
+
+	storeSchemas := schemas.Schemas["registry.terraform.io/hashicorp/test"].StateStoreSchemas
+	if len(storeSchemas) != 1 {
+		t.Fatalf("expected schema to include 1 state store, but got %v", len(storeSchemas))
+	}
+	storeName := "test_store"
+	gotStoreSchema, ok := storeSchemas[storeName]
+	if !ok {
+		t.Fatalf("expected schema to include a state store called %q, but it's missing.",
+			storeName,
+		)
+	}
+
+	if diff := cmp.Diff(gotStoreSchema, expectedStoreSchema, cmpopts.EquateComparable(cty.Type{})); diff != "" {
+		t.Errorf("Unexpected diff (+wanted, -got): %s", diff)
+		return
+	}
+}

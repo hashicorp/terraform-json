@@ -105,6 +105,9 @@ type ProviderSchema struct {
 
 	// The schemas for any list resources in this provider.
 	ListResourceSchemas map[string]*Schema `json:"list_resource_schemas,omitempty"`
+
+	// The schemas for any pluggable state stores implemented in this provider.
+	StateStoreSchemas map[string]*Schema `json:"state_store_schemas,omitempty"`
 }
 
 // Schema is the JSON representation of a particular schema
