@@ -42,7 +42,7 @@ func sanitizeVariable(
 	}
 
 	if config != nil && config.Sensitive {
-		result.Value = replaceWith
+		result.Value = applyReplacement(result.Value, replaceWith)
 	}
 
 	return result, nil
