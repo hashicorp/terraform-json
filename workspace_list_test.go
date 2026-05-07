@@ -122,3 +122,78 @@ func TestWorkspaceListOutput_error(t *testing.T) {
 		t.Fatalf("output mismatch: %s", diff)
 	}
 }
+
+func TestWorkspaceListOutput_CurrentWorkspace(t *testing.T) {
+	t.Run("returns current workspace", func(t *testing.T) {
+		wlo := &WorkspaceListOutput{
+			Workspaces: []WorkspaceListEntry{
+				{
+					Name:      "default",
+					IsCurrent: true,
+				},
+				{
+					Name:      "other",
+					IsCurrent: false,
+				},
+			},
+			Diagnostics: []Diagnostic{},
+		}
+
+		current := wlo.CurrentWorkspace()
+		if current == nil {
+			t.Fatal("unexpected nil result")
+		}
+		if current.Name != "default" {
+			t.Fatalf("wanted %q, got: %q", "default", current.Name)
+		}
+	})
+	t.Run("returns nil when there isn't a current workspace", func(t *testing.T) {
+		// This scenario could happen if custom workspaces exist and the
+		// default workspace is selected, but there hasn't been an apply
+		// yet so no default workspace actually exists yet...
+
+		wlo := &WorkspaceListOutput{
+			Workspaces: []WorkspaceListEntry{
+				{
+					Name:      "default",
+					IsCurrent: false,
+				},
+				{
+					Name:      "other",
+					IsCurrent: false,
+				},
+			},
+			Diagnostics: []Diagnostic{},
+		}
+
+		current := wlo.CurrentWorkspace()
+		if current != nil {
+			t.Fatalf("expected nil result, got: %#v", current)
+		}
+	})
+
+	t.Run("returns nil when there are no workspaces", func(t *testing.T) {
+		// This scenario could happen if there are no custom workspaces yet
+		// and an apply hasn't yet happened in the default workspace.
+		// E.g. user creates an empty Terraform project and immediately performs
+		// `terraform workspace list -json`
+
+		wlo := &WorkspaceListOutput{
+			Workspaces: []WorkspaceListEntry{},
+			Diagnostics: []Diagnostic{
+				{
+					// Mimicking `warnNoEnvsExistDiag` from the Core repo:
+					// https://github.com/hashicorp/terraform/blob/527402d3fe2de2363c4587e7abd1a3b23669ca25/internal/command/workspace_command.go#L158
+					Severity: "warning",
+					Summary:  "Terraform cannot find any existing workspaces.",
+					Detail:   "The \"default\" workspace is selected in your working directory. You can create this workspace by running \"terraform init\", by using the \"terraform workspace new\" subcommand or by including the \"-or-create\" flag with the \"terraform workspace select\" subcommand.",
+				},
+			},
+		}
+
+		current := wlo.CurrentWorkspace()
+		if current != nil {
+			t.Fatalf("expected nil result, got: %#v", current)
+		}
+	})
+}
