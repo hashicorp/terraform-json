@@ -221,6 +221,10 @@ type ResourceChange struct {
 // for the actions proposed in a ResourceChange. The set of possible values may
 // grow in future Terraform versions, so consumers should treat unrecognized
 // values as equivalent to ActionReasonNone.
+//
+// The canonical list of reason keywords is defined by Terraform in
+// internal/command/jsonplan/plan.go (the ResourceInstance* constants):
+// https://github.com/hashicorp/terraform/blob/main/internal/command/jsonplan/plan.go
 type ActionReason string
 
 const (
