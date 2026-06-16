@@ -137,6 +137,27 @@ func TestPlan_movedBlock(t *testing.T) {
 	}
 }
 
+func TestPlan_actionReason(t *testing.T) {
+	f, err := os.Open("testdata/action_reason/plan.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var plan *Plan
+	if err := json.NewDecoder(f).Decode(&plan); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := plan.Validate(); err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := plan.ResourceChanges[0].ActionReason, ActionReasonReplaceBecauseTainted; got != want {
+		t.Fatalf("unexpected action reason: got %q, want %q", got, want)
+	}
+}
+
 func TestPlan_actionInvocations(t *testing.T) {
 	f, err := os.Open("testdata/actions/plan.json")
 	if err != nil {
