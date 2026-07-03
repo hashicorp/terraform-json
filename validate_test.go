@@ -70,7 +70,12 @@ func TestValidateOutput_basic(t *testing.T) {
           "byte": 200
         }
       }
-    }
+    },
+	{
+		"severity": "warning",
+		"summary": "no ice cream",
+		"address": "module.icebox.ice_cream.vanilla"
+	}
   ]
 }`
 	var parsed ValidateOutput
@@ -103,6 +108,11 @@ func TestValidateOutput_basic(t *testing.T) {
 						Byte:   200,
 					},
 				},
+			},
+			{
+				Severity: "warning",
+				Address:  "module.icebox.ice_cream.vanilla",
+				Summary:  "no ice cream",
 			},
 		},
 	}
