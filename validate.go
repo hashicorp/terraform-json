@@ -44,6 +44,7 @@ const (
 type Diagnostic struct {
 	Severity DiagnosticSeverity `json:"severity,omitempty"`
 
+	Address string `json:"address,omitempty"`
 	Summary string `json:"summary,omitempty"`
 	Detail  string `json:"detail,omitempty"`
 	Range   *Range `json:"range,omitempty"`
