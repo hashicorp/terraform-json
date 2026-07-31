@@ -1,4 +1,4 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2019, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package tfjson
@@ -60,6 +60,10 @@ func (p *ProviderSchemas) Validate() error {
 	return nil
 }
 
+// UnmarshalJSON implements json.Unmarshaler for ProviderSchemas.
+//
+// As per established convention this method should only ever
+// be invoked *indirectly* via [encoding/json] library.
 func (p *ProviderSchemas) UnmarshalJSON(b []byte) error {
 	type rawSchemas ProviderSchemas
 	var schemas rawSchemas
@@ -101,6 +105,9 @@ type ProviderSchema struct {
 
 	// The schemas for any list resources in this provider.
 	ListResourceSchemas map[string]*Schema `json:"list_resource_schemas,omitempty"`
+
+	// The schemas for any pluggable state stores implemented in this provider.
+	StateStoreSchemas map[string]*Schema `json:"state_store_schemas,omitempty"`
 }
 
 // Schema is the JSON representation of a particular schema
@@ -334,17 +341,6 @@ type IdentityAttribute struct {
 
 // ActionSchema is the JSON representation of an action schema
 type ActionSchema struct {
-	// The version of the action schema.
-	Version uint64 `json:"version"`
-
 	// The root-level block of configuration values.
 	Block *SchemaBlock `json:"block,omitempty"`
-
-	// Additional information about the action, only populated if the action is unlinked.
-	Unlinked *UnlinkedSchemaType `json:"unlinked,omitempty"`
-}
-
-// UnlinkedSchemaType contains any additional information about an unlinked action.
-type UnlinkedSchemaType struct {
-	// Currently there is no additional information for unlinked action schema types
 }

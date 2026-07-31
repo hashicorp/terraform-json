@@ -1,10 +1,11 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2019, 2026
 // SPDX-License-Identifier: MPL-2.0
 
 package tfjson
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"reflect"
 	"testing"
@@ -136,6 +137,70 @@ func TestPlan_movedBlock(t *testing.T) {
 	}
 }
 
+func TestPlan_actionReason(t *testing.T) {
+	f, err := os.Open("testdata/action_reason/plan.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var plan *Plan
+	if err := json.NewDecoder(f).Decode(&plan); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := plan.Validate(); err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := plan.ResourceChanges[0].ActionReason, ActionReasonReplaceBecauseTainted; got != want {
+		t.Fatalf("unexpected action reason: got %q, want %q", got, want)
+	}
+}
+
+func TestPlan_actionInvocations(t *testing.T) {
+	f, err := os.Open("testdata/actions/plan.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	var plan *Plan
+	if err := json.NewDecoder(f).Decode(&plan); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := plan.Validate(); err != nil {
+		t.Fatal(err)
+	}
+
+	if len(plan.ActionInvocations) != 1 {
+		t.Fatalf("expected exactly 1 action invocation, got %d", len(plan.ActionInvocations))
+	}
+
+	expectedAction := []*ActionInvocation{
+		{
+			Address: "action.bufo_print.success",
+			Type:    "bufo_print",
+			Name:    "success",
+			ConfigValues: map[string]interface{}{
+				"color": nil,
+				"name":  "bufo-the-builder",
+				"ratio": nil,
+			},
+			ConfigSensitive:        map[string]interface{}{},
+			ConfigUnknown:          map[string]interface{}{},
+			ProviderName:           "registry.terraform.io/austinvalle/bufo",
+			LifecycleActionTrigger: nil,
+			InvokeActionTrigger:    &InvokeActionTrigger{},
+		},
+	}
+
+	if diff := cmp.Diff(expectedAction, plan.ActionInvocations); diff != "" {
+		t.Fatalf("unexpected action invocation: %s", diff)
+	}
+}
+
 func TestPlan_UnmarshalJSON(t *testing.T) {
 	t.Parallel()
 
@@ -144,7 +209,7 @@ func TestPlan_UnmarshalJSON(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	testCases := map[string]struct {
+	numericsTestCases := map[string]struct {
 		useJSONNumber bool
 		expected      any
 	}{
@@ -157,9 +222,7 @@ func TestPlan_UnmarshalJSON(t *testing.T) {
 		},
 	}
 
-	for name, testCase := range testCases {
-		name, testCase := name, testCase
-
+	for name, testCase := range numericsTestCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
@@ -167,8 +230,7 @@ func TestPlan_UnmarshalJSON(t *testing.T) {
 
 			plan.UseJSONNumber(testCase.useJSONNumber)
 
-			err = plan.UnmarshalJSON(b)
-
+			err = json.Unmarshal(b, &plan)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -187,6 +249,45 @@ func TestPlan_UnmarshalJSON(t *testing.T) {
 
 			if diff := cmp.Diff(attr, testCase.expected); diff != "" {
 				t.Errorf("unexpected difference: %s", diff)
+			}
+		})
+	}
+
+	jsonValidationTestCases := map[string]struct {
+		filePath    string
+		expectError bool
+	}{
+		"invalid plan JSON": {
+			filePath:    "testdata/invalid/plan.json",
+			expectError: true,
+		},
+		"valid plan JSON": {
+			filePath: "testdata/basic/plan.json",
+		},
+	}
+
+	for tn, tc := range jsonValidationTestCases {
+		t.Run(tn, func(t *testing.T) {
+			f, err := os.Open(tc.filePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
+
+			b, err := io.ReadAll(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var plan Plan
+			err = json.Unmarshal(b, &plan)
+
+			if tc.expectError && err == nil {
+				t.Fatalf("expected error; got none")
+			}
+
+			if !tc.expectError && err != nil {
+				t.Errorf("expected no error, got %q", err.Error())
 			}
 		})
 	}

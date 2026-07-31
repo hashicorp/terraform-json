@@ -1,9 +1,10 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2019, 2026
 // SPDX-License-Identifier: MPL-2.0
 package tfjson
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -99,6 +100,59 @@ func TestLogging_generic(t *testing.T) {
 	}
 }
 
+// Checking what happens when Terraform core swaps from using time.RFC3339 to using hclog.TimeFormat when formatting
+// timestamps for logs. We see that terraform-json is able to parse either log without issue, though precision is different
+// as a consequence.
+func TestLogging_timestampPrecision(t *testing.T) {
+
+	// The strings below are what you get when you take this time and use the Format method with different arguments.
+	//     t := time.Date(2025, 11, 17, 18, 55, 01, 123456789, time.UTC)// "2025-11-17 18:55:01.123456789 +0000 UTC"
+	//     t.Format(time.RFC3339) == "2025-11-17T18:55:01Z"
+	//     t.Format(hclog.TimeFormat) == "2025-11-17T18:55:01.123Z"
+	timeRFC3339 := "2025-11-17T18:55:01Z"
+	hclogTimeFormat := "2025-11-17T18:55:01.123Z"
+
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in time.RFC3339 format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
+				timeRFC3339,
+			),
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Testing out timestamps in time.RFC3339 format",
+					Time: time.Date(2025, 11, 17, 18, 55, 1, 0, time.UTC),
+				},
+			},
+		},
+		{
+			fmt.Sprintf(`{"@level":"info","@message":"Testing out timestamps in hclog.TimeFormat format","@module":"terraform.ui","@timestamp":"%s","type":"log"}`,
+				hclogTimeFormat,
+			),
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Testing out timestamps in hclog.TimeFormat format",
+					Time: time.Date(2025, 11, 17, 18, 55, 1, 123000000, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
 func TestLogging_query(t *testing.T) {
 	testCases := []struct {
 		rawMessage      string
@@ -120,7 +174,7 @@ func TestLogging_query(t *testing.T) {
 			},
 		},
 		{
-			`{"@level":"info","@message":"list.concept_pet.pets: Result found","@module":"terraform.ui","@timestamp":"2025-08-28T18:07:11.534589+00:00","list_resource_found":{"address":"list.concept_pet.pets","display_name":"This is a easy-antelope","identity":{"id":"easy-antelope","legs":6},"resource_type":"concept_pet"},"type":"list_resource_found"}`,
+			`{"@level":"info","@message":"list.concept_pet.pets: Result found","@module":"terraform.ui","@timestamp":"2025-08-28T18:07:11.534589+00:00","list_resource_found":{"address":"list.concept_pet.pets","display_name":"This is a easy-antelope","identity":{"id":"easy-antelope","legs":6},"identity_version":1,"resource_type":"concept_pet"},"type":"list_resource_found"}`,
 			ListResourceFoundMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
@@ -131,10 +185,11 @@ func TestLogging_query(t *testing.T) {
 					Address:      "list.concept_pet.pets",
 					ResourceType: "concept_pet",
 					DisplayName:  "This is a easy-antelope",
-					Identity: map[string]json.RawMessage{
-						"id":   json.RawMessage(`"easy-antelope"`),
-						"legs": json.RawMessage("6"),
+					Identity: map[string]any{
+						"id":   "easy-antelope",
+						"legs": json.Number("6"),
 					},
+					IdentityVersion: 1,
 				},
 			},
 		},

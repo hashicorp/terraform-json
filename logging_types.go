@@ -1,8 +1,9 @@
-// Copyright (c) HashiCorp, Inc.
+// Copyright IBM Corp. 2019, 2026
 // SPDX-License-Identifier: MPL-2.0
 package tfjson
 
 import (
+	"bytes"
 	"encoding/json"
 )
 
@@ -32,18 +33,23 @@ var allLogMessageTypes = []any{
 }
 
 func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
+	d := json.NewDecoder(bytes.NewReader(b))
+
+	// decode numbers as json.Number to avoid losing precision
+	d.UseNumber()
+
 	switch t {
 
 	// generic
 	case MessageTypeVersion:
 		v := VersionLogMessage{}
-		return v, json.Unmarshal(b, &v)
+		return v, d.Decode(&v)
 	case MessageTypeLog:
 		v := LogMessage{}
-		return v, json.Unmarshal(b, &v)
+		return v, d.Decode(&v)
 	case MessageTypeDiagnostic:
 		v := DiagnosticLogMessage{}
-		return v, json.Unmarshal(b, &v)
+		return v, d.Decode(&v)
 
 	// init
 	case InitOutput:
@@ -53,15 +59,15 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 	// query
 	case MessageListStart:
 		v := ListStartMessage{}
-		return v, json.Unmarshal(b, &v)
+		return v, d.Decode(&v)
 	case MessageListResourceFound:
 		v := ListResourceFoundMessage{}
-		return v, json.Unmarshal(b, &v)
+		return v, d.Decode(&v)
 	case MessageListComplete:
 		v := ListCompleteMessage{}
-		return v, json.Unmarshal(b, &v)
+		return v, d.Decode(&v)
 	}
 
 	v := UnknownLogMessage{}
-	return v, json.Unmarshal(b, &v)
+	return v, d.Decode(&v)
 }
