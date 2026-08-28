@@ -352,6 +352,27 @@ func TestLogging_stateMigrate(t *testing.T) {
 		rawMessage      string
 		expectedMessage LogMsg
 	}{
+		// dependency lock file
+		{
+			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider selections it made above.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_lockfile_created"}`,
+			ProviderLockfileCreatedMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has created a lock file .terraform.lock.hcl to record the provider selections it made above.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Terraform has made some changes to the provider dependency selections recorded in the .terraform.lock.hcl file.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_lockfile_updated"}`,
+			ProviderLockfileUpdatedMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has made some changes to the provider dependency selections recorded in the .terraform.lock.hcl file.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
 		// provider trust
 		{
 			`{"@level":"info","@message":"The state store provider was approved by the user.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_interactive_approval"}`,

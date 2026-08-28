@@ -32,6 +32,9 @@ var allLogMessageTypes = []any{
 	ListCompleteMessage{},
 
 	// state migrate
+	// dependency lock file
+	ProviderLockfileCreatedMessage{},
+	ProviderLockfileUpdatedMessage{},
 	// Provider trust-related message
 	ProviderInteractiveApprovalMessage{},
 	ProviderInteractiveRejectionMessage{},
@@ -83,6 +86,13 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 		return v, d.Decode(&v)
 
 	// state migrate
+	// dependency lock file
+	case ProviderLockfileCreated:
+		v := ProviderLockfileCreatedMessage{}
+		return v, d.Decode(&v)
+	case ProviderLockfileUpdated:
+		v := ProviderLockfileUpdatedMessage{}
+		return v, d.Decode(&v)
 	// provider trust
 	case ProviderInteractiveApproval:
 		v := ProviderInteractiveApprovalMessage{}

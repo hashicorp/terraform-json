@@ -4,6 +4,10 @@
 package tfjson
 
 const (
+	// Dependency lock file messages
+	ProviderLockfileCreated LogMessageType = "provider_lockfile_created"
+	ProviderLockfileUpdated LogMessageType = "provider_lockfile_updated"
+
 	// Provider trust-related messages
 	ProviderInteractiveApproval  LogMessageType = "provider_interactive_approval"
 	ProviderInteractiveRejection LogMessageType = "provider_interactive_rejection"
@@ -19,6 +23,14 @@ const (
 	LogMigrationDestinationInitializationStart    LogMessageType = "migration_destination_initialization_start"
 	LogMigrationDestinationInitializationComplete LogMessageType = "migration_destination_initialization_complete"
 )
+
+type ProviderLockfileCreatedMessage struct {
+	baseLogMessage
+}
+
+type ProviderLockfileUpdatedMessage struct {
+	baseLogMessage
+}
 
 type ProviderInteractiveApprovalMessage struct {
 	baseLogMessage
