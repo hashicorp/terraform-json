@@ -30,6 +30,16 @@ var allLogMessageTypes = []any{
 	ListStartMessage{},
 	ListResourceFoundMessage{},
 	ListCompleteMessage{},
+
+	// state migrate
+	MigrationStartMessage{},
+	MigrationCompleteMessage{},
+	MigrationErroredMessage{},
+	MigrationFinalizedMessage{},
+	MigrationSourceInitializationStartMessage{},
+	MigrationSourceInitializationCompleteMessage{},
+	MigrationDestinationInitializationStartMessage{},
+	MigrationDestinationInitializationCompleteMessage{},
 }
 
 func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
@@ -65,6 +75,32 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 		return v, d.Decode(&v)
 	case MessageListComplete:
 		v := ListCompleteMessage{}
+		return v, d.Decode(&v)
+
+	// state migrate
+	case LogMigrationStart:
+		v := MigrationStartMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationComplete:
+		v := MigrationCompleteMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationErrored:
+		v := MigrationErroredMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationFinalized:
+		v := MigrationFinalizedMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationSourceInitializationStart:
+		v := MigrationSourceInitializationStartMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationSourceInitializationComplete:
+		v := MigrationSourceInitializationCompleteMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationDestinationInitializationStart:
+		v := MigrationDestinationInitializationStartMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationDestinationInitializationComplete:
+		v := MigrationDestinationInitializationCompleteMessage{}
 		return v, d.Decode(&v)
 	}
 

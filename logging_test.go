@@ -346,3 +346,92 @@ func TestLogging_init(t *testing.T) {
 		}
 	}
 }
+
+func TestLogging_stateMigrate(t *testing.T) {
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		// state migration
+		{
+			`{"@level":"info","@message":"Initializing source...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_source_initialization_start"}`,
+			MigrationSourceInitializationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing source...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initialized source.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_source_initialization_complete"}`,
+			MigrationSourceInitializationCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initialized source.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing destination...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_destination_initialization_start"}`,
+			MigrationDestinationInitializationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing destination...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initialized destination.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_destination_initialization_complete"}`,
+			MigrationDestinationInitializationCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initialized destination.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Migrating state from backend \"local\" to backend \"local\"...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_start"}`,
+			MigrationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Migrating state from backend \"local\" to backend \"local\"...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"The migration process has copied state from the backend \"local\" to the backend \"local\"","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_complete"}`,
+			MigrationCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The migration process has copied state from the backend \"local\" to the backend \"local\"",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Finished migrating state from backend \"local\" to backend \"local\".","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_finalized"}`,
+			MigrationFinalizedMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Finished migrating state from backend \"local\" to backend \"local\".",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
