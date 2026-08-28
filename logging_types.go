@@ -30,6 +30,36 @@ var allLogMessageTypes = []any{
 	ListStartMessage{},
 	ListResourceFoundMessage{},
 	ListCompleteMessage{},
+
+	// state migrate
+	// provider installation
+	ProviderInstallationStartMessage{},
+	StateStoreProviderInstallationStartMessage{},
+	ProviderQueryUsePreviousVersionMessage{},
+	ProviderQueryUsePreviousConstraintsMessage{},
+	ProviderQueryUseLatestMessage{},
+	ProviderVersionAlreadyInstalledMessage{},
+	ProviderVersionFoundInCacheDirMessage{},
+	ProviderVersionInstallationStartMessage{},
+	ProviderVersionInstallationCompleteMessage{},
+	BuiltInProviderAvailableMessage{},
+	ThirdPartyProvidersInstalledMessage{},
+	// dependency lock file
+	ProviderLockfileCreatedMessage{},
+	ProviderLockfileUpdatedMessage{},
+	// Provider trust-related message
+	ProviderInteractiveApprovalMessage{},
+	ProviderInteractiveRejectionMessage{},
+	ProviderAutomaticApprovalMessage{},
+	// state migration
+	MigrationStartMessage{},
+	MigrationCompleteMessage{},
+	MigrationErroredMessage{},
+	MigrationFinalizedMessage{},
+	MigrationSourceInitializationStartMessage{},
+	MigrationSourceInitializationCompleteMessage{},
+	MigrationDestinationInitializationStartMessage{},
+	MigrationDestinationInitializationCompleteMessage{},
 }
 
 func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
@@ -65,6 +95,84 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 		return v, d.Decode(&v)
 	case MessageListComplete:
 		v := ListCompleteMessage{}
+		return v, d.Decode(&v)
+
+	// state migrate
+	// provider installation
+	case ProviderInstallationStart:
+		v := ProviderInstallationStartMessage{}
+		return v, d.Decode(&v)
+	case StateStoreProviderInstallationStart:
+		v := StateStoreProviderInstallationStartMessage{}
+		return v, d.Decode(&v)
+	case ProviderQueryUsePreviousVersion:
+		v := ProviderQueryUsePreviousVersionMessage{}
+		return v, d.Decode(&v)
+	case ProviderQueryUsePreviousConstraints:
+		v := ProviderQueryUsePreviousConstraintsMessage{}
+		return v, d.Decode(&v)
+	case ProviderQueryUseLatest:
+		v := ProviderQueryUseLatestMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionAlreadyInstalled:
+		v := ProviderVersionAlreadyInstalledMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionFoundInCacheDir:
+		v := ProviderVersionFoundInCacheDirMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionInstallationStart:
+		v := ProviderVersionInstallationStartMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionInstallationComplete:
+		v := ProviderVersionInstallationCompleteMessage{}
+		return v, d.Decode(&v)
+	case BuiltInProviderAvailable:
+		v := BuiltInProviderAvailableMessage{}
+		return v, d.Decode(&v)
+	case ThirdPartyProvidersInstalled:
+		v := ThirdPartyProvidersInstalledMessage{}
+		return v, d.Decode(&v)
+	// dependency lock file
+	case ProviderLockfileCreated:
+		v := ProviderLockfileCreatedMessage{}
+		return v, d.Decode(&v)
+	case ProviderLockfileUpdated:
+		v := ProviderLockfileUpdatedMessage{}
+		return v, d.Decode(&v)
+	// provider trust
+	case ProviderInteractiveApproval:
+		v := ProviderInteractiveApprovalMessage{}
+		return v, d.Decode(&v)
+	case ProviderInteractiveRejection:
+		v := ProviderInteractiveRejectionMessage{}
+		return v, d.Decode(&v)
+	case ProviderAutomaticApproval:
+		v := ProviderAutomaticApprovalMessage{}
+		return v, d.Decode(&v)
+	// state migration
+	case LogMigrationStart:
+		v := MigrationStartMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationComplete:
+		v := MigrationCompleteMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationErrored:
+		v := MigrationErroredMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationFinalized:
+		v := MigrationFinalizedMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationSourceInitializationStart:
+		v := MigrationSourceInitializationStartMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationSourceInitializationComplete:
+		v := MigrationSourceInitializationCompleteMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationDestinationInitializationStart:
+		v := MigrationDestinationInitializationStartMessage{}
+		return v, d.Decode(&v)
+	case LogMigrationDestinationInitializationComplete:
+		v := MigrationDestinationInitializationCompleteMessage{}
 		return v, d.Decode(&v)
 	}
 

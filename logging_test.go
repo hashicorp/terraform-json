@@ -346,3 +346,255 @@ func TestLogging_init(t *testing.T) {
 		}
 	}
 }
+
+func TestLogging_stateMigrate(t *testing.T) {
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		// provider installation
+		{
+			`{"@level":"info","@message":"Installing providers...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_installation_start"}`,
+			ProviderInstallationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing providers...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installing provider hashicorp/test v1.2.3 for state store test_foo...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"state_store_provider_installation_start"}`,
+			StateStoreProviderInstallationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing provider hashicorp/test v1.2.3 for state store test_foo...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"hashicorp/test: Reusing version 1.0.0 from the dependency lock file","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_query_use_previous_version"}`,
+			ProviderQueryUsePreviousVersionMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "hashicorp/test: Reusing version 1.0.0 from the dependency lock file",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Finding matching versions for provider: hashicorp/test, version_constraint: \"1.0.0\"","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_query_use_constraints"}`,
+			ProviderQueryUsePreviousConstraintsMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Finding matching versions for provider: hashicorp/test, version_constraint: \"1.0.0\"",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"hashicorp/test: Finding latest version...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_query_use_latest"}`,
+			ProviderQueryUseLatestMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "hashicorp/test: Finding latest version...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"hashicorp/test v1.0.0: Using previously-installed provider version","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_version_already_installed"}`,
+			ProviderVersionAlreadyInstalledMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "hashicorp/test v1.0.0: Using previously-installed provider version",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"hashicorp/test v1.0.0: Using from the shared cache directory","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_version_found_in_cache_dir"}`,
+			ProviderVersionFoundInCacheDirMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "hashicorp/test v1.0.0: Using from the shared cache directory",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installing provider version: hashicorp/test v1.2.3...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_version_installation_start"}`,
+			ProviderVersionInstallationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing provider version: hashicorp/test v1.2.3...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installed provider version: hashicorp/test v1.2.3 (verified checksum)","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_version_installation_complete"}`,
+			ProviderVersionInstallationCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installed provider version: hashicorp/test v1.2.3 (verified checksum)",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"hashicorp/test is built in to Terraform","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"built_in_provider_available"}`,
+			BuiltInProviderAvailableMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "hashicorp/test is built in to Terraform",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Partner and community providers are signed by their developers.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"third_party_providers_installed"}`,
+			ThirdPartyProvidersInstalledMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Partner and community providers are signed by their developers.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		// dependency lock file
+		{
+			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider selections it made above.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_lockfile_created"}`,
+			ProviderLockfileCreatedMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has created a lock file .terraform.lock.hcl to record the provider selections it made above.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Terraform has made some changes to the provider dependency selections recorded in the .terraform.lock.hcl file.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_lockfile_updated"}`,
+			ProviderLockfileUpdatedMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has made some changes to the provider dependency selections recorded in the .terraform.lock.hcl file.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		// provider trust
+		{
+			`{"@level":"info","@message":"The state store provider was approved by the user.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_interactive_approval"}`,
+			ProviderInteractiveApprovalMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The state store provider was approved by the user.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"The state store provider was rejected by the user.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_interactive_rejection"}`,
+			ProviderInteractiveRejectionMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The state store provider was rejected by the user.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"The state store provider was approved automatically.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_automatic_approval"}`,
+			ProviderAutomaticApprovalMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The state store provider was approved automatically.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		// state migration
+		{
+			`{"@level":"info","@message":"Initializing source...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_source_initialization_start"}`,
+			MigrationSourceInitializationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing source...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initialized source.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_source_initialization_complete"}`,
+			MigrationSourceInitializationCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initialized source.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing destination...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_destination_initialization_start"}`,
+			MigrationDestinationInitializationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing destination...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initialized destination.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_destination_initialization_complete"}`,
+			MigrationDestinationInitializationCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initialized destination.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Migrating state from backend \"local\" to backend \"local\"...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_start"}`,
+			MigrationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Migrating state from backend \"local\" to backend \"local\"...",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"The migration process has copied state from the backend \"local\" to the backend \"local\"","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_complete"}`,
+			MigrationCompleteMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The migration process has copied state from the backend \"local\" to the backend \"local\"",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Finished migrating state from backend \"local\" to backend \"local\".","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_finalized"}`,
+			MigrationFinalizedMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Finished migrating state from backend \"local\" to backend \"local\".",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
