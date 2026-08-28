@@ -32,6 +32,18 @@ var allLogMessageTypes = []any{
 	ListCompleteMessage{},
 
 	// state migrate
+	// provider installation
+	ProviderInstallationStartMessage{},
+	StateStoreProviderInstallationStartMessage{},
+	ProviderQueryUsePreviousVersionMessage{},
+	ProviderQueryUsePreviousConstraintsMessage{},
+	ProviderQueryUseLatestMessage{},
+	ProviderVersionAlreadyInstalledMessage{},
+	ProviderVersionFoundInCacheDirMessage{},
+	ProviderVersionInstallationStartMessage{},
+	ProviderVersionInstallationCompleteMessage{},
+	BuiltInProviderAvailableMessage{},
+	ThirdPartyProvidersInstalledMessage{},
 	// dependency lock file
 	ProviderLockfileCreatedMessage{},
 	ProviderLockfileUpdatedMessage{},
@@ -86,6 +98,40 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 		return v, d.Decode(&v)
 
 	// state migrate
+	// provider installation
+	case ProviderInstallationStart:
+		v := ProviderInstallationStartMessage{}
+		return v, d.Decode(&v)
+	case StateStoreProviderInstallationStart:
+		v := StateStoreProviderInstallationStartMessage{}
+		return v, d.Decode(&v)
+	case ProviderQueryUsePreviousVersion:
+		v := ProviderQueryUsePreviousVersionMessage{}
+		return v, d.Decode(&v)
+	case ProviderQueryUsePreviousConstraints:
+		v := ProviderQueryUsePreviousConstraintsMessage{}
+		return v, d.Decode(&v)
+	case ProviderQueryUseLatest:
+		v := ProviderQueryUseLatestMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionAlreadyInstalled:
+		v := ProviderVersionAlreadyInstalledMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionFoundInCacheDir:
+		v := ProviderVersionFoundInCacheDirMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionInstallationStart:
+		v := ProviderVersionInstallationStartMessage{}
+		return v, d.Decode(&v)
+	case ProviderVersionInstallationComplete:
+		v := ProviderVersionInstallationCompleteMessage{}
+		return v, d.Decode(&v)
+	case BuiltInProviderAvailable:
+		v := BuiltInProviderAvailableMessage{}
+		return v, d.Decode(&v)
+	case ThirdPartyProvidersInstalled:
+		v := ThirdPartyProvidersInstalledMessage{}
+		return v, d.Decode(&v)
 	// dependency lock file
 	case ProviderLockfileCreated:
 		v := ProviderLockfileCreatedMessage{}
