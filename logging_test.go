@@ -352,6 +352,37 @@ func TestLogging_stateMigrate(t *testing.T) {
 		rawMessage      string
 		expectedMessage LogMsg
 	}{
+		// provider trust
+		{
+			`{"@level":"info","@message":"The state store provider was approved by the user.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_interactive_approval"}`,
+			ProviderInteractiveApprovalMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The state store provider was approved by the user.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"The state store provider was rejected by the user.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_interactive_rejection"}`,
+			ProviderInteractiveRejectionMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The state store provider was rejected by the user.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"The state store provider was approved automatically.","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"provider_automatic_approval"}`,
+			ProviderAutomaticApprovalMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "The state store provider was approved automatically.",
+					Time: time.Date(2026, 8, 26, 16, 20, 04, 692816000, time.UTC),
+				},
+			},
+		},
 		// state migration
 		{
 			`{"@level":"info","@message":"Initializing source...","@module":"terraform.ui","@timestamp":"2026-08-26T16:20:04.692816Z","type":"migration_source_initialization_start"}`,

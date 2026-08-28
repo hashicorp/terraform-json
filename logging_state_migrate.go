@@ -4,6 +4,11 @@
 package tfjson
 
 const (
+	// Provider trust-related messages
+	ProviderInteractiveApproval  LogMessageType = "provider_interactive_approval"
+	ProviderInteractiveRejection LogMessageType = "provider_interactive_rejection"
+	ProviderAutomaticApproval    LogMessageType = "provider_automatic_approval"
+
 	// State migration-related messages
 	LogMigrationStart                             LogMessageType = "migration_start"
 	LogMigrationComplete                          LogMessageType = "migration_complete"
@@ -14,6 +19,18 @@ const (
 	LogMigrationDestinationInitializationStart    LogMessageType = "migration_destination_initialization_start"
 	LogMigrationDestinationInitializationComplete LogMessageType = "migration_destination_initialization_complete"
 )
+
+type ProviderInteractiveApprovalMessage struct {
+	baseLogMessage
+}
+
+type ProviderInteractiveRejectionMessage struct {
+	baseLogMessage
+}
+
+type ProviderAutomaticApprovalMessage struct {
+	baseLogMessage
+}
 
 type MigrationStartMessage struct {
 	baseLogMessage

@@ -32,6 +32,11 @@ var allLogMessageTypes = []any{
 	ListCompleteMessage{},
 
 	// state migrate
+	// Provider trust-related message
+	ProviderInteractiveApprovalMessage{},
+	ProviderInteractiveRejectionMessage{},
+	ProviderAutomaticApprovalMessage{},
+	// state migration
 	MigrationStartMessage{},
 	MigrationCompleteMessage{},
 	MigrationErroredMessage{},
@@ -78,6 +83,17 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 		return v, d.Decode(&v)
 
 	// state migrate
+	// provider trust
+	case ProviderInteractiveApproval:
+		v := ProviderInteractiveApprovalMessage{}
+		return v, d.Decode(&v)
+	case ProviderInteractiveRejection:
+		v := ProviderInteractiveRejectionMessage{}
+		return v, d.Decode(&v)
+	case ProviderAutomaticApproval:
+		v := ProviderAutomaticApprovalMessage{}
+		return v, d.Decode(&v)
+	// state migration
 	case LogMigrationStart:
 		v := MigrationStartMessage{}
 		return v, d.Decode(&v)
