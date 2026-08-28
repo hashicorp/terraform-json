@@ -4,7 +4,9 @@
 package sanitize
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,7 +37,19 @@ func testSanitizePlanGoldenEntry(c testGoldenCase) func(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		p, err = SanitizePlan(p)
+		if c.FileName == "hash.json" {
+			p, err = SanitizePlanWithValue(p, func(value interface{}) interface{} {
+				jsonBytes, err := json.Marshal(value)
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				hashBytes := sha256.Sum256(jsonBytes)
+				return fmt.Sprintf("%x", hashBytes)
+			})
+		} else {
+			p, err = SanitizePlan(p)
+		}
 		if err != nil {
 			t.Fatal(err)
 		}

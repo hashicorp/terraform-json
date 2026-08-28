@@ -49,7 +49,7 @@ func sanitizeChangeValue(old, sensitive, replaceWith interface{}) interface{} {
 	}
 
 	if shouldFilter, ok := sensitive.(bool); ok && shouldFilter {
-		return replaceWith
+		return applyReplacement(old, replaceWith)
 	}
 
 	return old
