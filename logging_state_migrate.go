@@ -5,36 +5,36 @@ package tfjson
 
 const (
 	// Provider installation messages
-	ProviderInstallationStart           LogMessageType = "provider_installation_start"
-	StateStoreProviderInstallationStart LogMessageType = "state_store_provider_installation_start"
-	ProviderQueryUsePreviousVersion     LogMessageType = "provider_query_use_previous_version"
-	ProviderQueryUsePreviousConstraints LogMessageType = "provider_query_use_constraints"
-	ProviderQueryUseLatest              LogMessageType = "provider_query_use_latest"
-	ProviderVersionAlreadyInstalled     LogMessageType = "provider_version_already_installed"
-	ProviderVersionFoundInCacheDir      LogMessageType = "provider_version_found_in_cache_dir"
-	ProviderVersionInstallationStart    LogMessageType = "provider_version_installation_start"
-	ProviderVersionInstallationComplete LogMessageType = "provider_version_installation_complete"
-	BuiltInProviderAvailable            LogMessageType = "built_in_provider_available"
-	ThirdPartyProvidersInstalled        LogMessageType = "third_party_providers_installed"
+	MessageProviderInstallationStart           LogMessageType = "provider_installation_start"
+	MessageStateStoreProviderInstallationStart LogMessageType = "state_store_provider_installation_start"
+	MessageProviderQueryUsePreviousVersion     LogMessageType = "provider_query_use_previous_version"
+	MessageProviderQueryUsePreviousConstraints LogMessageType = "provider_query_use_constraints"
+	MessageProviderQueryUseLatest              LogMessageType = "provider_query_use_latest"
+	MessageProviderVersionAlreadyInstalled     LogMessageType = "provider_version_already_installed"
+	MessageProviderVersionFoundInCacheDir      LogMessageType = "provider_version_found_in_cache_dir"
+	MessageProviderVersionInstallationStart    LogMessageType = "provider_version_installation_start"
+	MessageProviderVersionInstallationComplete LogMessageType = "provider_version_installation_complete"
+	MessageBuiltInProviderAvailable            LogMessageType = "built_in_provider_available"
+	MessageThirdPartyProvidersInstalled        LogMessageType = "third_party_providers_installed"
 
 	// Dependency lock file messages
-	ProviderLockfileCreated LogMessageType = "provider_lockfile_created"
-	ProviderLockfileUpdated LogMessageType = "provider_lockfile_updated"
+	MessageProviderLockfileCreated LogMessageType = "provider_lockfile_created"
+	MessageProviderLockfileUpdated LogMessageType = "provider_lockfile_updated"
 
 	// Provider trust-related messages
-	ProviderInteractiveApproval  LogMessageType = "provider_interactive_approval"
-	ProviderInteractiveRejection LogMessageType = "provider_interactive_rejection"
-	ProviderAutomaticApproval    LogMessageType = "provider_automatic_approval"
+	MessageProviderInteractiveApproval  LogMessageType = "provider_interactive_approval"
+	MessageProviderInteractiveRejection LogMessageType = "provider_interactive_rejection"
+	MessageProviderAutomaticApproval    LogMessageType = "provider_automatic_approval"
 
 	// State migration-related messages
-	LogMigrationStart                             LogMessageType = "migration_start"
-	LogMigrationComplete                          LogMessageType = "migration_complete"
-	LogMigrationErrored                           LogMessageType = "migration_errored"
-	LogMigrationFinalized                         LogMessageType = "migration_finalized"
-	LogMigrationSourceInitializationStart         LogMessageType = "migration_source_initialization_start"
-	LogMigrationSourceInitializationComplete      LogMessageType = "migration_source_initialization_complete"
-	LogMigrationDestinationInitializationStart    LogMessageType = "migration_destination_initialization_start"
-	LogMigrationDestinationInitializationComplete LogMessageType = "migration_destination_initialization_complete"
+	MessageMigrationStart                             LogMessageType = "migration_start"
+	MessageMigrationComplete                          LogMessageType = "migration_complete"
+	MessageMigrationErrored                           LogMessageType = "migration_errored"
+	MessageMigrationFinalized                         LogMessageType = "migration_finalized"
+	MessageMigrationSourceInitializationStart         LogMessageType = "migration_source_initialization_start"
+	MessageMigrationSourceInitializationComplete      LogMessageType = "migration_source_initialization_complete"
+	MessageMigrationDestinationInitializationStart    LogMessageType = "migration_destination_initialization_start"
+	MessageMigrationDestinationInitializationComplete LogMessageType = "migration_destination_initialization_complete"
 )
 
 type ProviderInstallationStartMessage struct {
