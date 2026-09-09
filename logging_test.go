@@ -221,7 +221,7 @@ func TestLogging_query(t *testing.T) {
 	}
 }
 
-// Includes a typical sequence of logs that happen when initializing a working directory
+// Includes a typical sequence of logs that happen when initializing a working directory for the first time.
 //
 // Currently `init` creates some logs with "type":"log" and others with "type":"init_output"
 // Type "init_output" logs include a specific field called "message_code" that takes a string value.
@@ -294,13 +294,17 @@ func TestLogging_init(t *testing.T) {
 				MessageCode: "initializing_backend_message",
 			},
 		},
-		// At this point in an init command's output there is a log message that isn't presented in JSON format:
-		// /*
-		//  Successfully configured the backend "local"! Terraform will automatically
-		//  use this backend unless the backend configuration changes.
-		// */
-		//
-		// See this GitHub issue: https://github.com/hashicorp/terraform/issues/37911
+		{
+			`{"@level":"info","@message":"Successfully configured the backend \"local\"! Terraform will automatically\nuse this backend unless the backend configuration changes.","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:52.256Z","message_code":"backend_configured_success","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Successfully configured the backend \"local\"! Terraform will automatically\nuse this backend unless the backend configuration changes.",
+					Time: time.Date(2025, 11, 17, 17, 18, 52, 256000000, time.UTC),
+				},
+				MessageCode: "backend_configured_success",
+			},
+		},
 		{
 			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:06.698Z","message_code":"lock_info","type":"init_output"}`,
 			InitOutputMessage{
