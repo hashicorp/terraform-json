@@ -351,6 +351,144 @@ func TestLogging_init(t *testing.T) {
 	}
 }
 
+// Includes a typical sequence of logs that happen when initializing a working directory for the first time
+// while using pluggable state storage.
+//
+// The logs during this process contain a mixture of new log message types and old ones, which we cannot change/improve
+// due to it being a breaking change.
+func TestLogging_init_withStateStore(t *testing.T) {
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			`{"@level":"info","@message":"Terraform 1.15.0-dev","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.763876Z","terraform":"1.15.0-dev","type":"version","ui":"1.2"}`,
+			VersionLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform 1.15.0-dev",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 763876000, time.UTC),
+				},
+				Terraform: version.Must(version.NewSemver("1.15.0-dev")),
+				UI:        version.Must(version.NewSemver("1.2.0")),
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installing provider hashicorp/pss (\u003c 0.2.0) for state store \"pss_fs\"...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.763876Z","type":"state_store_provider_installation_start"}`,
+			StateStoreProviderInstallationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing provider hashicorp/pss (< 0.2.0) for state store \"pss_fs\"...",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 763876000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Finding matching versions for provider: hashicorp/pss, version_constraint: \"\u003c 0.2.0\"","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.763894Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Finding matching versions for provider: hashicorp/pss, version_constraint: \"< 0.2.0\"",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 763894000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installing provider version: hashicorp/pss v0.1.0...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.765737Z","type":"log"}`, LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing provider version: hashicorp/pss v0.1.0...",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 765737000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installed provider version: hashicorp/pss v0.1.0 (unauthenticated)","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.779897Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installed provider version: hashicorp/pss v0.1.0 (unauthenticated)",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 779897000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing the state store \"pss_fs\"...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.780327Z","message_code":"initializing_state_store_message","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing the state store \"pss_fs\"...",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 780327000, time.UTC),
+				},
+				MessageCode: "initializing_state_store_message",
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing provider plugins...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.320620Z","message_code":"initializing_provider_plugin_message","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing provider plugins...",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 320620000, time.UTC),
+				},
+				MessageCode: "initializing_provider_plugin_message",
+			},
+		},
+		{
+			`{"@level":"info","@message":"foobar/pss: Reusing version 0.1.0 from the dependency lock file","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.320656Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "foobar/pss: Reusing version 0.1.0 from the dependency lock file",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 320656000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"foobar/pss v0.1.0: Using previously-installed provider version","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.331906Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "foobar/pss v0.1.0: Using previously-installed provider version",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 331906000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.331948Z","message_code":"lock_info","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 331948000, time.UTC),
+				},
+				MessageCode: "lock_info",
+			},
+		},
+		{
+			`{"@level":"info","@message":"Terraform has been successfully initialized!","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.332409Z","message_code":"output_init_success_message","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has been successfully initialized!",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 332409000, time.UTC),
+				},
+				MessageCode: "output_init_success_message",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
 func TestLogging_stateMigrate(t *testing.T) {
 	testCases := []struct {
 		rawMessage      string
