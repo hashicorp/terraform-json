@@ -25,6 +25,7 @@ var allLogMessageTypes = []any{
 
 	// init
 	InitOutputMessage{},
+	InitializingStateStoreStartMessage{},
 
 	// query
 	ListStartMessage{},
