@@ -104,7 +104,6 @@ func TestLogging_generic(t *testing.T) {
 // timestamps for logs. We see that terraform-json is able to parse either log without issue, though precision is different
 // as a consequence.
 func TestLogging_timestampPrecision(t *testing.T) {
-
 	// The strings below are what you get when you take this time and use the Format method with different arguments.
 	//     t := time.Date(2025, 11, 17, 18, 55, 01, 123456789, time.UTC)// "2025-11-17 18:55:01.123456789 +0000 UTC"
 	//     t.Format(time.RFC3339) == "2025-11-17T18:55:01Z"
@@ -413,14 +412,13 @@ func TestLogging_init_withStateStore(t *testing.T) {
 			},
 		},
 		{
-			`{"@level":"info","@message":"Initializing the state store \"pss_fs\"...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.780327Z","message_code":"initializing_state_store_message","type":"init_output"}`,
-			InitOutputMessage{
+			`{"@level":"info","@message":"Initializing the state store \"pss_fs\"...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.780327Z","type":"initializing_state_store_start"}`,
+			InitializingStateStoreStartMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
 					Msg:  "Initializing the state store \"pss_fs\"...",
 					Time: time.Date(2026, 9, 9, 11, 7, 54, 780327000, time.UTC),
 				},
-				MessageCode: "initializing_state_store_message",
 			},
 		},
 		{
