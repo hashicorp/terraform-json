@@ -5,6 +5,8 @@ package tfjson
 
 const (
 	InitOutput LogMessageType = "init_output"
+
+	MessageInitializingStateStoreStart LogMessageType = "initializing_state_store_start"
 )
 
 // InitOutputMessage represents messages of type "init_output"
@@ -15,4 +17,8 @@ const (
 type InitOutputMessage struct {
 	baseLogMessage
 	MessageCode string `json:"message_code"`
+}
+
+type InitializingStateStoreStartMessage struct {
+	baseLogMessage
 }
