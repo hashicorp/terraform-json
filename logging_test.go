@@ -393,7 +393,8 @@ func TestLogging_init_withStateStore(t *testing.T) {
 			},
 		},
 		{
-			`{"@level":"info","@message":"Installing provider version: hashicorp/pss v0.1.0...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.765737Z","type":"log"}`, LogMessage{
+			`{"@level":"info","@message":"Installing provider version: hashicorp/pss v0.1.0...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.765737Z","type":"log"}`,
+			LogMessage{
 				baseLogMessage: baseLogMessage{
 					Lvl:  Info,
 					Msg:  "Installing provider version: hashicorp/pss v0.1.0...",
