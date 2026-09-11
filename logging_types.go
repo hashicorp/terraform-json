@@ -25,6 +25,7 @@ var allLogMessageTypes = []any{
 
 	// init
 	InitOutputMessage{},
+	InitializingStateStoreStartMessage{},
 
 	// query
 	ListStartMessage{},
@@ -85,6 +86,9 @@ func unmarshalByType(t LogMessageType, b []byte) (LogMsg, error) {
 	case InitOutput:
 		v := InitOutputMessage{}
 		return v, json.Unmarshal(b, &v)
+	case MessageInitializingStateStoreStart:
+		v := InitializingStateStoreStartMessage{}
+		return v, d.Decode(&v)
 
 	// query
 	case MessageListStart:

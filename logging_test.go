@@ -104,7 +104,6 @@ func TestLogging_generic(t *testing.T) {
 // timestamps for logs. We see that terraform-json is able to parse either log without issue, though precision is different
 // as a consequence.
 func TestLogging_timestampPrecision(t *testing.T) {
-
 	// The strings below are what you get when you take this time and use the Format method with different arguments.
 	//     t := time.Date(2025, 11, 17, 18, 55, 01, 123456789, time.UTC)// "2025-11-17 18:55:01.123456789 +0000 UTC"
 	//     t.Format(time.RFC3339) == "2025-11-17T18:55:01Z"
@@ -221,7 +220,7 @@ func TestLogging_query(t *testing.T) {
 	}
 }
 
-// Includes a typical sequence of logs that happen when initializing a working directory
+// Includes a typical sequence of logs that happen when initializing a working directory for the first time.
 //
 // Currently `init` creates some logs with "type":"log" and others with "type":"init_output"
 // Type "init_output" logs include a specific field called "message_code" that takes a string value.
@@ -294,13 +293,17 @@ func TestLogging_init(t *testing.T) {
 				MessageCode: "initializing_backend_message",
 			},
 		},
-		// At this point in an init command's output there is a log message that isn't presented in JSON format:
-		// /*
-		//  Successfully configured the backend "local"! Terraform will automatically
-		//  use this backend unless the backend configuration changes.
-		// */
-		//
-		// See this GitHub issue: https://github.com/hashicorp/terraform/issues/37911
+		{
+			`{"@level":"info","@message":"Successfully configured the backend \"local\"! Terraform will automatically\nuse this backend unless the backend configuration changes.","@module":"terraform.ui","@timestamp":"2025-11-17T17:18:52.256Z","message_code":"backend_configured_success","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Successfully configured the backend \"local\"! Terraform will automatically\nuse this backend unless the backend configuration changes.",
+					Time: time.Date(2025, 11, 17, 17, 18, 52, 256000000, time.UTC),
+				},
+				MessageCode: "backend_configured_success",
+			},
+		},
 		{
 			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.","@module":"terraform.ui","@timestamp":"2025-11-17T17:19:06.698Z","message_code":"lock_info","type":"init_output"}`,
 			InitOutputMessage{
@@ -332,6 +335,144 @@ func TestLogging_init(t *testing.T) {
 					Time: time.Date(2025, 11, 17, 17, 19, 10, 553000000, time.UTC),
 				},
 				MessageCode: "output_init_success_cli_message",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		msg, err := UnmarshalLogMessage([]byte(tc.rawMessage))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.expectedMessage, msg, cmpOpts); diff != "" {
+			t.Fatalf("unexpected message: %s", diff)
+		}
+	}
+}
+
+// Includes a typical sequence of logs that happen when initializing a working directory for the first time
+// while using pluggable state storage.
+//
+// The logs during this process contain a mixture of new log message types and old ones, which we cannot change/improve
+// due to it being a breaking change.
+func TestLogging_init_withStateStore(t *testing.T) {
+	testCases := []struct {
+		rawMessage      string
+		expectedMessage LogMsg
+	}{
+		{
+			`{"@level":"info","@message":"Terraform 1.15.0-dev","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.763876Z","terraform":"1.15.0-dev","type":"version","ui":"1.2"}`,
+			VersionLogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform 1.15.0-dev",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 763876000, time.UTC),
+				},
+				Terraform: version.Must(version.NewSemver("1.15.0-dev")),
+				UI:        version.Must(version.NewSemver("1.2.0")),
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installing provider hashicorp/pss (\u003c 0.2.0) for state store \"pss_fs\"...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.763876Z","type":"state_store_provider_installation_start"}`,
+			StateStoreProviderInstallationStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing provider hashicorp/pss (< 0.2.0) for state store \"pss_fs\"...",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 763876000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Finding matching versions for provider: hashicorp/pss, version_constraint: \"\u003c 0.2.0\"","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.763894Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Finding matching versions for provider: hashicorp/pss, version_constraint: \"< 0.2.0\"",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 763894000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installing provider version: hashicorp/pss v0.1.0...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.765737Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installing provider version: hashicorp/pss v0.1.0...",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 765737000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Installed provider version: hashicorp/pss v0.1.0 (unauthenticated)","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.779897Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Installed provider version: hashicorp/pss v0.1.0 (unauthenticated)",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 779897000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing the state store \"pss_fs\"...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:54.780327Z","type":"initializing_state_store_start"}`,
+			InitializingStateStoreStartMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing the state store \"pss_fs\"...",
+					Time: time.Date(2026, 9, 9, 11, 7, 54, 780327000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Initializing provider plugins...","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.320620Z","message_code":"initializing_provider_plugin_message","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Initializing provider plugins...",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 320620000, time.UTC),
+				},
+				MessageCode: "initializing_provider_plugin_message",
+			},
+		},
+		{
+			`{"@level":"info","@message":"foobar/pss: Reusing version 0.1.0 from the dependency lock file","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.320656Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "foobar/pss: Reusing version 0.1.0 from the dependency lock file",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 320656000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"foobar/pss v0.1.0: Using previously-installed provider version","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.331906Z","type":"log"}`,
+			LogMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "foobar/pss v0.1.0: Using previously-installed provider version",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 331906000, time.UTC),
+				},
+			},
+		},
+		{
+			`{"@level":"info","@message":"Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.331948Z","message_code":"lock_info","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has created a lock file .terraform.lock.hcl to record the provider\nselections it made above. Include this file in your version control repository\nso that Terraform can guarantee to make the same selections by default when\nyou run \"terraform init\" in the future.",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 331948000, time.UTC),
+				},
+				MessageCode: "lock_info",
+			},
+		},
+		{
+			`{"@level":"info","@message":"Terraform has been successfully initialized!","@module":"terraform.ui","@timestamp":"2026-09-09T11:07:55.332409Z","message_code":"output_init_success_message","type":"init_output"}`,
+			InitOutputMessage{
+				baseLogMessage: baseLogMessage{
+					Lvl:  Info,
+					Msg:  "Terraform has been successfully initialized!",
+					Time: time.Date(2026, 9, 9, 11, 7, 55, 332409000, time.UTC),
+				},
+				MessageCode: "output_init_success_message",
 			},
 		},
 	}
