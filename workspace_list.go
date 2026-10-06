@@ -28,7 +28,7 @@ type WorkspaceListEntry struct {
 // nil is returned. Calling code should look for diagnostics in the receiver WorkspaceListOutput to
 // see if an explicit error has occurred or not.
 func (wlo *WorkspaceListOutput) CurrentWorkspace() *WorkspaceListEntry {
-	if wlo == nil {
+	if wlo == nil || len(wlo.Workspaces) == 0 {
 		return nil
 	}
 
