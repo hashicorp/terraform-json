@@ -126,7 +126,7 @@ func SanitizeStateOutputs(old map[string]*tfjson.StateOutput, replaceWith interf
 
 	for k := range result {
 		if result[k].Sensitive {
-			result[k].Value = replaceWith
+			result[k].Value = applyReplacement(result[k].Value, replaceWith)
 		}
 	}
 

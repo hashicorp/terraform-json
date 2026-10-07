@@ -47,8 +47,12 @@ func SanitizePlan(old *tfjson.Plan) (*tfjson.Plan, error) {
 // the BeforeSensitive and AfterSensitive in outputs are opaquely the
 // same.
 //
-// Sensitive values are replaced with the value supplied with
-// replaceWith. A copy of the Plan is returned.
+// Sensitive values are replaced with the value supplied by
+// replaceWith, which can either be a static value or a function
+// that receives the sensitive value as its only parameter and
+// returns a redacted value (not necessarily of the same type).
+//
+// A copy of the Plan is returned.
 func SanitizePlanWithValue(old *tfjson.Plan, replaceWith interface{}) (*tfjson.Plan, error) {
 	if old == nil {
 		return nil, NilPlanError
