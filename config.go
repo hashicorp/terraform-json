@@ -85,6 +85,9 @@ type ConfigModule struct {
 
 	// The variables defined in the module.
 	Variables map[string]*ConfigVariable `json:"variables,omitempty"`
+
+	// The actions defined in the module.
+	Actions []*ConfigAction `json:"actions,omitempty"`
 }
 
 // ConfigOutput defines an output as defined in configuration.
@@ -148,6 +151,32 @@ type ConfigResource struct {
 	// The contents of the "depends_on" config directive, which
 	// declares explicit dependencies for this resource.
 	DependsOn []string `json:"depends_on,omitempty"`
+}
+
+// ConfigAction is the representation of a config-declared action block.
+type ConfigAction struct {
+	// The address of the action relative to the module that it is
+	// in.
+	Address string `json:"address,omitempty"`
+
+	// The type of action, ie: "aws_lambda_invoke".
+	Type string `json:"type,omitempty"`
+
+	// The name of the action, ie: "foo" in "action.aws_lambda_invoke.foo".
+	Name string `json:"name,omitempty"`
+
+	// An opaque key representing the provider configuration this
+	// action uses. Note that there are more than one circumstance that
+	// this key will not match what is found in the ProviderConfigs
+	// field in the root Config structure, and as such should not be
+	// relied on for that purpose.
+	ProviderConfigKey string `json:"provider_config_key,omitempty"`
+
+	// The expression data for the "count" value in the action.
+	CountExpression *Expression `json:"count_expression,omitempty"`
+
+	// The expression data for the "for_each" value in the action.
+	ForEachExpression *Expression `json:"for_each_expression,omitempty"`
 }
 
 // ConfigVariable defines a variable as defined in configuration.
