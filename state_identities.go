@@ -23,7 +23,7 @@ type StateIdentitiesOutput struct {
 	Diagnostics   []Diagnostic              `json:"diagnostics,omitempty"`
 }
 
-// Validate checks to ensure that StateIdentitiesOutput is present, and the
+// Validate checks to ensure that data is present, and the
 // version matches the version supported by this library.
 func (sio *StateIdentitiesOutput) Validate() error {
 	if sio == nil {
@@ -61,6 +61,10 @@ func (sio *StateIdentitiesOutput) UnmarshalJSON(b []byte) error {
 	var output rawOutput
 
 	dec := json.NewDecoder(bytes.NewReader(b))
+
+	// decode numbers as json.Number to avoid losing precision
+	dec.UseNumber()
+
 	err := dec.Decode(&output)
 	if err != nil {
 		return err
