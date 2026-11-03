@@ -15,10 +15,12 @@ func TestStateIdentitiesOutput_basic(t *testing.T) {
   "format_version": "1.0",
   "identities": {
     "test_instance.bar": {
-      "id": "my-bar-id"
+      "id": "my-bar-id",
+      "legs": 4
     },
     "test_instance.foo": {
-      "id": "my-foo-id"
+      "id": "my-foo-id",
+      "legs": 3
     }
   }
 }`
@@ -31,10 +33,12 @@ func TestStateIdentitiesOutput_basic(t *testing.T) {
 		FormatVersion: "1.0",
 		Identities: map[string]map[string]any{
 			"test_instance.bar": {
-				"id": "my-bar-id",
+				"id":   "my-bar-id",
+				"legs": json.Number("4"),
 			},
 			"test_instance.foo": {
-				"id": "my-foo-id",
+				"id":   "my-foo-id",
+				"legs": json.Number("3"),
 			},
 		},
 	}
