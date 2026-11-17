@@ -298,7 +298,7 @@ type Change struct {
 	// actions, both values will be identical. After will be incomplete
 	// if there are values within it that won't be known until after
 	// apply.
-	Before interface{} `json:"before,"`
+	Before interface{} `json:"before"`
 	After  interface{} `json:"after,omitempty"`
 
 	// A deep object of booleans that denotes any values that are
